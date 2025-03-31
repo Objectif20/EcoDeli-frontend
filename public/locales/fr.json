@@ -262,5 +262,278 @@
       "blocCitation": "Citation",
       "divider": "Diviseur"
     }
+  },
+  "client" : {
+    "pages" : {
+      "public" : {
+        "landing" : {
+          "titre" : "Faites de vos déplacements une opportunité !",
+          "description" : "Recherchez. Trouvez. Et livrez.",
+          "bouton-action" : "Chercher un colis sur ma route",
+          "testimonials" : {
+            "titre" : "Ce que pense nos clients de EcoDeli",
+            "description" : "Avis laissés volontairement par nos clients.",
+            "avis" : {
+                "message1" : "EcoDeli a changé ma façon de livrer. Je peux maintenant livrer des colis tout en me déplaçant.",
+                "message2" : "J'adore utiliser EcoDeli. C'est rapide, facile et écologique !",
+                "message3" : "La plateforme est intuitive et j'ai trouvé des livraisons près de chez moi en un rien de temps."
+            }
+          },
+          "tuto" : {
+            "titre" : "Livrer votre colis n’aura jamais\n été aussi facile.",
+            "titre1" : "Déposez une annonce de livraison.",
+            "titre2" : "Discuter avec un livreur des conditions.",
+            "titre3" : "Confier votre colis au livreur de confiance."
+          },
+          "FAQ" : {
+            "titre" : "Questions fréquentes",
+            "description" : "Vous avez des questions ? Nous avons les réponses.",
+            "bouton" : "Voir toutes les questions",
+            "questions" : {
+              "question1" : {
+                "question" : "Comment fonctionne EcoDeli ?",
+                "reponse" : "EcoDeli est une plateforme de livraison qui connecte les particuliers, les commerçants et les prestataires de services de livraison. Vous pouvez rechercher des livraisons près de chez vous et commencer à livrer des colis."
+              },
+              "question2" : {
+                "question" : "Comment puis-je devenir livreur ?",
+                "reponse" : "Pour devenir livreur, il vous suffit de vous inscrire sur notre plateforme et de créer un profil. Vous pourrez ensuite rechercher des livraisons près de chez vous."
+              },
+              "question3" : {
+                "question" : "Quels types de livraisons puis-je effectuer ?",
+                "reponse" : "Vous pouvez livrer des colis, des courses, des documents et bien plus encore. Il vous suffit de rechercher les livraisons disponibles sur notre plateforme."
+              },
+              "question4" : {
+                "question" : "Comment puis-je contacter le service client ?",
+                "reponse" : "Il vos suffit de vous rendre sur la page Contact et de remplir le formulaire. Nous vous répondrons dans les plus brefs délais."
+              },
+              "question5" : {
+                "question" : "Comment puis-je suivre ma livraison ?",
+                "reponse" : "Une fois que vous avez confié votre colis à un livreur, vous recevrez un lien de suivi par email. Vous pourrez suivre l'acheminement de votre colis en temps réel."
+              }
+            }
+          }
+        },
+        "legalNotices": {
+          "title": "Mentions Légales",
+          "intro": "Conformément aux dispositions de la loi n° 2004-575 du 21 juin 2004 pour la confiance en l'économie numérique, il est précisé aux utilisateurs du Site l'identité des différents intervenants dans le cadre de sa réalisation et de son suivi.",
+          "editor": {
+            "title": "Editeur du site",
+            "description": "Le site ecodeli.remythibaut.fr est édité par la société EcoDeli SAS au capital de 12345.67 euros, immatriculée au Registre de Commerce et des Sociétés de Paris sous le numéro 111 222 333 et ayant son siège social au 16 rue de l'Hôpital, 21000 Dijon."
+          },
+          "host": {
+            "title": "Hébergeur",
+            "description": "Le site ecodeli.remythibaut.fr est hébergé par la société OVH, 2 rue Kellermann - 59100 Roubaix - France. Le stockage des données personnelles des utilisateurs est exclusivement réalisé sur le serveur OVH.",
+            "images": "Les images du site ecodeli.remythibaut.fr sont hébergées sur un serveur hébergé en France, à Gravelines 59820 par OVH."
+          },
+          "privacyPolicy": "Lire la charte de confidentialité"
+        },
+        "accessibility": {
+          "title": "Déclaration d'accessibilité",
+          "commitment": "Le Service Public Régional de Bruxelles s'engage à rendre le présent site internet accessible, conformément à l’ordonnance du 4 octobre 2018 relative à l’accessibilité des sites internet et des applications mobiles des organismes publics régionaux et des communes.",
+          "applicability": "La présente déclaration sur l'accessibilité s'applique au site [address-du-site.brussels].",
+          "complianceStatus": "État de conformité",
+          "wcagDescription": "Les Web Content Accessibility Guidelines (WCAG) rassemblent les normes applicables en matière d’exigences d’accessibilité pour les personnes souffrant d’un handicap. Ces règles sont réparties en trois niveaux : niveau A, niveau AA et niveau AAA.",
+          "partialCompliance": "Le présent site internet est en conformité partielle avec l’ordonnance du 4 octobre 2018 relative à l’accessibilité des sites internet et des applications mobiles des organismes publics régionaux et des communes, en raison de la non-conformité/des non-conformités énumérée(s) ci-dessous.",
+          "inaccessibleContent": "Contenu non accessible",
+          "nonComplianceReason": "Le contenu visé ci-après n'est pas accessible pour la/les raison(s) suivante(s) :",
+          "nonComplianceDetails": "Non-conformité avec l'ordonnance régionale :\n- Certaines images n'ont pas de texte alternatif.\n- Les contrastes de couleurs ne sont pas suffisants sur certaines pages.\n- Les vidéos ne disposent pas toutes de sous-titres.\n\nMesures prises pour remédier au problème :\n- Ajout de textes alternatifs pour toutes les images d'ici fin 2025.\n- Amélioration des contrastes de couleurs d'ici le premier trimestre 2026.\n- Ajout de sous-titres pour toutes les vidéos d'ici mi-2026.",
+          "preparation": "Préparation de la présente déclaration sur l'accessibilité",
+          "preparationDate": "La présente déclaration a été préparée le 15 octobre 2023.",
+          "complianceMethod": "La conformité de ce site aux normes Web Content Accessibility Guidelines 2.1 niveau AA a été établie par AnySurfer ([lien vers la page de statut AnySurfer / approbation officielle]).\nOU : La méthode utilisée pour préparer cette déclaration : une évaluation réalisée par ExempleOrg. Le dernier réexamen de la déclaration a eu lieu le 1er octobre 2023.",
+          "feedback": "Retour d'information et coordonnées de contact",
+          "contactInfo": "Pour toute demande d’information relative au contenu du présent site internet, pour signaler une absence de conformité ou simplement pour nous faire part de vos avis ou suggestions, contactez :\nService public régional de Bruxelles\nBoulevard du Jardin Botanique, 20\n1035 Bruxelles\nTel. : + 32 2 204 21 11\ninfo@sprb.brussels",
+          "enforcementProcedure": "Procédure permettant d'assurer le respect des dispositions",
+          "enforcementDetails": "À déterminer.\nOU [Fournir une description de la procédure, ainsi qu'un lien vers cette dernière, à suivre en cas de réponse non satisfaisante à une notification ou demande envoyée conformément à l'article 7, paragraphe 1, point b), de la directive].\n[Indiquer les coordonnées pour contacter l'organisme de contrôle compétent].\n\nTaux de conformité actuel : 85%"
+        },
+        "faq": {
+          "titre": "Besoin d’aide ?",
+          "tabs": {
+            
+            "delivery": {
+              "title": "Livraison",
+              "q1": {
+                "title": "Quels sont les délais de livraison ?",
+                "content": "Les délais de livraison varient selon votre localisation. En général, il faut compter entre 3 et 5 jours ouvrables."
+              },
+              "q2": {
+                "title": "Puis-je suivre ma commande ?",
+                "content": "Oui, vous recevrez un lien de suivi par email une fois votre commande expédiée."
+              },
+              "q3": {
+                "title": "Livrez-vous à l'international ?",
+                "content": "Oui, nous livrons dans plusieurs pays. Consultez notre page de livraison pour plus de détails."
+              },
+              "q4": {
+                "title": "Que faire si je ne suis pas chez moi au moment de la livraison ?",
+                "content": "Vous pouvez choisir une adresse alternative ou demander à ce que votre colis soit laissé dans un endroit sûr."
+              },
+              "q5": {
+                "title": "Puis-je retourner un produit livré ?",
+                "content": "Oui, vous avez 14 jours pour retourner un produit. Consultez notre politique de retour pour plus d'informations."
+              }
+            },
+            "service": {
+              "title": "Prestation",
+              "q1": {
+                "title": "Quels services proposez-vous ?",
+                "content": "Nous proposons une large gamme de services, de la consultation à la mise en œuvre de solutions."
+              },
+              "q2": {
+                "title": "Comment puis-je obtenir un devis ?",
+                "content": "Vous pouvez demander un devis en remplissant notre formulaire de contact."
+              },
+              "q3": {
+                "title": "Quels sont vos tarifs ?",
+                "content": "Nos tarifs varient selon le service demandé. Contactez-nous pour un devis personnalisé."
+              },
+              "q4": {
+                "title": "Proposez-vous des services personnalisés ?",
+                "content": "Oui, nous adaptons nos services à vos besoins spécifiques."
+              },
+              "q5": {
+                "title": "Quels sont vos délais de réalisation ?",
+                "content": "Les délais dépendent de la nature du projet. Nous vous fournirons une estimation précise lors de notre premier échange."
+              }
+            },
+            "subscription": {
+              "title": "Abonnements",
+              "q1": {
+                "title": "Comment fonctionnent vos abonnements ?",
+                "content": "Nos abonnements sont mensuels ou annuels et vous donnent accès à des fonctionnalités exclusives."
+              },
+              "q2": {
+                "title": "Puis-je annuler mon abonnement à tout moment ?",
+                "content": "Oui, vous pouvez annuler votre abonnement à tout moment depuis votre espace client."
+              },
+              "q3": {
+                "title": "Quels sont les avantages d'un abonnement annuel ?",
+                "content": "Un abonnement annuel vous permet de bénéficier d'une réduction par rapport à un abonnement mensuel."
+              },
+              "q4": {
+                "title": "Puis-je changer de formule d'abonnement ?",
+                "content": "Oui, vous pouvez changer de formule à tout moment depuis votre espace client."
+              },
+              "q5": {
+                "title": "Quels moyens de paiement acceptez-vous ?",
+                "content": "Nous acceptons les paiements par carte bancaire, PayPal et virement bancaire."
+              }
+            },
+            "security": {
+              "title": "Sécurité",
+              "q1": {
+                "title": "Comment protégez-vous mes données personnelles ?",
+                "content": "Nous utilisons des protocoles de sécurité avancés pour protéger vos données personnelles."
+              },
+              "q2": {
+                "title": "Vos services sont-ils conformes au RGPD ?",
+                "content": "Oui, nous respectons les exigences du RGPD pour la protection des données."
+              },
+              "q3": {
+                "title": "Comment puis-je signaler un problème de sécurité ?",
+                "content": "Vous pouvez nous contacter via notre formulaire de contact pour signaler tout problème de sécurité."
+              },
+              "q4": {
+                "title": "Utilisez-vous des cookies ?",
+                "content": "Oui, nous utilisons des cookies pour améliorer votre expérience utilisateur. Vous pouvez consulter notre politique de cookies pour plus d'informations."
+              },
+              "q5": {
+                "title": "Comment sécurisez-vous les paiements en ligne ?",
+                "content": "Nous utilisons des passerelles de paiement sécurisées pour garantir la sécurité de vos transactions."
+              }
+            }
+          }
+        },
+        "teams": {
+          "title": "Qui sommes-nous ?",
+          "remy_thibaut": "Rémy THIBAUT",
+          "damien_vaurette": "Damien VAURETTE",
+          "quentin_delneuf": "Quentin Delneuf",
+          "frederic_sananes": "Fréderic SANANES",
+          "kevin_trancho": "Kevin TRANCHO",
+          "christophe_delon": "Christophe DELON",
+          "maxime_antoine": "Maxime ANTOINE",
+          "john_doe": "John Doe",
+          "gregoire_petit": "Gréroire Petit",
+          "alice_bob": "Alice Bob",
+          "developer": "Développeur Fullstack",
+          "network_manager": "Directeur de l’équipe réseau",
+          "database_manager": "Responsable des bases de données",
+          "pedagogical_director": "Directeur Pédagogique",
+          "accounting_expert": "Expert comptabilité",
+          "mobile_specialist": "Spécialiste application mobile",
+          "api_referent": "Référent APIs",
+          "sales": "Commercial",
+          "communication_manager": "Gérant communication / forum",
+          "app_tester": "Testeuse de l’application"
+        },
+        "contact": {
+          "title": "Contactez-nous",
+          "description": "Que vous ayez une question, une remarque ou bien un problème avec un autre utilisateur, EcoDeli est toujours avec vous pour vous aider.",
+          "sections": {
+            "faq": {
+              "title": "Comment utiliser EcoDeli ?",
+              "description": "Ne vous inquiétez pas, vous pouvez retrouver sur notre page FAQ les réponses aux questions les plus souvent posées par les utilisateurs.",
+              "button": "Accéder à la FAQ"
+            },
+            "userIssue": {
+              "title": "Problème avec un autre utilisateur ?",
+              "description": "Cela arrive, même au meilleur. Heureusement, nous avons toujours une solution. N’hésitez pas à contacter notre support afin qu’il puisse vous aider à résoudre ce problème."
+            },
+            "bugReport": {
+              "title": "Signaler un bug",
+              "description": "Un bug sur un site fonctionne comme la météo, on ne sait ni quand ni comment il pourrait arriver. Mais grâce à vous, nous allons enfin pouvoir le corriger.",
+              "email": "contact.ecodeli@gmail.com"
+            }
+          }
+        }
+      }
+    }, 
+    "components" : {
+        "footer": {
+          "ecodeli": "EcoDeli",
+          "description": "EcoDeli est une plateforme de livraison écologique qui connecte les particuliers, les commerçants et les prestataires de services de livraison.",
+          "a_propos": "A propos",
+          "faq": "FAQ",
+          "suivre_mon_colis": "Suivre mon colis",
+          "mentions_legales": "Mentions légales",
+          "notre_equipe": "Notre équipe",
+          "securite": "Sécurité",
+          "accessibilite": "Accessibilité",
+          "livraisons": "Livraisons",
+          "devenir_livreur": "Devenir livreur",
+          "trouver_des_livraisons": "Trouver des livraisons",
+          "faire_une_demande": "Faire une demande",
+          "solution_ecologique": "Solution écologique",
+          "prestations": "Prestations",
+          "devenir_prestataire": "Devenir prestataire",
+          "les_decouvrir": "Les découvrir",
+          "nous_contacter": "Nous contacter",
+          "email": "Email",
+          "telephone": "(+33) 12 34 56 78 90",
+          "adresse": "242 Rue du Faubourg\n Saint-Antoine, \n75012 Paris",
+          "tous_droits_reserves" : "Tous droits réservés"
+        },
+      "navbar" : {
+        "titre" : "EcoDeli",
+        "livraison" : {
+          "titre" : "Livraison",
+          "devenirLivreur" : "Devenir livreur",
+          "devenirLivreurDescription" : "Rejoignez notre équipe de livreurs et livrez des colis de manière écologique.",
+          "trouverLivraison" : "Trouver des livraisons",
+          "trouverLivraisonDescription" : "Trouvez des livraisons près de chez vous et commencez à gagner de l'argent.",
+          "ecologie" : "Écologie",
+          "ecologieDescription" : "Découvrez comment nous contribuons à la protection de l'environnement grâce à nos livraisons écologiques."
+        },
+        "prestation" : {
+          "titre" : "Prestations",
+          "devenirPrestataire" : "Devenir prestataire",
+          "devenirPrestataireDescription" : "Devenez prestataire de services de livraison et rejoignez notre équipe.",
+          "trouverPrestations" : "Trouver des prestations",
+          "trouverPrestationsDescription" : "Trouvez des prestations sur la plateforme et commencez à travailler."
+        },
+        "qui_sommes_nous" :  "Qui sommes-nous ?",
+        "login" : "Se connecter"
+      }
+    }
   }
 }

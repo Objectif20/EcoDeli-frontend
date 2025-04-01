@@ -3,7 +3,7 @@ import Navbar from "./navbar";
 import Footer from "./footer";
 
 
-export default function PublicLayout() {
+export function PublicLayout() {
     return (
         <div className="flex flex-col">
             <div className="flex-grow">
@@ -11,6 +11,17 @@ export default function PublicLayout() {
                 <Outlet />
             </div>
             <Footer />
+        </div>
+    )
+}
+
+export function PublicNavbar() {
+    return (
+        <div className="flex flex-col">
+            <div className="flex-grow">
+                <Navbar />
+                <Outlet />
+            </div>
         </div>
     )
 }

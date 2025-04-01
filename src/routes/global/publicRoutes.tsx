@@ -1,6 +1,7 @@
-import PublicLayout from "@/components/public/public-layout";
+import {PublicLayout, PublicNavbar} from "@/components/public/public-layout";
 import AccessibilityPage from "@/pages/public/accessibility";
 import ContactPage from "@/pages/public/contact";
+import DeliveriesPage from "@/pages/public/deliveries";
 import FAQPage from "@/pages/public/faq";
 import LandingPage from "@/pages/public/landing";
 import LegalesNotices from "@/pages/public/legales-notices";
@@ -20,10 +21,12 @@ export default function PublicRoutes() {
                 <Route path="/our-teams" element={<TeamPage />} />
                 <Route path="/ecology" element={<h1>Ecology</h1>} />
                 <Route path="/become-delivery-partner" element={<h1>Become Delivery Partner</h1>} />
-                <Route path="/deliveries" element={<h1>Deliveries</h1>} />
                 <Route path="/faq" element={<FAQPage />} />
                 <Route path="/become-provider" element={<h1>Become Provider</h1>} />
                 <Route path="/services" element={<h1>Services</h1>} />
+            </Route>
+            <Route element={<PublicNavbar />}>
+                <Route path="/deliveries" element={<DeliveriesPage />} />
             </Route>
         </Routes>
     );

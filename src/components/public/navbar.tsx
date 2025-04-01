@@ -107,7 +107,7 @@ const Navbar = ({
   const { t } = useTranslation();
 
   return (
-    <section className='py-4'>
+    <section className='py-4 h-16'>
       <div className='container'>
         <nav className='hidden justify-between lg:flex'>
           <div className='flex items-center gap-6'>

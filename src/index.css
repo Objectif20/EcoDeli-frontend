@@ -103,3 +103,7 @@
 #root {
   white-space: pre-line;
 }
+
+.leaflet-routing-container{
+  visibility: hidden;
+}

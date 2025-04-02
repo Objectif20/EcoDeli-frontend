@@ -13,9 +13,10 @@ interface City {
 interface CityAsyncSelectDemoProps {
   onCitySelect: (city: City) => void;
   labelValue?: string;
+  placeholder?: string;
 }
 
-function CityAsyncSelectDemo({ onCitySelect, labelValue }: CityAsyncSelectDemoProps) {
+function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder }: CityAsyncSelectDemoProps) {
   const [cities, setCities] = useState<City[]>([]);
   const [_, setIsLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState("");
@@ -107,7 +108,7 @@ function CityAsyncSelectDemo({ onCitySelect, labelValue }: CityAsyncSelectDemoPr
         getDisplayValue={(city) => city.label}
         notFound={<div className="py-6 text-center text-sm">Aucune ville trouvée</div>}
         label="City"
-        placeholder={selectedValue ? update(labelValue || "") : "Recherchez une ville"}
+        placeholder={selectedValue ? update(labelValue || "") : placeholder}
         value={selectedValue}
         onChange={handleChange}
         width="375px"

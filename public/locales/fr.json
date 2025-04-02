@@ -485,6 +485,33 @@
               "email": "contact.ecodeli@gmail.com"
             }
           }
+        },
+        "deliveries": {
+          "findPackage": "Trouver un colis sur ma route",
+          "around": "Autour de",
+          "onRoute": "Sur ma route pour commencer",
+          "radius": "Rayon (km)",
+          "applyFilters": "Appliquer les filtres",
+          "noDataFound": "Aucune donnée trouvée.",
+          "resetFilters": "Réinitialiser les filtres",
+          "moreFilters": "Plus de filtres",
+          "filters": "Filtres",
+          "useThisSpace": "Utilisez cet espace pour ajouter des filtres à vos livraisons.",
+          "price": "Prix",
+          "weight": "Poids",
+          "deliveryType": "Type de livraison",
+          "all": "Tous",
+          "urgent": "Urgent",
+          "nonUrgent": "Non urgent",
+          "apply": "Appliquer",
+          "more": "Plus",
+          "departure": "Départ",
+          "arrival": "Arrivée",
+          "description": "Description",
+          "totalPrice": "Prix total",
+          "cityToCity": "{{departureCity}} - {{arrivalCity}}",
+          "weightKg": "{{weight}} Kg",
+          "urgency": "{{urgency}}"
         }
       }
     }, 

@@ -9,28 +9,28 @@ const Footer01Page = () => {
     {
       title: t("client.components.footer.a_propos"),
       links: [
-        { title: t("client.components.footer.faq"), href: "#" },
-        { title: t("client.components.footer.suivre_mon_colis"), href: "#" },
-        { title: t("client.components.footer.mentions_legales"), href: "#" },
-        { title: t("client.components.footer.notre_equipe"), href: "#" },
-        { title: t("client.components.footer.securite"), href: "#" },
-        { title: t("client.components.footer.accessibilite"), href: "#" },
+        { title: t("client.components.footer.faq"), href: "/faq" },
+        { title: t("client.components.footer.mentions_legales"), href: "/legal-notice" },
+        { title: t("client.components.footer.notre_equipe"), href: "/our-teams" },
+        { title: t("client.components.footer.securite"), href: "/security" },
+        { title: t("client.components.footer.accessibilite"), href: "/accessibility" },
       ],
     },
     {
       title: t("client.components.footer.livraisons"),
       links: [
-        { title: t("client.components.footer.devenir_livreur"), href: "#" },
-        { title: t("client.components.footer.trouver_des_livraisons"), href: "#" },
-        { title: t("client.components.footer.faire_une_demande"), href: "#" },
-        { title: t("client.components.footer.solution_ecologique"), href: "#" },
+        { title: t("client.components.footer.devenir_livreur"), href: "/become-deliveryman" },
+        { title: t("client.components.footer.trouver_des_livraisons"), href: "/deliveries" },
+        { title: t("client.components.footer.suivre_mon_colis"), href: "/follow-packages" },
+        { title: t("client.components.footer.faire_une_demande"), href: "/create-shipment" },
+        { title: t("client.components.footer.solution_ecologique"), href: "/ecology" },
       ],
     },
     {
       title: t("client.components.footer.prestations"),
       links: [
-        { title: t("client.components.footer.devenir_prestataire"), href: "#" },
-        { title: t("client.components.footer.les_decouvrir"), href: "#" },
+        { title: t("client.components.footer.devenir_prestataire"), href: "/become-provider" },
+        { title: t("client.components.footer.les_decouvrir"), href: "/services" },
       ],
     },
     {

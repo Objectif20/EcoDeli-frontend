@@ -35,8 +35,10 @@ export interface DeliveriesFilter {
     routeEndLatitude?: number;
     routeEndLongitude?: number;
     routeRadius?: number;
-    priceMin?: number;
-    priceMax?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    minWeight?: number;
+    maxWeight?: number;
     deliveryType?: string;
 }
 

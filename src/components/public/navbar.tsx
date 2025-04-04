@@ -48,6 +48,10 @@ interface NavbarProps {
     url: string;
   }[];
   auth?: {
+    register: {
+      textKey: string;
+      url: string;
+    };
     login: {
       textKey: string;
       url: string;
@@ -101,6 +105,7 @@ const Navbar = ({
     },
   ],
   auth = {
+    register: { textKey: 'client.components.navbar.register', url: '/auth/register' },
     login: { textKey: 'client.components.navbar.login', url: '/auth/login' },
   },
 }: NavbarProps) => {
@@ -126,6 +131,9 @@ const Navbar = ({
             </div>
           </div>
           <div className='flex gap-2'>
+          <Button asChild className='w-full' variant={"link"}>
+                      <Link to={auth.register.url}>{t(auth.register.textKey)}</Link>
+                    </Button>
             <Button asChild size='sm'>
               <Link to={auth.login.url}>{t(auth.login.textKey)}</Link>
             </Button>
@@ -163,6 +171,9 @@ const Navbar = ({
                     {menu.map((item) => renderMobileMenuItem(item, t))}
                   </Accordion>
                   <div className='flex flex-col gap-2'>
+                  <Button asChild className='w-full' variant={"link"}>
+                      <Link to={auth.register.url}>{t(auth.register.textKey)}</Link>
+                    </Button>
                     <Button asChild className='w-full'>
                       <Link to={auth.login.url}>{t(auth.login.textKey)}</Link>
                     </Button>

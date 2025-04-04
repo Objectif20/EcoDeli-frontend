@@ -95,14 +95,14 @@ export default function Step3PrestataireProfile() {
                 />
             </div>
             <div className="mb-4">
-                <label className="block text-gray-700">Type de service</label>
+                <label className="block text-gray-700">Type de service</label>à
                 <input
                     type="text"
                     name="service_type"
                     value={formData.service_type}
                     onChange={handleChange}
                     className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-blue-600"
-                    required
+                    required  
                 />
             </div>
             <div className="mb-4">

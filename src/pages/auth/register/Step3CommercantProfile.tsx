@@ -1,23 +1,21 @@
 "use client"
 
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { RegisterContext } from "./RegisterContext"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
+
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import Logo from "@/assets/logo.svg"
+import LocationSelector from "@/components/ui/location-input"
+import { Language, RegisterApi } from "@/api/register.api"
 
 const formSchema = z
   .object({
@@ -27,13 +25,6 @@ const formSchema = z
     lastName: z.string().min(2, {
       message: "Le nom doit contenir au moins 2 caractères.",
     }),
-    birthDate: z.date({
-      required_error: "Veuillez sélectionner une date.",
-    }),
-    nationality: z.string({
-      required_error: "Veuillez sélectionner une nationalité.",
-    }),
-
     email: z.string().email({
       message: "Veuillez entrer une adresse email valide.",
     }),
@@ -47,9 +38,6 @@ const formSchema = z
     }),
     siret: z.string().regex(/^\d{14}$/, {
       message: "Le numéro SIRET doit contenir 14 chiffres.",
-    }),
-    business_sector: z.string({
-      required_error: "Veuillez sélectionner un secteur d'activité.",
     }),
 
     address: z.string().min(5, {
@@ -84,6 +72,18 @@ type FormValues = z.infer<typeof formSchema>
 
 export default function Step3CommercantProfile() {
   const { nextStep, setCommercantInfo } = useContext(RegisterContext)
+  const [, setCountry] = useState('FR');
+  const [, setCountryName] = useState('');
+  const [languages, setLanguages] = useState<Language[]>([])
+  
+
+      useEffect(() => {
+        async function fetchLanguages() {
+          const languages = await RegisterApi.getLanguage()
+          setLanguages(languages.filter(lang => lang.active))
+        }
+        fetchLanguages()
+      }, [])
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -113,31 +113,8 @@ export default function Step3CommercantProfile() {
     nextStep()
   }
 
-  const nationalities = [
-    { value: "fr", label: "Française" },
-    { value: "be", label: "Belge" },
-    { value: "ch", label: "Suisse" },
-    { value: "ca", label: "Canadienne" },
-    { value: "other", label: "Autre" },
-  ]
-
-  const businessSectors = [
-    { value: "restaurant", label: "Restaurant gastronomique" },
-    { value: "grocery", label: "Épicerie" },
-    { value: "bakery", label: "Boulangerie" },
-    { value: "butcher", label: "Boucherie" },
-    { value: "farm", label: "Producteur" },
-    { value: "other", label: "Autre" },
-  ]
-
   return (
     <div className="container mx-auto py-8">
-      <div className="flex items-center mb-8">
-        <div className="mr-4">
-          <img src={Logo} alt="EcoDeli Logo" className="h-20 w-20" />
-        </div>
-        <h1 className="text-2xl font-bold">EcoDeli</h1>
-      </div>
 
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
@@ -170,70 +147,6 @@ export default function Step3CommercantProfile() {
                       <FormControl>
                         <Input placeholder="Jean" {...field} />
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="birthDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Date *</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={`w-full pl-3 text-left font-normal ${
-                                !field.value ? "text-muted-foreground" : ""
-                              }`}
-                            >
-                              {field.value ? (
-                                format(field.value, "dd/MM/yyyy", { locale: fr })
-                              ) : (
-                                <span>JJ/MM/AAAA</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="nationality"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nationalité *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner une nationalité" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {nationalities.map((nationality) => (
-                            <SelectItem key={nationality.value} value={nationality.value}>
-                              {nationality.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -315,30 +228,7 @@ export default function Step3CommercantProfile() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="business_sector"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Secteur d'activité *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner un secteur" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {businessSectors.map((sector) => (
-                            <SelectItem key={sector.value} value={sector.value}>
-                              {sector.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
               </div>
 
               <div className="grid grid-cols-1 gap-4">
@@ -385,19 +275,25 @@ export default function Step3CommercantProfile() {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Pays *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="France" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
+              <FormField
+                  control={form.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Pays *</FormLabel>
+                      <LocationSelector
+                        onCountryChange={(country) => {
+                          setCountry(country?.iso2 || 'FR');
+                          setCountryName(country?.name || '');
+                          field.onChange(country?.name || '');
+                        }}
+                        enableStateSelection={false}
+                      />
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 </div>
               </div>
 
@@ -416,29 +312,30 @@ export default function Step3CommercantProfile() {
                   )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name="language_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Langue</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Sélectionner une langue" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="fr">Français</SelectItem>
-                          <SelectItem value="en">Anglais</SelectItem>
-                          <SelectItem value="es">Espagnol</SelectItem>
-                          <SelectItem value="de">Allemand</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <FormField
+                control={form.control}
+                name="language_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Langue *</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Sélectionnez votre langue" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {languages.map(lang => (
+                          <SelectItem key={lang.language_id} value={lang.language_id}>
+                            {lang.language_name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
                 <FormField
                   control={form.control}

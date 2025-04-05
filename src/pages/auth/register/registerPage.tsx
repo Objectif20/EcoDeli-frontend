@@ -10,6 +10,7 @@ import Step5Stripe from "./Step5Stripe";
 import { RegisterContext } from "./RegisterContext";
 import { Elements } from '@stripe/react-stripe-js';
 import stripePromise from '@/config/stripeConfig';
+import { RegisterApi } from "@/api/register.api";
 
 export default function RegisterPage() {
     const [step, setStep] = useState(1);
@@ -24,27 +25,30 @@ export default function RegisterPage() {
     const prevStep = () => setStep((prev) => prev - 1);
 
     useEffect(() => {
-
         if (isFinished) {
             if (isPro) {
                 if (isPrestataire) {
                     console.log('Informations du prestataire:', prestataireInfo);
+                    RegisterApi.registerPrestataire(prestataireInfo)
                 } else {
                     console.log('Informations du commerçant:', commercantInfo);
+                    RegisterApi.registerCommercant(commercantInfo)
                 }
             } else {
                 console.log('Informations du client:', clientInfo);
+                RegisterApi.registerClient(clientInfo)
             }
         }
-        if(step === 2 && !isPro) {
+        if (step === 2 && !isPro) {
             setStep(3);
         }
-    }, [step, clientInfo]);
+        if (step === 6) {
+            setIsFinished(true);
+        }
+    }, [step, clientInfo, isFinished, isPro, isPrestataire, prestataireInfo, commercantInfo]);
 
-
-
-    return ( 
-        <RegisterContext.Provider value={{ isPro, setIsPro, isPrestataire, setIsPrestataire, nextStep, prevStep, setClientInfo, clientInfo, prestataireInfo, setPrestataireInfo, setCommercantInfo, commercantInfo , setIsFinished, isFinished }}>
+    return (
+        <RegisterContext.Provider value={{ isPro, setIsPro, isPrestataire, setIsPrestataire, nextStep, prevStep, setClientInfo, clientInfo, prestataireInfo, setPrestataireInfo, setCommercantInfo, commercantInfo, setIsFinished, isFinished }}>
             {step === 1 && <Step1ProfileChoice />}
             {step === 2 && isPro && <Step2ProChoice />}
             {step === 3 && !isPro && <Step3ParticulierProfile />}
@@ -58,16 +62,15 @@ export default function RegisterPage() {
                 </Elements>
             )}
             {isFinished && (
-                <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-                    <h2 className="mb-8 text-2xl font-semibold text-gray-800">
+                <div className="flex flex-col items-center justify-center min-h-screen ">
+                    <h2 className="mb-8 text-2xl font-semibold ">
                         Inscription terminée !
                     </h2>
-                    <p className="text-gray-600">
+                    <p className="">
                         Merci de vous être inscrit. Vous pouvez maintenant vous connecter.
                     </p>
                 </div>
             )}
-            
         </RegisterContext.Provider>
     );
 }

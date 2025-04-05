@@ -512,6 +512,72 @@
           "cityToCity": "{{departureCity}} - {{arrivalCity}}",
           "weightKg": "{{weight}} Kg",
           "urgency": "{{urgency}}"
+        },
+        "services": {
+          "title": "Découvrez {{count}} prestations",
+          "searchPlaceholder": "Recherchez une prestation...",
+          "locationPlaceholder": "Ville, département, région...",
+          "searchButton": "Rechercher",
+          "filterBy": "Filtrer par:",
+          "recent": "Les plus récents",
+          "serviceDetails": "Détails du service",
+          "proposedBy": "Prestation proposée par {{name}}",
+          "description": "Description",
+          "price": "Prix",
+          "customerReviews": "Avis des clients",
+          "appointmentButton": "Prendre un rendez-vous",
+          "closeButton": "Fermer",
+          "selectService": "Sélectionnez une prestation pour voir les détails.",
+          "selectServiceDescription": "Vous pouvez cliquer sur une des prestations à gauche pour afficher ses informations.",
+          "viewDetails": "Voir les détails"
+        },
+        "register": {
+          "firstProfileChoice": {
+            "title": "Quel est votre profil ?",
+            "individual": "Particulier",
+            "individualDescription": "Vous utilisez l'application pour vous-même et pour faire de chouettes rencontres",
+            "professional": "Professionnel",
+            "professionalDescription": "Vous êtes ici pour mettre en avant votre activité tout en profitant des services les plus fiables.",
+            "signUp": "S'inscrire",
+            "existingAccount": "Vous possédez déjà un compte ?",
+            "login": "Connectez-vous"
+          },
+          "secondProfileChoice": {
+            "title": "Quel type de professionnel êtes-vous ?",
+            "merchant": "Commerçant",
+            "merchantDescription": "Vous souhaitez utiliser EcoDeli afin de mettre en avant votre commerce et vos produits.",
+            "serviceProvider": "Prestataire",
+            "serviceProviderDescription": "Vous avez pour ambition de rendre le monde meilleur en proposant des services à la personne.",
+            "signUp": "S'inscrire",
+            "existingAccount": "Vous possédez déjà un compte ?",
+            "login": "Connectez-vous"
+          },
+          "clientProfile": {
+            "completeProfile": "Compléter votre profil",
+            "profileDescription": "Quel est votre profil ?",
+            "lastName": "Nom *",
+            "firstName": "Prénom *",
+            "language": "Langue *",
+            "selectLanguage": "Sélectionnez votre langue",
+            "email": "Email *",
+            "emailPlaceholder": "exemple@email.com",
+            "password": "Mot de passe *",
+            "confirmPassword": "Confirmer le mot de passe *",
+            "newsletter": "S'inscrire à la newsletter",
+            "acceptTerms": "J'accepte les conditions générales du site EcoDeli, disponibles ",
+            "termsLink": "ici",
+            "continue": "Continuer",
+            "validation": {
+              "email": "Veuillez entrer une adresse email valide.",
+              "passwordLength": "Le mot de passe doit contenir au moins 12 caractères.",
+              "passwordFormat": "Le mot de passe doit contenir des lettres, des chiffres et au moins un caractère spécial (@$!%*?&).",
+              "firstNameRequired": "Le prénom est requis.",
+              "lastNameRequired": "Le nom est requis.",
+              "languageRequired": "L'identifiant de langue est requis.",
+              "passwordMatch": "Les mots de passe ne correspondent pas.",
+              "acceptTerms": "Vous devez accepter les conditions générales."
+            }
+          }
         }
       }
     }, 

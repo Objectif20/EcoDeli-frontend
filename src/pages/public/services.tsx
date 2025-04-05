@@ -26,6 +26,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import { useTranslation } from 'react-i18next';
+
 
 export interface Service {
   service_id: string
@@ -212,35 +214,38 @@ const fakeServices: Service[] = [
 ]
 
 export default function ServicesPage() {
-  const [services] = useState<Service[]>(fakeServices)
-  const [selectedService, setSelectedService] = useState<Service>(services[0])
-  const [currentPage, setCurrentPage] = useState(1)
-  const servicesPerPage = 3
+  const { t } = useTranslation();
+  const [services] = useState<Service[]>(fakeServices);
+  const [selectedService, setSelectedService] = useState<Service>(services[0]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const servicesPerPage = 3;
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page)
-  }
+    setCurrentPage(page);
+  };
 
   return (
     <div className="container mx-auto py-6">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-6 text-center">Découvrez {services.length} prestations</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          {t('client.pages.public.services.title', { count: services.length })}
+        </h1>
         <div className="flex flex-col md:flex-row gap-4 justify-center mb-6">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-            <Input placeholder="Recherchez une prestation..." className="pl-10 bg-white" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 " size={18} />
+            <Input placeholder={t('client.pages.public.services.searchPlaceholder')} className="pl-10 " />
           </div>
           <div className="relative flex-1 max-w-md">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-            <Input placeholder="Ville, département, région..." className="pl-10 bg-white" />
+            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 " size={18} />
+            <Input placeholder={t('client.pages.public.services.locationPlaceholder')} className="pl-10 " />
           </div>
-          <Button className="bg-green-500 hover:bg-green-600">Rechercher</Button>
+          <Button>{t('client.pages.public.services.searchButton')}</Button>
         </div>
 
         <div className="flex items-center gap-2 mb-4">
-          <p className="text-sm font-medium text-gray-500">Filtrer par:</p>
+          <p className="text-sm font-medium ">{t('client.pages.public.services.filterBy')}</p>
           <Button variant="outline" size="sm" className="text-xs">
-            Les plus récents
+            {t('client.pages.public.services.recent')}
           </Button>
         </div>
       </div>
@@ -263,7 +268,7 @@ export default function ServicesPage() {
                       alt={service.name}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute top-2 right-2 bg-white rounded-full px-2 py-1 text-xs font-medium flex items-center">
+                    <div className="absolute top-2 right-2  rounded-full px-2 py-1 text-xs font-medium flex items-center">
                       <Star className="w-3 h-3 text-yellow-500 mr-1" />
                       {service.rate}
                     </div>
@@ -272,7 +277,7 @@ export default function ServicesPage() {
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h3 className="font-semibold text-lg">{service.name}</h3>
-                        <p className="text-sm text-gray-500 flex items-center">
+                        <p className="text-sm flex items-center">
                           <MapPin className="w-3 h-3 mr-1" /> {service.city}
                         </p>
                       </div>
@@ -326,7 +331,7 @@ export default function ServicesPage() {
                   <div className="flex justify-between items-start">
                     <div>
                       <h2 className="text-2xl font-bold">{selectedService.name}</h2>
-                      <p className="text-gray-500 flex items-center">
+                      <p className=" flex items-center">
                         <MapPin className="w-4 h-4 mr-1" /> {selectedService.city}
                       </p>
                     </div>
@@ -335,7 +340,7 @@ export default function ServicesPage() {
                         <Star className="w-4 h-4 text-yellow-500 mr-1" />
                         <span className="font-medium">{selectedService.rate}</span>
                       </div>
-                      <div className="flex items-center text-gray-500 text-sm">
+                      <div className="flex items-center  text-sm">
                         <Clock className="w-3 h-3 mr-1" />
                         <span>{selectedService.duration_time} min</span>
                       </div>
@@ -352,12 +357,14 @@ export default function ServicesPage() {
 
                 <CardContent className="flex-grow overflow-auto">
                   <div className="mb-6 flex items-center gap-4 pb-4 border-b">
-                    <Avatar className="h-16 w-16 border-2 border-green-100">
+                    <Avatar className="h-16 w-16 border-2 ">
                       <AvatarImage src={selectedService.author.photo} />
                       <AvatarFallback>{selectedService.author.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <h3 className="font-semibold text-lg">Prestation proposée par {selectedService.author.name}</h3>
+                      <h3 className="font-semibold text-lg">
+                        {t('client.pages.public.services.proposedBy', { name: selectedService.author.name })}
+                      </h3>
                       <div className="flex items-center">
                         <Star className="w-4 h-4 text-yellow-500 mr-1" />
                         <span>{selectedService.rate}</span>
@@ -366,18 +373,18 @@ export default function ServicesPage() {
                   </div>
 
                   <div className="mb-6">
-                    <h3 className="font-semibold text-lg mb-2">Description</h3>
+                    <h3 className="font-semibold text-lg mb-2">{t('client.pages.public.services.description')}</h3>
                     <p className="text-gray-700">{selectedService.description}</p>
                     <div className="mt-4 p-4 ">
                       <div className="flex justify-between items-center">
-                        <p className="font-medium">Prix</p>
+                        <p className="font-medium">{t('client.pages.public.services.price')}</p>
                         <p className="font-bold text-xl">{selectedService.price_admin || selectedService.price}€</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="mb-6">
-                    <h3 className="font-semibold text-lg mb-4">Avis des clients</h3>
+                    <h3 className="font-semibold text-lg mb-4">{t('client.pages.public.services.customerReviews')}</h3>
                     <div className="space-y-4">
                       {selectedService.comments?.map((comment) => (
                         <div key={comment.id} className="border rounded-lg p-4">
@@ -388,7 +395,7 @@ export default function ServicesPage() {
                             </Avatar>
                             <div>
                               <p className="font-semibold">{comment.author.name}</p>
-                              <p className="text-gray-700">{comment.content}</p>
+                              <p className="">{comment.content}</p>
                             </div>
                           </div>
 
@@ -401,7 +408,7 @@ export default function ServicesPage() {
                                 </Avatar>
                                 <div>
                                   <p className="font-semibold text-sm">{comment.response.author.name}</p>
-                                  <p className="text-gray-700 text-sm">{comment.response.content}</p>
+                                  <p className=" text-sm">{comment.response.content}</p>
                                 </div>
                               </div>
                             </div>
@@ -413,17 +420,17 @@ export default function ServicesPage() {
                 </CardContent>
 
                 <CardFooter className="border-t pt-4">
-                  <Button className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2">
-                    Prendre un rendez-vous
+                  <Button className="w-full  text-white font-medium py-2">
+                    {t('client.pages.public.services.appointmentButton')}
                   </Button>
                 </CardFooter>
               </div>
             ) : (
               <div className="flex items-center justify-center h-full p-8 text-center">
                 <div>
-                  <p className="text-gray-500 mb-4">Sélectionnez une prestation pour voir les détails.</p>
-                  <p className="text-sm text-gray-400">
-                    Vous pouvez cliquer sur une des prestations à gauche pour afficher ses informations.
+                  <p className=" mb-4">{t('client.pages.public.services.selectService')}</p>
+                  <p className="text-sm ">
+                    {t('client.pages.public.services.selectServiceDescription')}
                   </p>
                 </div>
               </div>
@@ -433,59 +440,61 @@ export default function ServicesPage() {
 
         <Drawer>
           <DrawerTrigger asChild>
-            <Button className="lg:hidden fixed bottom-4 right-4 bg-green-500 hover:bg-green-600 text-white">
-              Voir les détails
+            <Button className="lg:hidden fixed bottom-4 right-4  text-white">
+              {t('client.pages.public.services.viewDetails')}
             </Button>
           </DrawerTrigger>
-          <DrawerContent  >
+          <DrawerContent>
             <DrawerHeader className="mx-4">
-            <DrawerTitle>{selectedService.name}</DrawerTitle>
-            <DrawerDescription>Détails du service</DrawerDescription>
+              <DrawerTitle>{selectedService.name}</DrawerTitle>
+              <DrawerDescription>{t('client.pages.public.services.serviceDetails')}</DrawerDescription>
               <div className="flex items-center justify-end mb-1">
                 <Star className="w-4 h-4 text-yellow-500 mr-1" />
                 <span className="font-medium">{selectedService.rate}</span>
               </div>
-              <div className="flex items-center text-gray-500 text-sm">
+              <div className="flex items-center  text-sm">
                 <Clock className="w-3 h-3 mr-1" />
                 <span>{selectedService.duration_time} min</span>
               </div>
             </DrawerHeader>
             <div className="mx-4">
-                <div className="mb-6 flex items-center gap-4 pb-4 border-b">
-                <Avatar className="h-16 w-16 border-2 border-green-100">
-                    <AvatarImage src={selectedService.author.photo} />
-                    <AvatarFallback>{selectedService.author.name.charAt(0)}</AvatarFallback>
+              <div className="mb-6 flex items-center gap-4 pb-4 border-b">
+                <Avatar className="h-16 w-16 border-2 ">
+                  <AvatarImage src={selectedService.author.photo} />
+                  <AvatarFallback>{selectedService.author.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                    <h3 className="font-semibold text-lg">Prestation proposée par {selectedService.author.name}</h3>
-                    <div className="flex items-center">
+                  <h3 className="font-semibold text-lg">
+                    {t('client.pages.public.services.proposedBy', { name: selectedService.author.name })}
+                  </h3>
+                  <div className="flex items-center">
                     <Star className="w-4 h-4 text-yellow-500 mr-1" />
                     <span>{selectedService.rate}</span>
-                    </div>
+                  </div>
                 </div>
-                </div>
-                <div className="mb-6">
-                <h3 className="font-semibold text-lg mb-2">Description</h3>
-                <p className="text-gray-700">{selectedService.description}</p>
+              </div>
+              <div className="mb-6">
+                <h3 className="font-semibold text-lg mb-2">{t('client.pages.public.services.description')}</h3>
+                <p className="">{selectedService.description}</p>
                 <div className="mt-4 p-4 ">
-                    <div className="flex justify-between items-center">
-                    <p className="font-medium">Prix</p>
+                  <div className="flex justify-between items-center">
+                    <p className="font-medium">{t('client.pages.public.services.price')}</p>
                     <p className="font-bold text-xl">{selectedService.price_admin || selectedService.price}€</p>
-                    </div>
+                  </div>
                 </div>
-                </div>
+              </div>
             </div>
             <DrawerFooter>
-              <Button className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2">
-                Prendre un rendez-vous
+              <Button className="w-full  font-medium py-2">
+                {t('client.pages.public.services.appointmentButton')}
               </Button>
               <DrawerClose asChild>
-                <Button variant="outline">Fermer</Button>
+                <Button variant="outline">{t('client.pages.public.services.closeButton')}</Button>
               </DrawerClose>
             </DrawerFooter>
           </DrawerContent>
         </Drawer>
       </div>
     </div>
-  )
+  );
 }

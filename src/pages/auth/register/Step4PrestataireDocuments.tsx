@@ -1,7 +1,6 @@
 'use client'
 
-import type React from "react"
-import { useContext, useState, useRef } from "react"
+import React, { useContext, useState, useRef } from "react"
 import { RegisterContext } from "./RegisterContext"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -19,6 +18,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import SignatureInput from '@/components/ui/signature-input'
+import { useTranslation } from 'react-i18next'
 
 interface DocumentFile {
   id: string
@@ -26,11 +26,13 @@ interface DocumentFile {
   name: string
 }
 
-const FormSchema = z.object({
-  signature: z.string().min(1, 'Please sign the form'),
-})
+const createFormSchema = (t: (key: string) => string) => {
+  return z.object({
+    signature: z.string().min(1, t('client.pages.public.register.providerDocument.signatureError')),
+  });
+};
 
-type SignatureFormData = z.infer<typeof FormSchema>
+type SignatureFormData = z.infer<ReturnType<typeof createFormSchema>>
 
 export default function Step4PrestataireDocuments() {
   const { nextStep, setPrestataireInfo, setIsFinished } = useContext(RegisterContext)
@@ -39,10 +41,13 @@ export default function Step4PrestataireDocuments() {
   const [dragActive, setDragActive] = useState(false)
   const [tempFile, setTempFile] = useState<File | null>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const { t } = useTranslation()
+
+  const FormSchema = createFormSchema(t);
 
   const form = useForm<SignatureFormData>({
     resolver: zodResolver(FormSchema),
-  })
+  });
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -107,12 +112,11 @@ export default function Step4PrestataireDocuments() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
             <div className="text-center space-y-4">
-              <h2 className="text-2xl md:text-3xl font-semibold">Justifier votre profil</h2>
+              <h2 className="text-2xl md:text-3xl font-semibold">
+                {t('client.pages.public.register.providerDocument.title')}
+              </h2>
               <p className="text-sm max-w-2xl mx-auto">
-                Votre profil prestataire sera examiné par EcoDeli. EcoDeli se réserve le droit de refuser votre demande
-                d'inscription sans avoir à fournir de justification. De plus, EcoDeli se réserve la possibilité de vous
-                contacter. Vous devrez fournir les documents justificatifs nécessaires à la validation de votre
-                inscription.
+                {t('client.pages.public.register.providerDocument.description')}
               </p>
             </div>
 
@@ -130,9 +134,11 @@ export default function Step4PrestataireDocuments() {
                   <Upload className="h-6 w-6 text-secondary" />
                 </div>
                 <div className="space-y-2">
-                  <p className="font-medium">Faites glisser ou ajouter un nouveau document</p>
+                  <p className="font-medium">
+                    {t('client.pages.public.register.providerDocument.dragDropText')}
+                  </p>
                   <p className="text-xs">
-                    Seuls les documents pdf, doc, docx et les images jpg, png or jpeg sont acceptés.
+                    {t('client.pages.public.register.providerDocument.acceptedFiles')}
                   </p>
                 </div>
                 <label htmlFor="file-upload" className="cursor-pointer">
@@ -149,7 +155,7 @@ export default function Step4PrestataireDocuments() {
                     size="sm"
                     onClick={() => document.getElementById('file-upload')?.click()}
                   >
-                    Parcourir les fichiers
+                    {t('client.pages.public.register.providerDocument.browseFiles')}
                   </Button>
                 </label>
                 {tempFile && (
@@ -162,10 +168,12 @@ export default function Step4PrestataireDocuments() {
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="document-name">Nom du document</Label>
+                <Label htmlFor="document-name">
+                  {t('client.pages.public.register.providerDocument.documentName')}
+                </Label>
                 <Input
                   id="document-name"
-                  placeholder="Vous devez fournir le nom du document"
+                  placeholder={t('client.pages.public.register.providerDocument.documentNamePlaceholder')}
                   value={documentName}
                   onChange={(e) => setDocumentName(e.target.value)}
                   className="w-full"
@@ -179,13 +187,15 @@ export default function Step4PrestataireDocuments() {
                 onClick={addDocument}
                 disabled={!tempFile || !documentName}
               >
-                Ajouter le document
+                {t('client.pages.public.register.providerDocument.addDocument')}
               </Button>
             </div>
 
             {documents.length > 0 && (
               <div className="space-y-4">
-                <h3 className="font-medium">Documents téléchargés</h3>
+                <h3 className="font-medium">
+                  {t('client.pages.public.register.providerDocument.uploadedDocuments')}
+                </h3>
                 <div className="space-y-2">
                   {documents.map((doc) => (
                     <div key={doc.id} className="flex items-center justify-between p-3 border-foreground rounded-md">
@@ -216,17 +226,19 @@ export default function Step4PrestataireDocuments() {
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <div>
-                      <FormLabel>Ajouter votre signature</FormLabel>
+                      <FormLabel>
+                        {t('client.pages.public.register.providerDocument.signatureLabel')}
+                      </FormLabel>
                     </div>
                     <div className="mx-auto">
-                    <SignatureInput
-                      canvasRef={canvasRef}
-                      onSignatureChange={field.onChange}
-                    />
+                      <SignatureInput
+                        canvasRef={canvasRef}
+                        onSignatureChange={field.onChange}
+                      />
                     </div>
 
                     <FormDescription>
-                      Veuillez signer le formulaire pour valider votre inscription.
+                      {t('client.pages.public.register.providerDocument.signatureDescription')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -236,7 +248,7 @@ export default function Step4PrestataireDocuments() {
 
             <div className="pt-4">
               <Button type="submit" className="w-full">
-                Suivant
+                {t('client.pages.public.register.providerDocument.nextButton')}
               </Button>
             </div>
           </form>

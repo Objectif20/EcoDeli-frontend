@@ -11,6 +11,8 @@ export interface User {
   iso_code: string;
   profile: string[];
   otp?: boolean | false;
+  updgradablePlan?: boolean | false;
+  planName?: string;
 }
 
 export interface UserState {

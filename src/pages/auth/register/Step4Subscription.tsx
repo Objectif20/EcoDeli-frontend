@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Check, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
 
 export default function Step4Subscription() {
   const { nextStep, setClientInfo, isPro, setCommercantInfo } = useContext(RegisterContext);
@@ -12,6 +13,7 @@ export default function Step4Subscription() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [currentPage, setCurrentPage] = useState(0);
   const plansPerPage = 3;
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchPlans = async () => {
@@ -54,8 +56,6 @@ export default function Step4Subscription() {
   };
 
   const getPopularPlanIndex = () => {
-    // Logique pour déterminer le plan le plus populaire
-    // Par exemple, on peut considérer le plan du milieu comme le plus populaire
     return displayedPlans.length > 1 ? 1 : 0;
   };
 
@@ -68,7 +68,9 @@ export default function Step4Subscription() {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
-      <h2 className="text-2xl font-bold text-center mb-10">Choisissez votre abonnement</h2>
+      <h2 className="text-2xl font-bold text-center mb-10">
+        {t("client.pages.public.register.subscription.chooseSubscription")}
+      </h2>
       <div className="relative">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           {displayedPlans.map((plan, index) => {
@@ -77,44 +79,52 @@ export default function Step4Subscription() {
               <div key={plan.plan_id} className="relative">
                 {isPopular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                    <Badge className="bg-green-500 hover:bg-green-600">La plus populaire</Badge>
+                    <Badge className="bg-green-500 hover:bg-green-600">
+                      {t("client.pages.public.register.subscription.mostPopular")}
+                    </Badge>
                   </div>
                 )}
                 <Card className={`h-full ${isPopular ? "border-green-500 shadow-lg" : ""}`}>
                   <CardHeader>
-                    <CardTitle className="text-center">{plan.name === "Free" ? "Gratuit" : plan.name}</CardTitle>
+                    <CardTitle className="text-center">
+                      {plan.name === "Free"
+                        ? t("client.pages.public.register.subscription.free")
+                        : plan.name}
+                    </CardTitle>
                     {Number(plan.price) > 0 ? (
-                      <div className="text-center text-xl font-semibold">{plan.price}€/mois</div>
+                      <div className="text-center text-xl font-semibold">
+                        {`${plan.price}€/${t("client.pages.public.register.subscription.perMonth")}`}
+                      </div>
                     ) : null}
                     <CardDescription className="text-center">
                       {plan.name === "Free"
-                        ? "Tout ce dont vous avez besoin pour faire vos demandes de livraisons."
+                        ? t("client.pages.public.register.subscription.freeDescription")
                         : plan.name === "Premium"
-                        ? "Si la perfection était un abonnement, ce serait celui-ci."
-                        : "Tout ce dont vous avez besoin pour faire vos demandes de livraisons."}
+                        ? t("client.pages.public.register.subscription.premiumDescription")
+                        : t("client.pages.public.register.subscription.defaultDescription")}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {renderFeatureItem(true, "Demandes de livraisons")}
+                      {renderFeatureItem(true, t("client.pages.public.register.subscription.deliveryRequests"))}
                       {renderFeatureItem(
                         Number(plan.priority_shipping_percentage) > 0,
-                        `Envoi prioritaire à ${plan.priority_shipping_percentage}%`,
+                        t("client.pages.public.register.subscription.priorityShipping", { percentage: plan.priority_shipping_percentage }),
                       )}
                       {renderFeatureItem(
                         Number(plan.max_insurance_coverage) > 0,
-                        `Assurance jusqu'à ${plan.max_insurance_coverage}€`,
+                        t("client.pages.public.register.subscription.insuranceCoverage", { amount: plan.max_insurance_coverage }),
                       )}
                       {renderFeatureItem(
                         Number(plan.shipping_discount) > 0,
-                        `Réduction sur l'envoi de ${plan.shipping_discount}%`,
+                        t("client.pages.public.register.subscription.shippingDiscount", { percentage: plan.shipping_discount }),
                       )}
                       {renderFeatureItem(
                         Number(plan.permanent_discount) > 0,
-                        `Réduction permanente de ${plan.permanent_discount}% sur petits colis`,
+                        t("client.pages.public.register.subscription.permanentDiscount", { percentage: plan.permanent_discount }),
                       )}
                       {plan.priority_months_offered > 0 &&
-                        renderFeatureItem(true, `${plan.priority_months_offered} envois prioritaire offerts`)}
+                        renderFeatureItem(true, t("client.pages.public.register.subscription.priorityMonthsOffered", { months: plan.priority_months_offered }))}
                     </div>
                   </CardContent>
                   <CardFooter>
@@ -123,7 +133,7 @@ export default function Step4Subscription() {
                       className="w-full"
                       variant={isPopular ? "default" : "outline"}
                     >
-                      Découvrir
+                      {t("client.pages.public.register.subscription.discover")}
                     </Button>
                   </CardFooter>
                 </Card>

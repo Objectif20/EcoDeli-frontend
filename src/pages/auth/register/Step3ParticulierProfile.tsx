@@ -233,7 +233,7 @@ export default function Step3ParticulierProfile() {
                 />
 
                 <div className="flex justify-center">
-                  <Button type="submit" className="bg-green-800 hover:bg-green-700 text-white px-8">
+                  <Button type="submit" className=" text-white px-8">
                     {t('client.pages.public.register.clientProfile.continue')}
                   </Button>
                 </div>

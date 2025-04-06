@@ -6,7 +6,7 @@ import breadcrumbReducer from './slices/breadcrumbSlice';
 export const store = configureStore({
   reducer: {
     auth: authReducer, 
-    admin : userReducer,
+    user : userReducer,
     breadcrumb : breadcrumbReducer,
   },
 });

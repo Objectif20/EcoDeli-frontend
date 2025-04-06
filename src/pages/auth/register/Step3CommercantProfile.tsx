@@ -1,10 +1,11 @@
-"use client"
+'use client'
 
 import { useContext, useEffect, useState } from "react"
 import { RegisterContext } from "./RegisterContext"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import { useTranslation } from 'react-i18next'
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -17,73 +18,72 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import LocationSelector from "@/components/ui/location-input"
 import { Language, RegisterApi } from "@/api/register.api"
 
-const formSchema = z
-  .object({
+const createFormSchema = (t: (key: string) => string) => {
+  return z.object({
     firstName: z.string().min(2, {
-      message: "Le prénom doit contenir au moins 2 caractères.",
+      message: t('client.pages.public.register.merchantProfile.firstNameError'),
     }),
     lastName: z.string().min(2, {
-      message: "Le nom doit contenir au moins 2 caractères.",
+      message: t('client.pages.public.register.merchantProfile.lastNameError'),
     }),
     email: z.string().email({
-      message: "Veuillez entrer une adresse email valide.",
+      message: t('client.pages.public.register.merchantProfile.emailError'),
     }),
     password: z.string().min(8, {
-      message: "Le mot de passe doit contenir au moins 8 caractères.",
+      message: t('client.pages.public.register.merchantProfile.passwordError'),
     }),
     confirmPassword: z.string(),
-
     company_name: z.string().min(2, {
-      message: "Le nom de l'entreprise doit contenir au moins 2 caractères.",
+      message: t('client.pages.public.register.merchantProfile.companyNameError'),
     }),
     siret: z.string().regex(/^\d{14}$/, {
-      message: "Le numéro SIRET doit contenir 14 chiffres.",
+      message: t('client.pages.public.register.merchantProfile.siretError'),
     }),
-
     address: z.string().min(5, {
-      message: "L'adresse doit contenir au moins 5 caractères.",
+      message: t('client.pages.public.register.merchantProfile.addressError'),
     }),
     postal_code: z.string().regex(/^\d{5}$/, {
-      message: "Le code postal doit contenir 5 chiffres.",
+      message: t('client.pages.public.register.merchantProfile.postalCodeError'),
     }),
     city: z.string().min(2, {
-      message: "La ville doit contenir au moins 2 caractères.",
+      message: t('client.pages.public.register.merchantProfile.cityError'),
     }),
     country: z.string().min(2, {
-      message: "Le pays doit contenir au moins 2 caractères.",
+      message: t('client.pages.public.register.merchantProfile.countryError'),
     }),
-
     phone: z.string().regex(/^(\+33|0)[1-9](\d{2}){4}$/, {
-      message: "Veuillez entrer un numéro de téléphone valide.",
+      message: t('client.pages.public.register.merchantProfile.phoneError'),
     }),
     description: z.string().optional(),
     newsletter: z.boolean().default(false),
     language_id: z.string().optional(),
     terms: z.boolean().refine((val) => val === true, {
-      message: "Vous devez accepter les conditions générales.",
+      message: t('client.pages.public.register.merchantProfile.termsError'),
     }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Les mots de passe ne correspondent pas.",
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('client.pages.public.register.merchantProfile.passwordMismatch'),
     path: ["confirmPassword"],
-  })
+  });
+};
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<ReturnType<typeof createFormSchema>>
 
 export default function Step3CommercantProfile() {
   const { nextStep, setCommercantInfo } = useContext(RegisterContext)
   const [, setCountry] = useState('FR');
   const [, setCountryName] = useState('');
   const [languages, setLanguages] = useState<Language[]>([])
-  
+  const { t } = useTranslation();
 
-      useEffect(() => {
-        async function fetchLanguages() {
-          const languages = await RegisterApi.getLanguage()
-          setLanguages(languages.filter(lang => lang.active))
-        }
-        fetchLanguages()
-      }, [])
+  const formSchema = createFormSchema(t);
+
+  useEffect(() => {
+    async function fetchLanguages() {
+      const languages = await RegisterApi.getLanguage()
+      setLanguages(languages.filter(lang => lang.active))
+    }
+    fetchLanguages()
+  }, [])
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -115,10 +115,11 @@ export default function Step3CommercantProfile() {
 
   return (
     <div className="container mx-auto py-8">
-
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-center text-2xl">Compléter votre profil commerçant</CardTitle>
+          <CardTitle className="text-center text-2xl">
+            {t('client.pages.public.register.merchantProfile.title')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -129,7 +130,7 @@ export default function Step3CommercantProfile() {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nom *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.lastName')} *</FormLabel>
                       <FormControl>
                         <Input placeholder="Dupont" {...field} />
                       </FormControl>
@@ -143,7 +144,7 @@ export default function Step3CommercantProfile() {
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Prénom *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.firstName')} *</FormLabel>
                       <FormControl>
                         <Input placeholder="Jean" {...field} />
                       </FormControl>
@@ -159,7 +160,7 @@ export default function Step3CommercantProfile() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.email')} *</FormLabel>
                       <FormControl>
                         <Input type="email" placeholder="exemple@email.com" {...field} />
                       </FormControl>
@@ -175,7 +176,7 @@ export default function Step3CommercantProfile() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mot de passe *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.password')} *</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
@@ -189,7 +190,7 @@ export default function Step3CommercantProfile() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirmer le mot de passe *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.confirmPassword')} *</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
                       </FormControl>
@@ -205,7 +206,7 @@ export default function Step3CommercantProfile() {
                   name="company_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nom de l'entreprise *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.companyName')} *</FormLabel>
                       <FormControl>
                         <Input placeholder="Ma Société" {...field} />
                       </FormControl>
@@ -219,7 +220,7 @@ export default function Step3CommercantProfile() {
                   name="siret"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Numéro de Siret *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.siret')} *</FormLabel>
                       <FormControl>
                         <Input placeholder="12345678901234" {...field} />
                       </FormControl>
@@ -227,8 +228,6 @@ export default function Step3CommercantProfile() {
                     </FormItem>
                   )}
                 />
-
-
               </div>
 
               <div className="grid grid-cols-1 gap-4">
@@ -237,7 +236,7 @@ export default function Step3CommercantProfile() {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Adresse *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.address')} *</FormLabel>
                       <FormControl>
                         <Input placeholder="123 rue de Paris" {...field} />
                       </FormControl>
@@ -252,7 +251,7 @@ export default function Step3CommercantProfile() {
                     name="postal_code"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Code postal *</FormLabel>
+                        <FormLabel>{t('client.pages.public.register.merchantProfile.postalCode')} *</FormLabel>
                         <FormControl>
                           <Input placeholder="75001" {...field} />
                         </FormControl>
@@ -266,7 +265,7 @@ export default function Step3CommercantProfile() {
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Ville *</FormLabel>
+                        <FormLabel>{t('client.pages.public.register.merchantProfile.city')} *</FormLabel>
                         <FormControl>
                           <Input placeholder="Paris" {...field} />
                         </FormControl>
@@ -275,25 +274,24 @@ export default function Step3CommercantProfile() {
                     )}
                   />
 
-
-              <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Pays *</FormLabel>
-                      <LocationSelector
-                        onCountryChange={(country) => {
-                          setCountry(country?.iso2 || 'FR');
-                          setCountryName(country?.name || '');
-                          field.onChange(country?.name || '');
-                        }}
-                        enableStateSelection={false}
-                      />
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('client.pages.public.register.merchantProfile.country')} *</FormLabel>
+                        <LocationSelector
+                          onCountryChange={(country) => {
+                            setCountry(country?.iso2 || 'FR');
+                            setCountryName(country?.name || '');
+                            field.onChange(country?.name || '');
+                          }}
+                          enableStateSelection={false}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
 
@@ -303,7 +301,7 @@ export default function Step3CommercantProfile() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Téléphone *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.phone')} *</FormLabel>
                       <FormControl>
                         <Input placeholder="0612345678" {...field} />
                       </FormControl>
@@ -312,37 +310,37 @@ export default function Step3CommercantProfile() {
                   )}
                 />
 
-              <FormField
-                control={form.control}
-                name="language_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Langue *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez votre langue" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {languages.map(lang => (
-                          <SelectItem key={lang.language_id} value={lang.language_id}>
-                            {lang.language_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                <FormField
+                  control={form.control}
+                  name="language_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.language')} *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Sélectionnez votre langue" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {languages.map(lang => (
+                            <SelectItem key={lang.language_id} value={lang.language_id}>
+                              {lang.language_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
                   name="description"
                   render={({ field }) => (
                     <FormItem className="col-span-1 md:col-span-2">
-                      <FormLabel>Description</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.merchantProfile.description')}</FormLabel>
                       <FormControl>
                         <Textarea placeholder="Décrivez votre entreprise..." className="resize-none" {...field} />
                       </FormControl>
@@ -362,7 +360,7 @@ export default function Step3CommercantProfile() {
                         <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
                       <div className="space-y-1 leading-none">
-                        <FormLabel>S'inscrire à la newsletter</FormLabel>
+                        <FormLabel>{t('client.pages.public.register.merchantProfile.newsletterLabel')}</FormLabel>
                       </div>
                     </FormItem>
                   )}
@@ -378,11 +376,7 @@ export default function Step3CommercantProfile() {
                       </FormControl>
                       <div className="space-y-1 leading-none">
                         <FormLabel>
-                          J'accepte{" "}
-                          <a href="#" className="text-primary underline" onClick={(e) => e.preventDefault()}>
-                            les conditions générales
-                          </a>{" "}
-                          du site EcoDeli
+                          {t('client.pages.public.register.merchantProfile.termsLabel')}
                         </FormLabel>
                         <FormMessage />
                       </div>
@@ -392,7 +386,7 @@ export default function Step3CommercantProfile() {
               </div>
 
               <Button type="submit" className="w-full bg-green-700 hover:bg-green-800">
-                Continuer
+                {t('client.pages.public.register.merchantProfile.continueButton')}
               </Button>
             </form>
           </Form>
@@ -401,4 +395,3 @@ export default function Step3CommercantProfile() {
     </div>
   )
 }
-

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { useContext, useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -17,46 +18,49 @@ import { Textarea } from "@/components/ui/textarea"
 import { Language, RegisterApi } from "@/api/register.api"
 import LocationSelector from "@/components/ui/location-input"
 
-const formSchema = z
-  .object({
-    first_name: z.string().min(2, { message: "Le prénom doit contenir au moins 2 caractères" }),
-    last_name: z.string().min(2, { message: "Le nom doit contenir au moins 2 caractères" }),
-    email: z.string().email({ message: "Email invalide" }),
-    password: z.string().min(8, { message: "Le mot de passe doit contenir au moins 8 caractères" }),
+const createFormSchema = (t: (key: string) => string) => {
+  return z.object({
+    first_name: z.string().min(2, { message: t('client.pages.public.register.providerProfile.validation.firstNameMin') }),
+    last_name: z.string().min(2, { message: t('client.pages.public.register.providerProfile.validation.lastNameMin') }),
+    email: z.string().email({ message: t('client.pages.public.register.providerProfile.validation.invalidEmail') }),
+    password: z.string().min(8, { message: t('client.pages.public.register.providerProfile.validation.passwordMin') }),
     confirm_password: z.string(),
-    company_name: z.string().min(2, { message: "Le nom de l'entreprise est requis" }),
-    siret: z.string().min(14, { message: "Le numéro SIRET doit contenir 14 chiffres" }).max(14),
-    service_type: z.string({ required_error: "Le secteur d'activité est requis" }),
-    address: z.string().optional(),
-    postal_code: z.string().optional(),
-    city: z.string().optional(),
-    country: z.string().optional(),
-    phone: z.string().optional(),
-    description: z.string().optional(),
-    language_id: z.string().optional(),
+    company_name: z.string().min(2, { message: t('client.pages.public.register.providerProfile.validation.companyNameMin') }),
+    siret: z.string().min(14, { message: t('client.pages.public.register.providerProfile.validation.siretLength') }).max(14),
+    service_type: z.string({ required_error: t('client.pages.public.register.providerProfile.validation.activitySector') }),
+    address: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.addressRequired') }),
+    postal_code: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.postalCodeRequired') }),
+    city: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.cityRequired') }),
+    country: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.countryRequired') }),
+    phone: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.phoneRequired') }),
+    description: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.descriptionRequired') }),
+    language_id: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.languageRequired') }),
     newsletter: z.boolean().default(false),
     terms: z.boolean().refine((val) => val === true, {
-      message: "Vous devez accepter les conditions générales",
+      message: t('client.pages.public.register.providerProfile.validation.acceptTerms'),
     }),
-  })
-  .refine((data) => data.password === data.confirm_password, {
-    message: "Les mots de passe ne correspondent pas",
+  }).refine((data) => data.password === data.confirm_password, {
+    message: t('client.pages.public.register.providerProfile.validation.passwordMismatch'),
     path: ["confirm_password"],
   })
+}
 
 export default function Step3PrestataireProfile() {
+  const { t } = useTranslation();
+  const formSchema = createFormSchema(t);
+
   const { nextStep, setPrestataireInfo } = useContext(RegisterContext)
-    const [languages, setLanguages] = useState<Language[]>([])
-      const [, setCountry] = useState('FR');
-      const [, setCountryName] = useState('');
-  
-    useEffect(() => {
-      async function fetchLanguages() {
-        const languages = await RegisterApi.getLanguage()
-        setLanguages(languages.filter(lang => lang.active))
-      }
-      fetchLanguages()
-    }, [])
+  const [languages, setLanguages] = useState<Language[]>([])
+  const [, setCountry] = useState('FR');
+  const [, setCountryName] = useState('');
+
+  useEffect(() => {
+    async function fetchLanguages() {
+      const languages = await RegisterApi.getLanguage()
+      setLanguages(languages.filter(lang => lang.active))
+    }
+    fetchLanguages()
+  }, [])
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -74,6 +78,7 @@ export default function Step3PrestataireProfile() {
       country: "",
       phone: "",
       description: "",
+      language_id: "",
       newsletter: false,
       terms: false,
     },
@@ -88,9 +93,11 @@ export default function Step3PrestataireProfile() {
     <div className="container mx-auto py-10">
       <Card className="max-w-2xl mx-auto">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl text-center">Compléter votre profil prestataire</CardTitle>
+          <CardTitle className="text-2xl text-center">
+            {t('client.pages.public.register.providerProfile.completeProfile')}
+          </CardTitle>
           <CardDescription className="text-center">
-            Remplissez les informations ci-dessous pour créer votre profil prestataire
+            {t('client.pages.public.register.providerProfile.fillInfo')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -102,7 +109,7 @@ export default function Step3PrestataireProfile() {
                   name="last_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nom *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.providerProfile.lastName')}</FormLabel>
                       <FormControl>
                         <Input placeholder="Dupont" {...field} />
                       </FormControl>
@@ -115,7 +122,7 @@ export default function Step3PrestataireProfile() {
                   name="first_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Prénom *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.providerProfile.firstName')}</FormLabel>
                       <FormControl>
                         <Input placeholder="Jean" {...field} />
                       </FormControl>
@@ -130,7 +137,7 @@ export default function Step3PrestataireProfile() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email *</FormLabel>
+                    <FormLabel>{t('client.pages.public.register.providerProfile.email')}</FormLabel>
                     <FormControl>
                       <Input type="email" placeholder="exemple@email.com" {...field} />
                     </FormControl>
@@ -145,7 +152,7 @@ export default function Step3PrestataireProfile() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mot de passe *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.providerProfile.password')}</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="********" {...field} />
                       </FormControl>
@@ -158,7 +165,7 @@ export default function Step3PrestataireProfile() {
                   name="confirm_password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirmer le mot de passe *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.providerProfile.confirmPassword')}</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="********" {...field} />
                       </FormControl>
@@ -173,7 +180,7 @@ export default function Step3PrestataireProfile() {
                 name="company_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nom de l'entreprise *</FormLabel>
+                    <FormLabel>{t('client.pages.public.register.providerProfile.companyName')}</FormLabel>
                     <FormControl>
                       <Input placeholder="Ma Société" {...field} />
                     </FormControl>
@@ -187,7 +194,7 @@ export default function Step3PrestataireProfile() {
                 name="siret"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Numéro de Siret *</FormLabel>
+                    <FormLabel>{t('client.pages.public.register.providerProfile.siretNumber')}</FormLabel>
                     <FormControl>
                       <Input placeholder="12345678901234" {...field} />
                     </FormControl>
@@ -201,11 +208,11 @@ export default function Step3PrestataireProfile() {
                 name="service_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Secteur d'activité *</FormLabel>
+                    <FormLabel>{t('client.pages.public.register.providerProfile.activitySector')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez votre secteur d'activité" />
+                          <SelectValue placeholder={t('client.pages.public.register.providerProfile.selectActivitySector')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -220,30 +227,80 @@ export default function Step3PrestataireProfile() {
                 )}
               />
 
-            <div className="grid grid-cols-1 gap-4">
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Adresse *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="123 rue de Paris" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <FormField
                   control={form.control}
-                  name="postal_code"
+                  name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Code postal *</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.providerProfile.address')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="75001" {...field} />
+                        <Input placeholder="123 rue de Paris" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="postal_code"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('client.pages.public.register.providerProfile.postalCode')}</FormLabel>
+                        <FormControl>
+                          <Input placeholder="75001" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('client.pages.public.register.providerProfile.city')}</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Paris" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t('client.pages.public.register.providerProfile.country')}</FormLabel>
+                        <LocationSelector
+                          onCountryChange={(country) => {
+                            setCountry(country?.iso2 || 'FR');
+                            setCountryName(country?.name || '');
+                            field.onChange(country?.name || '');
+                          }}
+                          enableStateSelection={false}
+                        />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('client.pages.public.register.providerProfile.phone')}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="0612345678" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -252,13 +309,24 @@ export default function Step3PrestataireProfile() {
 
                 <FormField
                   control={form.control}
-                  name="city"
+                  name="language_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Ville *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Paris" {...field} />
-                      </FormControl>
+                      <FormLabel>{t('client.pages.public.register.providerProfile.language')}</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder={t('client.pages.public.register.providerProfile.selectLanguage')} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {languages.map(lang => (
+                            <SelectItem key={lang.language_id} value={lang.language_id}>
+                              {lang.language_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -266,81 +334,20 @@ export default function Step3PrestataireProfile() {
 
                 <FormField
                   control={form.control}
-                  name="country"
+                  name="description"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Pays *</FormLabel>
-                      <LocationSelector
-                        onCountryChange={(country) => {
-                          setCountry(country?.iso2 || 'FR');
-                          setCountryName(country?.name || '');
-                          field.onChange(country?.name || '');
-                        }}
-                        enableStateSelection={false}
-                      />
+                    <FormItem className="col-span-1 md:col-span-2">
+                      <FormLabel>{t('client.pages.public.register.providerProfile.description')}</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Décrivez votre entreprise..." className="resize-none" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Téléphone *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="0612345678" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
               <FormField
-                control={form.control}
-                name="language_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Langue *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez votre langue" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {languages.map(lang => (
-                          <SelectItem key={lang.language_id} value={lang.language_id}>
-                            {lang.language_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem className="col-span-1 md:col-span-2">
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea placeholder="Décrivez votre entreprise..." className="resize-none" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
                 control={form.control}
                 name="newsletter"
                 render={({ field }) => (
@@ -349,7 +356,7 @@ export default function Step3PrestataireProfile() {
                       <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>S'inscrire à la newsletter</FormLabel>
+                      <FormLabel>{t('client.pages.public.register.providerProfile.subscribeNewsletter')}</FormLabel>
                     </div>
                   </FormItem>
                 )}
@@ -365,11 +372,7 @@ export default function Step3PrestataireProfile() {
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel>
-                        J'accepte{" "}
-                        <a href="#" className="text-primary underline">
-                          les conditions générales
-                        </a>{" "}
-                        du site EcoDeli
+                        {t('client.pages.public.register.providerProfile.acceptTerms', { link: <a href="#" className="text-primary underline">{t('client.pages.public.register.providerProfile.termsLink')}</a> })}
                       </FormLabel>
                       <FormMessage />
                     </div>
@@ -377,8 +380,8 @@ export default function Step3PrestataireProfile() {
                 )}
               />
 
-              <Button type="submit" className="w-full bg-green-700 hover:bg-green-800">
-                Continuer
+              <Button type="submit" className="w-full">
+                {t('client.pages.public.register.providerProfile.continue')}
               </Button>
             </form>
           </Form>
@@ -387,4 +390,3 @@ export default function Step3PrestataireProfile() {
     </div>
   )
 }
-

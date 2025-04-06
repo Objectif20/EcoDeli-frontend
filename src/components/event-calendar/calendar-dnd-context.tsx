@@ -331,6 +331,7 @@ export function CalendarDndProvider({
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
+      
     >
       <CalendarDndContext.Provider
         value={{

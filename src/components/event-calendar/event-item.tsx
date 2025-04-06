@@ -12,12 +12,11 @@ import {
 } from "@/components/event-calendar"
 import { cn } from "@/lib/utils"
 
-// Using date-fns format with custom formatting:
-// 'h' - hours (1-12)
-// 'a' - am/pm
-// ':mm' - minutes with leading zero (only if the token 'mm' is present)
+// Utilisation de date-fns format avec un format personnalisé :
+// 'H' - heures (0-23)
+// ':mm' - minutes avec zéro initial (uniquement si le jeton 'mm' est présent)
 const formatTimeWithOptionalMinutes = (date: Date) => {
-  return format(date, getMinutes(date) === 0 ? "ha" : "h:mma").toLowerCase()
+  return format(date, getMinutes(date) === 0 ? "H'h'" : "H'h'mm").toLowerCase()
 }
 
 interface EventWrapperProps {
@@ -35,7 +34,7 @@ interface EventWrapperProps {
   onTouchStart?: (e: React.TouchEvent) => void
 }
 
-// Shared wrapper component for event styling
+// Composant partagé pour le style des événements
 function EventWrapper({
   event,
   isFirstDay = true,
@@ -50,7 +49,7 @@ function EventWrapper({
   onMouseDown,
   onTouchStart,
 }: EventWrapperProps) {
-  // Always use the currentTime (if provided) to determine if the event is in the past
+  // Toujours utiliser currentTime (si fourni) pour déterminer si l'événement est passé
   const displayEnd = currentTime
     ? new Date(
         new Date(currentTime).getTime() +
@@ -87,7 +86,7 @@ interface EventItemProps {
   isDragging?: boolean
   onClick?: (e: React.MouseEvent) => void
   showTime?: boolean
-  currentTime?: Date // For updating time during drag
+  currentTime?: Date // Pour mettre à jour l'heure pendant le glisser
   isFirstDay?: boolean
   isLastDay?: boolean
   children?: React.ReactNode
@@ -116,7 +115,7 @@ export function EventItem({
 }: EventItemProps) {
   const eventColor = event.color
 
-  // Use the provided currentTime (for dragging) or the event's actual time
+  // Utiliser currentTime (pour le glisser) ou l'heure réelle de l'événement
   const displayStart = useMemo(() => {
     return currentTime || new Date(event.start)
   }, [currentTime, event.start])
@@ -130,20 +129,20 @@ export function EventItem({
       : new Date(event.end)
   }, [currentTime, event.start, event.end])
 
-  // Calculate event duration in minutes
+  // Calculer la durée de l'événement en minutes
   const durationMinutes = useMemo(() => {
     return differenceInMinutes(displayEnd, displayStart)
   }, [displayStart, displayEnd])
 
   const getEventTime = () => {
-    if (event.allDay) return "All day"
+    if (event.allDay) return "Toute la journée"
 
-    // For short events (less than 45 minutes), only show start time
+    // Pour les événements courts (moins de 45 minutes), afficher uniquement l'heure de début
     if (durationMinutes < 45) {
       return formatTimeWithOptionalMinutes(displayStart)
     }
 
-    // For longer events, show both start and end time
+    // Pour les événements plus longs, afficher l'heure de début et de fin
     return `${formatTimeWithOptionalMinutes(displayStart)} - ${formatTimeWithOptionalMinutes(displayEnd)}`
   }
 
@@ -222,7 +221,7 @@ export function EventItem({
     )
   }
 
-  // Agenda view - kept separate since it's significantly different
+  // Vue agenda - gardée séparée car significativement différente
   return (
     <button
       className={cn(
@@ -240,7 +239,7 @@ export function EventItem({
       <div className="text-sm font-medium">{event.title}</div>
       <div className="text-xs opacity-70">
         {event.allDay ? (
-          <span>All day</span>
+          <span>Toute la journée</span>
         ) : (
           <span className="uppercase">
             {formatTimeWithOptionalMinutes(displayStart)} -{" "}

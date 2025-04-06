@@ -9,7 +9,6 @@ import {
 } from "@/components/event-calendar"
 import { SidebarRight } from "@/components/features/planning/sidebar/sidebar-right"
 
-// Sample events data with hardcoded times
 const sampleEvents: CalendarEvent[] = [
   {
     id: "1",
@@ -135,6 +134,7 @@ const sampleEvents: CalendarEvent[] = [
 
 export default function PlanningPage() {
   const [events, setEvents] = useState<CalendarEvent[]>(sampleEvents)
+  const [initialDate, setInitialDate] = useState(new Date())
 
   const handleEventAdd = (event: CalendarEvent) => {
     setEvents([...events, event])
@@ -152,17 +152,31 @@ export default function PlanningPage() {
     setEvents(events.filter((event) => event.id !== eventId))
   }
 
+  const handleDateChange = (newDate: Date | undefined) => {
+    setInitialDate(newDate ?? new Date())
+  }
+
+  const handleMonthChange = (newMonth: Date | undefined) => {
+    setInitialDate(newMonth ?? new Date())
+  }
+
   return (
-    <div className="flex h-screen">
+    <div className="flex border rounded-lg">
       <div className="flex-1 overflow-auto">
         <EventCalendar
           events={events}
           onEventAdd={handleEventAdd}
           onEventUpdate={handleEventUpdate}
           onEventDelete={handleEventDelete}
+          initialDate={initialDate}
         />
       </div>
-      <SidebarRight className="hidden lg:block" style={{ width: "17rem" }} />
+      <SidebarRight
+        className="hidden lg:block rounded-lg"
+        style={{ width: "17rem" }}
+        onDateChange={handleDateChange}
+        onMonthChange={handleMonthChange}
+      />
     </div>
   )
 }

@@ -1,11 +1,11 @@
-import * as React from "react"
-import { Check, ChevronRight } from "lucide-react"
-
+import * as React from "react";
+import { ChevronRight } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -14,16 +14,29 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 export function Calendars({
   calendars,
+  onSelectionChange,
 }: {
   calendars: {
-    name: string
-    items: string[]
-  }[]
+    name: string;
+    items: string[];
+  }[];
+  onSelectionChange?: (selectedItems: string[]) => void;
 }) {
+  const [selectedItems, setSelectedItems] = React.useState<string[]>([]);
+
+  const handleCheckboxChange = (item: string) => {
+    const newSelectedItems = selectedItems.includes(item)
+      ? selectedItems.filter((i) => i !== item)
+      : [...selectedItems, item];
+
+    setSelectedItems(newSelectedItems);
+    onSelectionChange?.(newSelectedItems);
+  };
+
   return (
     <>
       {calendars.map((calendar, index) => (
@@ -45,15 +58,13 @@ export function Calendars({
               <CollapsibleContent>
                 <SidebarGroupContent>
                   <SidebarMenu>
-                    {calendar.items.map((item, index) => (
+                    {calendar.items.map((item) => (
                       <SidebarMenuItem key={item}>
                         <SidebarMenuButton>
-                          <div
-                            data-active={index < 2}
-                            className="group/calendar-item flex aspect-square size-4 shrink-0 items-center justify-center rounded-sm border border-sidebar-border text-sidebar-primary-foreground data-[active=true]:border-sidebar-primary data-[active=true]:bg-sidebar-primary"
-                          >
-                            <Check className="hidden size-3 group-data-[active=true]/calendar-item:block" />
-                          </div>
+                          <Checkbox
+                            checked={selectedItems.includes(item)}
+                            onChange={() => handleCheckboxChange(item)}
+                          />
                           {item}
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -67,5 +78,5 @@ export function Calendars({
         </React.Fragment>
       ))}
     </>
-  )
+  );
 }

@@ -13,6 +13,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns"
+import {fr} from 'date-fns/locale/fr' 
 
 import {
   DraggableEvent,
@@ -50,16 +51,16 @@ export function MonthView({
   const days = useMemo(() => {
     const monthStart = startOfMonth(currentDate)
     const monthEnd = endOfMonth(monthStart)
-    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 })
-    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 })
+    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 })
+    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 })
 
     return eachDayOfInterval({ start: calendarStart, end: calendarEnd })
   }, [currentDate])
 
   const weekdays = useMemo(() => {
     return Array.from({ length: 7 }).map((_, i) => {
-      const date = addDays(startOfWeek(new Date()), i)
-      return format(date, "EEE")
+      const date = addDays(startOfWeek(new Date(), { weekStartsOn: 1 }), i)
+      return format(date, "EEE", { locale: fr })
     })
   }, [])
 
@@ -99,7 +100,7 @@ export function MonthView({
         {weekdays.map((day) => (
           <div
             key={day}
-            className="text-muted-foreground/70 py-2 text-center text-sm"
+            className="text-muted-foreground/70 py-2 text-center text-sm capitalize"
           >
             {day}
           </div>
@@ -134,7 +135,7 @@ export function MonthView({
               return (
                 <div
                   key={day.toString()}
-                  className="group border-border/70 data-outside-cell:bg-muted/25 data-outside-cell:text-muted-foreground/70 border-r border-b last:border-r-0 h-28"
+                  className="group border-border/70 data-outside-cell:bg-muted/25 data-outside-cell:text-muted-foreground/70 border-r border-b last:border-r-0 h-24"
                   data-today={isToday(day) || undefined}
                   data-outside-cell={!isCurrentMonth || undefined}
                 >
@@ -148,7 +149,7 @@ export function MonthView({
                     }}
                   >
                     <div className="group-data-today:bg-primary group-data-today:text-primary-foreground mt-1 inline-flex size-6 items-center justify-center rounded-full text-sm">
-                      {format(day, "d")}
+                      {format(day, "d", { locale: fr })}
                     </div>
                     <div
                       ref={isReferenceCell ? contentRef : null}
@@ -184,7 +185,8 @@ export function MonthView({
                                     <span>
                                       {format(
                                         new Date(event.start),
-                                        "h:mm"
+                                        "h:mm",
+                                        { locale: fr }
                                       )}{" "}
                                     </span>
                                   )}
@@ -221,7 +223,7 @@ export function MonthView({
                             >
                               <span>
                                 + {remainingCount}{" "}
-                                <span className="max-sm:sr-only">more</span>
+                                <span className="max-sm:sr-only">plus</span>
                               </span>
                             </button>
                           </PopoverTrigger>
@@ -236,7 +238,7 @@ export function MonthView({
                           >
                             <div className="space-y-2">
                               <div className="text-sm font-medium">
-                                {format(day, "EEE d")}
+                                {format(day, "EEE d", { locale: fr })}
                               </div>
                               <div className="space-y-1">
                                 {sortEvents(allEvents).map((event) => {

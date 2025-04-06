@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 import { RiCalendarEventLine } from "@remixicon/react"
 import { addDays, format, isToday } from "date-fns"
+import {fr} from 'date-fns/locale/fr' 
 
 import {
   AgendaDaysToShow,
@@ -22,9 +23,8 @@ export function AgendaView({
   events,
   onEventSelect,
 }: AgendaViewProps) {
-  // Show events for the next days based on constant
   const days = useMemo(() => {
-    console.log("Agenda view updating with date:", currentDate.toISOString())
+    console.log("Vue agenda mise à jour avec la date :", currentDate.toISOString())
     return Array.from({ length: AgendaDaysToShow }, (_, i) =>
       addDays(new Date(currentDate), i)
     )
@@ -32,11 +32,10 @@ export function AgendaView({
 
   const handleEventClick = (event: CalendarEvent, e: React.MouseEvent) => {
     e.stopPropagation()
-    console.log("Agenda view event clicked:", event)
+    console.log("Événement de la vue agenda cliqué :", event)
     onEventSelect(event)
   }
 
-  // Check if there are any days with events
   const hasEvents = days.some(
     (day) => getAgendaEventsForDay(events, day).length > 0
   )
@@ -49,9 +48,9 @@ export function AgendaView({
             size={32}
             className="text-muted-foreground/50 mb-2"
           />
-          <h3 className="text-lg font-medium">No events found</h3>
+          <h3 className="text-lg font-medium">Aucun événement trouvé</h3>
           <p className="text-muted-foreground">
-            There are no events scheduled for this time period.
+            Il n'y a pas d'événements programmés pour cette période.
           </p>
         </div>
       ) : (
@@ -69,7 +68,7 @@ export function AgendaView({
                 className="bg-background absolute -top-3 left-0 flex h-6 items-center pe-4 text-[10px] uppercase data-today:font-medium sm:pe-4 sm:text-xs"
                 data-today={isToday(day) || undefined}
               >
-                {format(day, "d MMM, EEEE")}
+                {format(day, "d MMM, EEEE", { locale: fr })}
               </span>
               <div className="mt-6 space-y-2">
                 {dayEvents.map((event) => (

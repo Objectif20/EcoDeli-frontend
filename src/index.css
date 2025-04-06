@@ -107,3 +107,7 @@
 .leaflet-routing-container{
   visibility: hidden;
 }
+
+#react-day-picker-1, .capitalize, .rdp-head {
+  text-transform: capitalize;
+}

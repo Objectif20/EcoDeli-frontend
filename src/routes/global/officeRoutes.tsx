@@ -1,4 +1,5 @@
 import PrivateProfileRoutes from "@/components/private-profileRoutes";
+import ChatPage from "@/pages/features/messaging/chat";
 import PlanningPage from "@/pages/features/planning/planning";
 import BillingSettings from "@/pages/features/settings.tsx/billings";
 import PrivacySettings from "@/pages/features/settings.tsx/confidentiality";
@@ -59,7 +60,7 @@ const OfficeRoute: React.FC = () => {
       <Route path="privacy" element={<PrivacySettings />} />
       <Route path="contact-details" element={<ContactDetailsSettings />} />
       <Route path="reports" element={<ReportSettings />} />
-      <Route path="messaging" element={<h1>Messaging</h1>} />
+      <Route path="messaging" element={<ChatPage />} />
 
       <Route path="/dashboard" element={<h1>Dashboard</h1>} />
     </Routes>

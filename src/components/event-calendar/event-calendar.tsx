@@ -2,15 +2,21 @@ import { useEffect, useMemo, useState } from "react"
 import { RiCalendarCheckLine } from "@remixicon/react"
 import {
   addDays,
+  addMonths,
+  addWeeks,
   endOfWeek,
   format,
   isSameMonth,
   startOfWeek,
+  subMonths,
+  subWeeks,
 
 } from "date-fns"
 import { fr } from 'date-fns/locale'
 import {
   ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 
 } from "lucide-react"
 
@@ -99,6 +105,30 @@ export function EventCalendar({
       window.removeEventListener("keydown", handleKeyDown)
     }
   }, [isEventDialogOpen])
+
+  const handlePrevious = () => {
+    if (view === "month") {
+      setCurrentDate(subMonths(currentDate, 1))
+    } else if (view === "week") {
+      setCurrentDate(subWeeks(currentDate, 1))
+    } else if (view === "day") {
+      setCurrentDate(addDays(currentDate, -1))
+    } else if (view === "agenda") {
+      setCurrentDate(addDays(currentDate, -AgendaDaysToShow))
+    }
+  }
+
+  const handleNext = () => {
+    if (view === "month") {
+      setCurrentDate(addMonths(currentDate, 1))
+    } else if (view === "week") {
+      setCurrentDate(addWeeks(currentDate, 1))
+    } else if (view === "day") {
+      setCurrentDate(addDays(currentDate, 1))
+    } else if (view === "agenda") {
+      setCurrentDate(addDays(currentDate, AgendaDaysToShow))
+    }
+  }
 
   const handleToday = () => {
     setCurrentDate(new Date())
@@ -196,6 +226,14 @@ export function EventCalendar({
             <RiCalendarCheckLine className="min-[480px]:hidden" size={16} aria-hidden="true" />
             <span className="max-[479px]:sr-only">Aujourd'hui</span>
           </Button>
+          <div className="flex sm:hidden items-center gap-2">
+            <Button variant="ghost" size="icon" onClick={handlePrevious} aria-label="Précédent">
+              <ChevronLeftIcon size={16} aria-hidden="true" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={handleNext} aria-label="Suivant">
+              <ChevronRightIcon size={16} aria-hidden="true" />
+            </Button>
+          </div>
           <h2 className="text-sm font-semibold sm:text-lg md:text-xl">{viewTitle}</h2>
         </div>
         <div className="flex items-center gap-2">

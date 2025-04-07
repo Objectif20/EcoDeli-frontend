@@ -1,12 +1,16 @@
+import { MinimalTiptapEditorTextOnly } from "@/components/minimal-tiptap";
+import { Button } from "@/components/ui/button";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { RootState } from "@/redux/store";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 const ReportSettings: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
+
+  const [description, setDescription] = useState<string>("");
 
   const isProvider = user?.profile.includes('PROVIDER');
   const isClient = user?.profile.includes('CLIENT');
@@ -40,7 +44,22 @@ const ReportSettings: React.FC = () => {
           <Link to="/office/reports" className="font-semibold text-primary active-link">Signalements</Link>
         </nav>
         <div className="grid gap-6">
-          <h1>Contenu des facturations</h1>
+            <div>
+            <h3 className="text-lg font-medium">Signalements</h3>
+            <p className="text-sm text-muted-foreground">Faites un signalement</p>
+          </div>
+          <MinimalTiptapEditorTextOnly 
+              value={description}
+              onChange={(value) => setDescription(value?.toString() || "")}
+              className="w-full"
+              editorContentClassName="p-5"
+              output="html"
+              placeholder="Faites un rapport"
+              autofocus
+              editable={true}
+              editorClassName="focus:outline-none"
+          />
+          <Button>Envoyer le signalement</Button>
         </div>
       </div>
     </div>

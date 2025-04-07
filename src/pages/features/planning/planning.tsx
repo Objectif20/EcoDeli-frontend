@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { addDays, setHours, setMinutes, subDays } from "date-fns"
 
 import {
@@ -8,6 +8,8 @@ import {
   type CalendarEvent,
 } from "@/components/event-calendar"
 import { SidebarRight } from "@/components/features/planning/sidebar/sidebar-right"
+import { useDispatch } from "react-redux"
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 
 const sampleEvents: CalendarEvent[] = [
   {
@@ -135,6 +137,17 @@ const sampleEvents: CalendarEvent[] = [
 export default function PlanningPage() {
   const [events, setEvents] = useState<CalendarEvent[]>(sampleEvents)
   const [initialDate, setInitialDate] = useState(new Date())
+  const dispatch = useDispatch()
+
+
+  useEffect(() => {
+    dispatch(
+      setBreadcrumb({
+        segments: ["Accueil", "Mon planning"],
+        links: ["/office/dashboard"],
+      }),
+    )
+  }, [dispatch])
 
   const handleEventAdd = (event: CalendarEvent) => {
     setEvents([...events, event])

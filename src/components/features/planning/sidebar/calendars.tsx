@@ -11,7 +11,6 @@ import {
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
@@ -60,13 +59,21 @@ export function Calendars({
                   <SidebarMenu>
                     {calendar.items.map((item) => (
                       <SidebarMenuItem key={item}>
-                        <SidebarMenuButton>
+                        <div className="flex items-center gap-3 px-2 py-1.5 w-full rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground">
                           <Checkbox
+                            id={`checkbox-${item}`}
                             checked={selectedItems.includes(item)}
-                            onChange={() => handleCheckboxChange(item)}
+                            onCheckedChange={() => handleCheckboxChange(item)}
+                            className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                           />
-                          {item}
-                        </SidebarMenuButton>
+                          <label
+                            htmlFor={`checkbox-${item}`}
+                            className="flex-1 cursor-pointer text-sm"
+                            onClick={() => handleCheckboxChange(item)}
+                          >
+                            {item}
+                          </label>
+                        </div>
                       </SidebarMenuItem>
                     ))}
                   </SidebarMenu>

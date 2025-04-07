@@ -18,15 +18,17 @@ COPY . .
 
 # Étape 7 : Récupérer les variables passées en argument du build
 ARG VITE_API_BASE_URL
+ARG VITE_STRIPE_PUBLIC_KEY
 
 # Étape 8 : Définir ces variables dans l'environnement pour Vite
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
 
 # Étape 9 : Construire l'application React
 RUN npm run build
 
-# Étape 10 : Exposer le port 5173
-EXPOSE 5173
+# Étape 10 : Exposer le port 5174
+EXPOSE 5174
 
 # Étape 11 : Lancer un serveur statique
 CMD ["serve", "-s", "dist", "-l", "5174"]

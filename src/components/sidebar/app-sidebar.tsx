@@ -80,7 +80,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "#",
               icon: ShoppingCart,
               items: [
-                { title: t("client.components.sidebar.activeAds"), url: "/office/active-ads" },
+                { title: t("client.components.sidebar.activeAds"), url: "/office/deliveries" },
                 { title: t("client.components.sidebar.history"), url: "/office/ads-history" },
                 { title: t("client.components.sidebar.insurance"), url: "/office/insurance" },
                 { title: t("client.components.sidebar.reviews"), url: "/office/reviews" },
@@ -111,7 +111,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "#",
               icon: ShoppingCart,
               items: [
-                { title: t("client.components.sidebar.activeAds"), url: "/office/active-ads"},
+                { title: t("client.components.sidebar.activeAds"), url: "/office/deliveries"},
                 { title: t("client.components.sidebar.history"), url: "/office/ads-history" },
                 { title: t("client.components.sidebar.insurance"), url: "/office/insurance" },
                 { title: t("client.components.sidebar.reviews"), url: "/office/reviews" },

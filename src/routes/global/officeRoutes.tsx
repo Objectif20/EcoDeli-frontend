@@ -1,4 +1,6 @@
 import PrivateProfileRoutes from "@/components/private-profileRoutes";
+import { CreateDeliveryPage } from "@/pages/features/deliveries/create/create";
+import { DeliveriesPage } from "@/pages/features/deliveries/deliveries";
 import ChatPage from "@/pages/features/messaging/chat";
 import PlanningPage from "@/pages/features/planning/planning";
 import BillingSettings from "@/pages/features/settings.tsx/billings";
@@ -15,7 +17,8 @@ const OfficeRoute: React.FC = () => {
   return (
     <Routes>
       <Route element={<PrivateProfileRoutes requiredProfile="MERCHANT" />}>
-        <Route path="active-ads" element={<h1>Active Ads</h1>} />
+        <Route path="deliveries" element={<DeliveriesPage />} />
+        <Route path='deliveries/create' element={<CreateDeliveryPage />} />
         <Route path="ads-history" element={<h1>Ads History</h1>} />
         <Route path="insurance" element={<h1>Insurance</h1>} />
         <Route path="reviews" element={<h1>Reviews</h1>} />
@@ -26,7 +29,8 @@ const OfficeRoute: React.FC = () => {
       </Route>
 
       <Route element={<PrivateProfileRoutes requiredProfile="CLIENT" />}>
-        <Route path="active-ads" element={<h1>Active Ads</h1>} />
+        <Route path="deliveries" element={<DeliveriesPage />} />
+        <Route path='deliveries/create' element={<CreateDeliveryPage />} />
         <Route path="ads-history" element={<h1>Ads History</h1>} />
         <Route path="insurance" element={<h1>Insurance</h1>} />
         <Route path="reviews" element={<h1>Reviews</h1>} />

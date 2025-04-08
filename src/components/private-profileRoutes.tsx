@@ -8,9 +8,10 @@ import { RootState } from '../redux/store';
 
 interface PrivateProfileRoutesProps {
   requiredProfile: string;
+  requireAuth?: boolean;
 }
 
-const PrivateProfileRoutes: React.FC<PrivateProfileRoutesProps> = ({ requiredProfile }) => {
+const PrivateProfileRoutes: React.FC<PrivateProfileRoutesProps> = ({ requiredProfile, requireAuth = true }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const user = useSelector((state: RootState) => state.user.user);
@@ -18,40 +19,34 @@ const PrivateProfileRoutes: React.FC<PrivateProfileRoutesProps> = ({ requiredPro
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    const fetchAccessToken = async () => {
-      const response = await getAccessToken();
+    const fetchData = async () => {
+      if (requireAuth) {
+        const response = await getAccessToken();
 
-      if (response.accessToken) {
-        setIsAuthenticated(true);
-
-        dispatch(UserApi.getUserData())
-          .then(() => {
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.error("Erreur lors de la récupération des données de l'utilisateur:", error);
-            setLoading(false);
-          });
+        if (response.accessToken) {
+          setIsAuthenticated(true);
+          dispatch(UserApi.getUserData()).finally(() => setLoading(false));
+        } else {
+          setIsAuthenticated(false);
+          setLoading(false);
+        }
       } else {
-        setIsAuthenticated(false);
-        setLoading(false);
+        dispatch(UserApi.getUserData()).finally(() => setLoading(false));
       }
     };
 
-    fetchAccessToken();
-  }, [dispatch]);
+    fetchData();
+  }, [dispatch, requireAuth]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (!isAuthenticated || !user?.profile.includes(requiredProfile)) {
+  if (requireAuth && (!isAuthenticated || !user?.profile.includes(requiredProfile))) {
     return <Navigate to="/auth/login" />;
   }
 
-  return (
-      <Outlet />
-  );
+  return <Outlet />;
 };
 
 export default PrivateProfileRoutes;

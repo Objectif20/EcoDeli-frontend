@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/chat/chat-bubble';
 import { ChatInput } from '@/components/ui/chat/chat-input';
 import { ChatMessageList } from '@/components/ui/chat/chat-message-list';
-import { Send } from 'lucide-react';
+import { Send, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -30,7 +30,6 @@ const fakeContacts = [
   { name: 'Janath Satch', message: 'À bientôt !', time: '1 jour', online: false, avatar: 'https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg' },
   { name: 'Janath Satch', message: 'À bientôt !', time: '1 jour', online: false, avatar: 'https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg' },
   { name: 'Janath Satch', message: 'À bientôt !', time: '1 jour', online: false, avatar: 'https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg' },
-
 ];
 
 const fakeMessages: Record<string, { sender: string; message: string; isLoading?: boolean }[]> = {
@@ -59,22 +58,20 @@ const fakeMessages: Record<string, { sender: string; message: string; isLoading?
 };
 
 export default function ChatPage() {
-  const [selectedContact, setSelectedContact] = useState(fakeContacts[0].name);
-  const [inputHeight, setInputHeight] = useState(48);
+  const [selectedContact, setSelectedContact] = useState<string | null>(fakeContacts[0].name);
   const [searchQuery, setSearchQuery] = useState('');
   const [messages, setMessages] = useState(fakeMessages);
-  const dispatch = useDispatch()
+  const [showContacts, setShowContacts] = useState(true);
+  const dispatch = useDispatch();
 
-
-      useEffect(() => {
-        dispatch(
-          setBreadcrumb({
-            segments: ["Accueil", "Messagerie"],
-            links: ["/office/dashboard"],
-          }),
-        )
-      }, [dispatch])
-
+  useEffect(() => {
+    dispatch(
+      setBreadcrumb({
+        segments: ["Accueil", "Messagerie"],
+        links: ["/office/dashboard"],
+      })
+    );
+  }, [dispatch]);
 
   const filteredContacts = fakeContacts.filter(contact =>
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -83,17 +80,17 @@ export default function ChatPage() {
   const selectedContactInfo = fakeContacts.find(contact => contact.name === selectedContact);
 
   const handleSendMessage = (message: string) => {
+    if (!selectedContact) return;
+
     const newMessages = [...messages[selectedContact], { sender: 'Utilisateur', message }];
     setMessages({ ...messages, [selectedContact]: newMessages });
     console.log('Message envoyé:', message);
 
-    // Simuler la réponse de l'autre personne
     setTimeout(() => {
       const response = { sender: selectedContact, message: 'Ceci est une réponse simulée.', isLoading: true };
       const updatedMessages = [...newMessages, response];
       setMessages({ ...messages, [selectedContact]: updatedMessages });
 
-      // Simuler la fin du chargement
       setTimeout(() => {
         const finalMessages = updatedMessages.map(msg =>
           msg.isLoading ? { ...msg, isLoading: false } : msg
@@ -103,50 +100,69 @@ export default function ChatPage() {
     }, 2000);
   };
 
+  const handleContactClick = (contactName: string) => {
+    setSelectedContact(contactName);
+    if (window.innerWidth <= 768) {
+      setShowContacts(false);
+    }
+  };
+
+  const handleBackClick = () => {
+    setShowContacts(true);
+    setSelectedContact(null);
+  };
+
   return (
-    <div className="flex h-[calc(100vh-80px)]">
-      <div className="w-1/4 bg-background p-4">
-        <h2 className="text-lg font-semibold mb-4">Discussions</h2>
-        <Input
-          type="text"
-          placeholder="Rechercher des discussions..."
-          className="w-full p-2 mb-4 border rounded"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <ScrollArea className='h-[calc(100vh-230px)]'>
-          <div className="space-y-2 mr-4">
-            {filteredContacts.map((contact, index) => (
-              <div
-                key={index}
-                className={`flex items-center p-2 cursor-pointer ${selectedContact === contact.name ? 'bg-background' : ''}`}
-                onClick={() => setSelectedContact(contact.name)}
-              >
-                <div className="relative">
-                  <Avatar>
-                    <AvatarImage src={contact.avatar} alt={contact.name} />
-                    <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  {contact.online && (
-                    <span className="border-background absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-primay">
-                      <span className="sr-only">En ligne</span>
-                    </span>
-                  )}
+    <div className="flex h-[calc(100vh-150px)]">
+      {(showContacts || window.innerWidth > 768) && (
+        <div className="w-full lg:w-1/4 bg-background p-4">
+          <h2 className="text-lg font-semibold mb-4">Discussions</h2>
+          <Input
+            type="text"
+            placeholder="Rechercher des discussions..."
+            className="w-full p-2 mb-4 border rounded"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <ScrollArea className='h-[calc(100vh-230px)]'>
+            <div className="space-y-2 mr-4">
+              {filteredContacts.map((contact, index) => (
+                <div
+                  key={index}
+                  className={`flex items-center p-2 cursor-pointer ${selectedContact === contact.name ? 'bg-background' : ''}`}
+                  onClick={() => handleContactClick(contact.name)}
+                >
+                  <div className="relative">
+                    <Avatar>
+                      <AvatarImage src={contact.avatar} alt={contact.name} />
+                      <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    {contact.online && (
+                      <span className="border-background absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-primay">
+                        <span className="sr-only">En ligne</span>
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 ml-2">
+                    <h3 className="font-semibold">{contact.name}</h3>
+                    <p className="text-sm text-gray-600">{contact.message}</p>
+                  </div>
+                  <div className="text-xs text-gray-500">{contact.time}</div>
                 </div>
-                <div className="flex-1 ml-2">
-                  <h3 className="font-semibold">{contact.name}</h3>
-                  <p className="text-sm text-gray-600">{contact.message}</p>
-                </div>
-                <div className="text-xs text-gray-500">{contact.time}</div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      </div>
-      <div className="w-3/4 p-4 flex flex-col">
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+      )}
+      <div className={`flex-1 p-4 ${showContacts && window.innerWidth <= 768 ? 'hidden' : ''}`}>
         {selectedContact ? (
           <>
             <div className="flex items-center mb-4">
+              {window.innerWidth <= 768 && (
+                <Button onClick={handleBackClick} className="mr-2" variant={"ghost"}>
+                  <ChevronLeft className="size-4" />
+                </Button>
+              )}
               <Avatar>
                 <AvatarImage src={selectedContactInfo?.avatar} alt={selectedContactInfo?.name} />
                 <AvatarFallback>{selectedContactInfo?.name.charAt(0)}</AvatarFallback>
@@ -156,7 +172,7 @@ export default function ChatPage() {
                 <p className="text-gray-600">{selectedContactInfo?.online ? 'En ligne' : 'Hors ligne'}</p>
               </div>
             </div>
-            <ScrollArea className="flex-1 mb-12" style={{ height: `calc(100% - ${inputHeight + 20}px)` }}>
+            <ScrollArea className="flex-1" style={{ height: `calc(100% - 48px)` }}>
               <ChatMessageList>
                 {messages[selectedContact]?.map((msg, index) => (
                   <ChatBubble key={index} variant={msg.sender === selectedContact ? 'received' : 'sent'}>
@@ -173,7 +189,7 @@ export default function ChatPage() {
               </ChatMessageList>
             </ScrollArea>
             <form
-              className="flex relative gap-2 mt-auto"
+              className="flex relative gap-2 mt-4"
               onSubmit={(e) => {
                 e.preventDefault();
                 const input = (e.target as HTMLFormElement).elements.namedItem('chatInput') as HTMLInputElement;
@@ -185,7 +201,6 @@ export default function ChatPage() {
                 name="chatInput"
                 className="min-h-12 bg-background shadow-none"
                 placeholder="Tapez votre message ici..."
-                onHeightChange={(height) => setInputHeight(height)}
               />
               <Button
                 className="absolute top-1/2 right-2 transform size-8 -translate-y-1/2"

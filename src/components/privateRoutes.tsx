@@ -6,41 +6,42 @@ import { AppDispatch } from '../redux/store';
 import Layout from '@/pages/features/layout';
 import { UserApi } from '@/api/user.api';
 
-const PrivateRoute: React.FC = () => {
+type PrivateRouteProps = {
+  requireAuth?: boolean;
+};
+
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ requireAuth = true }) => {
   const [loading, setLoading] = useState(true); 
   const [isAuthenticated, setIsAuthenticated] = useState(false); 
 
   const dispatch = useDispatch<AppDispatch>();  
 
   useEffect(() => {
-    const fetchAccessToken = async () => {
-      const response = await getAccessToken();
-      
-      if (response.accessToken) {
-        setIsAuthenticated(true);
-        
-        dispatch(UserApi.getUserData()) 
-          .then(() => {
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.error("Erreur lors de la récupération des données de l'admin:", error);
-            setLoading(false);  
-          });
+    const fetchData = async () => {
+      if (requireAuth) {
+        const response = await getAccessToken();
+        if (response.accessToken) {
+          setIsAuthenticated(true);
+          dispatch(UserApi.getUserData())
+            .finally(() => setLoading(false));
+        } else {
+          setIsAuthenticated(false);
+          setLoading(false);
+        }
       } else {
-        setIsAuthenticated(false);
-        setLoading(false);  
+        dispatch(UserApi.getUserData())
+          .finally(() => setLoading(false));
       }
     };
-
-    fetchAccessToken();
-  }, [dispatch]); 
+    
+    fetchData();
+  }, [dispatch, requireAuth]); 
 
   if (loading) {
     return <div>Loading...</div>; 
   }
 
-  if (!isAuthenticated) {
+  if (requireAuth && !isAuthenticated) {
     return <Navigate to="/auth/login" />;
   }
 

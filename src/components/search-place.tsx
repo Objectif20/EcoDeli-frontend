@@ -19,7 +19,7 @@ interface CityAsyncSelectDemoProps {
 function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder }: CityAsyncSelectDemoProps) {
   const [cities, setCities] = useState<City[]>([]);
   const [_, setIsLoading] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState(labelValue || "");
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {

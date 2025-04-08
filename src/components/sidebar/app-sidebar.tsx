@@ -178,6 +178,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               items: [
                 { title: t("client.components.sidebar.upcomingDeliveries"), url: "/office/upcoming-deliveries" },
                 { title: t("client.components.sidebar.deliveryHistory"), url: "/office/delivery-history" },
+                { title: t("client.components.sidebar.deliveryHistory"), url: "/office/reviews-deliveryman" },
               ],
             },
             {
@@ -220,6 +221,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {
             title: t("client.components.sidebar.messaging"),
             url: "/office/messaging",
+            icon: MessageSquare,
+          },
+          {
+            title: "Mes documents",
+            url: "/office/documents",
             icon: MessageSquare,
           },
         ],

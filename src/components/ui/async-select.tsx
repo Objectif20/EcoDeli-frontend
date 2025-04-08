@@ -115,7 +115,7 @@ export function AsyncSelect<T>({
     const newValue = clearable && currentValue === selectedValue ? "" : currentValue;
     setSelectedValue(newValue);
     setSelectedOption(options.find((option) => getOptionValue(option) === newValue) || null);
-    onChange(newValue); // Make sure to pass the correct value here
+    onChange(newValue);
     setOpen(false);
   }, [selectedValue, onChange, clearable, options, getOptionValue]);
 

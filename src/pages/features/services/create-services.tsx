@@ -1,0 +1,147 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useState } from "react";
+import { useDropzone } from "react-dropzone";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { XIcon } from "lucide-react";
+import { FileUpload } from "@/components/file-upload";
+
+const FormSchema = z.object({
+  serviceName: z.string().min(2, { message: "Le nom de la prestation doit comporter au moins 2 caractères." }),
+  description: z.string().min(10, { message: "La description doit comporter au moins 10 caractères." }),
+  price: z.string().regex(/^\d+(\.\d{1,2})?$/, { message: "Veuillez entrer un prix valide." }),
+  acceptTerms: z.boolean().refine(val => val === true, { message: "Vous devez accepter les conditions." }),
+  justificatif: z.instanceof(File).optional(),
+});
+
+export default function CreateService() {
+  const form = useForm({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      serviceName: "",
+      description: "",
+      price: "",
+      acceptTerms: false,
+      justificatif: undefined,
+    },
+  });
+
+  const [images, setImages] = useState<File[]>([]);
+  const [imageError, setImageError] = useState("");
+
+  const onDrop = (acceptedFiles: File[]) => {
+    setImages(prev => [...prev, ...acceptedFiles].slice(0, 5));
+    setImageError("");
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: { "image/*": [] },
+    maxFiles: 5,
+    onDrop,
+  });
+
+  function onSubmit(data: any) {
+    if (images.length === 0) {
+      setImageError("Vous devez ajouter au moins une image.");
+      return;
+    }
+    console.log("Form submitted:", { ...data, images });
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-2">Créer une nouvelle prestation</h1>
+      <p className="text-gray-600 mb-6">Remplissez les informations ci-dessous pour proposer votre prestation sur notre plateforme.</p>
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField control={form.control} name="serviceName" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nom de la prestation</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="description" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="price" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Prix</FormLabel>
+              <FormControl>
+                <Input type="number" step="0.01" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          <FormField control={form.control} name="acceptTerms" render={({ field }) => (
+            <FormItem className="flex items-center gap-2">
+              <FormControl>
+                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+              </FormControl>
+              <FormLabel>J'accepte qu'EcoDeli analyse ma prestation</FormLabel>
+              <FormMessage />
+            </FormItem>
+          )} />
+          
+          <div className="w-full flex flex-col items-center gap-4 border p-4 rounded-lg">
+            <div {...getRootProps()} className={`w-full border-2 border-dashed p-4 ${isDragActive ? 'ring-2 ring-blue-500' : ''}`}>
+              <input {...getInputProps()} />
+              <Button type="button" variant="outline" className="w-full">Ajouter des images</Button>
+            </div>
+            {imageError && <p className="text-red-500 text-sm">{imageError}</p>}
+            <div className="flex gap-2 overflow-auto">
+              {images.map((file, i) => (
+                <div key={i} className="relative w-32 h-32">
+                  <img src={URL.createObjectURL(file)} alt={`preview-${i}`} className="w-full h-full object-cover rounded-md border" />
+                  <button className="absolute top-0 right-0 bg-red-500 text-white p-1 rounded-full" onClick={() => removeImage(i)}>
+                    <XIcon size={12} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <FormField control={form.control} name="justificatif" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Justificatif</FormLabel>
+              <FormControl>
+                <FileUpload onChange={(files) => field.onChange(files[0])} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+          
+          <Button type="submit" className="w-full">Envoyer ma demande de prestation</Button>
+        </form>
+      </Form>
+    </div>
+  );
+}

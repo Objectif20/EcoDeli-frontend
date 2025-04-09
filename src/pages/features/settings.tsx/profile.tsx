@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+import { useTranslation } from "react-i18next"
 
-// Type pour les utilisateurs bloqués
 interface BlockedUser {
   id: string
   name: string
@@ -20,93 +20,82 @@ interface BlockedUser {
 }
 
 const ProfileSettings: React.FC = () => {
-  const dispatch = useDispatch()
-  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user)
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
 
-  const isProvider = user?.profile.includes("PROVIDER")
-  const isClient = user?.profile.includes("CLIENT")
-  const isMerchant = user?.profile.includes("MERCHANT")
-  const isDeliveryman = user?.profile.includes("DELIVERYMAN")
+  const isProvider = user?.profile.includes("PROVIDER");
+  const isClient = user?.profile.includes("CLIENT");
+  const isMerchant = user?.profile.includes("MERCHANT");
+  const isDeliveryman = user?.profile.includes("DELIVERYMAN");
 
-  // État pour l'image de profil
-  const [profileImage, setProfileImage] = useState<string | null>(user?.avatar || null)
+  const [profileImage, setProfileImage] = useState<string | null>(user?.avatar || null);
 
-  // État pour les utilisateurs bloqués (exemple de données)
   const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([
     { id: "1", name: "Nom prénom", avatar: "/placeholder.svg?height=40&width=40" },
     { id: "2", name: "Nom prénom", avatar: "/placeholder.svg?height=40&width=40" },
     { id: "3", name: "Nom prénom", avatar: "/placeholder.svg?height=40&width=40" },
     { id: "4", name: "Nom prénom", avatar: "/placeholder.svg?height=40&width=40" },
-  ])
+  ]);
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Paramètres", "Profil"],
+        segments: [t("client.pages.office.settings.profile.home"), t("client.pages.office.settings.profile.settings"), t("client.pages.office.settings.profile.profile")],
         links: ["/office/dashboard"],
       }),
-    )
-  }, [dispatch])
+    );
+  }, [dispatch, t]);
 
-  // Fonction pour mettre à jour l'image de profil
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
-        setProfileImage(e.target?.result as string)
-        // Ici vous pourriez ajouter une logique pour envoyer l'image au serveur
-      }
-      reader.readAsDataURL(file)
+        setProfileImage(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
     }
-  }
+  };
 
-  // Fonction pour supprimer l'image de profil
   const removeProfileImage = () => {
-    setProfileImage(null)
-    // Ici vous pourriez ajouter une logique pour supprimer l'image sur le serveur
-  }
+    setProfileImage(null);
+  };
 
-  // Fonction pour débloquer un utilisateur
   const unblockUser = (userId: string) => {
-    setBlockedUsers(blockedUsers.filter((user) => user.id !== userId))
-    // Ici vous pourriez ajouter une logique pour débloquer l'utilisateur sur le serveur
-  }
+    setBlockedUsers(blockedUsers.filter((user) => user.id !== userId));
+  };
 
   return (
     <div className="flex flex-col gap-8">
       <div className="mx-auto grid w-full max-w-6xl gap-2">
-        <h1 className="text-3xl font-semibold">Profil</h1>
+        <h1 className="text-3xl font-semibold">{t("client.pages.office.settings.profile.profile")}</h1>
       </div>
       <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-        {/* Menu de navigation existant - ne pas modifier */}
         <nav className="grid gap-4 text-sm text-muted-foreground">
-          <Link to="/office/general-settings">Paramètres généraux</Link>
+          <Link to="/office/general-settings">{t("client.pages.office.settings.profile.generalSettings")}</Link>
           <Link to="/office/profile" className="font-semibold text-primary active-link">
-            Profil
+            {t("client.pages.office.settings.profile.profile")}
           </Link>
-          <Link to="/office/privacy">Confidentialité</Link>
-          <Link to="/office/contact-details">Coordonnées</Link>
-          {(isMerchant || isClient) && <Link to="/office/subscriptions">Abonnements</Link>}
-          {(isProvider || isDeliveryman) && <Link to="/office/billing-settings">Facturations</Link>}
-          <Link to="/office/reports">Signalements</Link>
+          <Link to="/office/privacy">{t("client.pages.office.settings.profile.privacy")}</Link>
+          <Link to="/office/contact-details">{t("client.pages.office.settings.profile.contactDetails")}</Link>
+          {(isMerchant || isClient) && <Link to="/office/subscriptions">{t("client.pages.office.settings.profile.subscriptions")}</Link>}
+          {(isProvider || isDeliveryman) && <Link to="/office/billing-settings">{t("client.pages.office.settings.profile.billing")}</Link>}
+          <Link to="/office/reports">{t("client.pages.office.settings.profile.reports")}</Link>
         </nav>
 
-        {/* Contenu principal */}
         <div className="grid gap-6">
           <div>
-            <h2 className="text-xl font-medium mb-2">Profil</h2>
-            <p className="text-sm text-muted-foreground mb-4">Modifier votre profil</p>
+            <h2 className="text-xl font-medium mb-2">{t("client.pages.office.settings.profile.profile")}</h2>
+            <p className="text-sm text-muted-foreground mb-4">{t("client.pages.office.settings.profile.modifyProfile")}</p>
 
-            {/* Section de l'image de profil */}
             <div className="flex items-center gap-4 mb-8">
               <div className="relative">
                 <Avatar className="w-24 h-24 border-4 border-background">
-                  <AvatarImage src={profileImage || "/placeholder.svg?height=96&width=96"} alt="Photo de profil" />
+                  <AvatarImage src={profileImage || "/placeholder.svg?height=96&width=96"} alt={t("client.pages.office.settings.profile.profilePicture")} />
                   <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
                 </Avatar>
 
-                {/* Bouton pour télécharger une nouvelle image */}
                 <label
                   htmlFor="profile-image"
                   className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-1.5 cursor-pointer"
@@ -122,7 +111,6 @@ const ProfileSettings: React.FC = () => {
                 </label>
               </div>
 
-              {/* Bouton pour supprimer l'image */}
               {profileImage && (
                 <Button variant="ghost" size="icon" onClick={removeProfileImage} className="h-8 w-8">
                   <X className="h-4 w-4" />
@@ -132,9 +120,8 @@ const ProfileSettings: React.FC = () => {
 
             <Separator className="my-6" />
 
-            {/* Liste des utilisateurs bloqués */}
             <div>
-              <h2 className="text-lg font-medium mb-4">Liste des utilisateurs que vous avez bloqués</h2>
+              <h2 className="text-lg font-medium mb-4">{t("client.pages.office.settings.profile.blockedUsers")}</h2>
 
               <div className="space-y-4">
                 {blockedUsers.map((user) => (
@@ -151,13 +138,13 @@ const ProfileSettings: React.FC = () => {
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-8 w-8">
                           <MoreVertical className="h-4 w-4" />
-                          <span className="sr-only">Options</span>
+                          <span className="sr-only">{t("client.pages.office.settings.profile.options")}</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem className="cursor-default">{user.name}</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => unblockUser(user.id)}>
-                          Débloquer l'utilisateur
+                          {t("client.pages.office.settings.profile.unblockUser")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -165,7 +152,7 @@ const ProfileSettings: React.FC = () => {
                 ))}
 
                 {blockedUsers.length === 0 && (
-                  <p className="text-sm text-muted-foreground">Vous n'avez bloqué aucun utilisateur.</p>
+                  <p className="text-sm text-muted-foreground">{t("client.pages.office.settings.profile.noBlockedUsers")}</p>
                 )}
               </div>
             </div>
@@ -173,7 +160,7 @@ const ProfileSettings: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ProfileSettings
+export default ProfileSettings;

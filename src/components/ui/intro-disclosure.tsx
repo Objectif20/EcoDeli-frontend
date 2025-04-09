@@ -1,64 +1,44 @@
-"use client"
-
-import * as React from "react"
+import * as React from "react";
 import {
   AnimatePresence,
   motion,
   useAnimation,
   type PanInfo,
-} from "framer-motion"
-import { CheckIcon, ExternalLinkIcon } from "lucide-react"
+} from "framer-motion";
+import { CheckIcon, ExternalLinkIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-import { cn } from "@/lib/utils"
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog-without-close"
+} from "@/components/ui/dialog-without-close";
 import {
   Drawer,
   DrawerContent,
   DrawerHeader,
   DrawerTitle,
-} from "@/components/ui/drawer"
-import { Progress } from "@/components/ui/progress"
+} from "@/components/ui/drawer";
+import { Progress } from "@/components/ui/progress";
 
 function useMediaQuery(query: string) {
-  const [matches, setMatches] = React.useState<boolean | null>(null)
+  const [matches, setMatches] = React.useState<boolean | null>(null);
 
   React.useEffect(() => {
-    const media = window.matchMedia(query)
-    setMatches(media.matches)
+    const media = window.matchMedia(query);
+    setMatches(media.matches);
 
-    const listener = (e: MediaQueryListEvent) => setMatches(e.matches)
-    media.addEventListener("change", listener)
-    return () => media.removeEventListener("change", listener)
-  }, [query])
+    const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, [query]);
 
-  return matches ?? false
+  return matches ?? false;
 }
-
-// Commented out the useFeatureVisibility hook
-/*
-function useFeatureVisibility(featureId: string) {
-  const [isVisible, setIsVisible] = React.useState<boolean | null>(null)
-
-  React.useEffect(() => {
-    const storedValue = localStorage.getItem(`feature_${featureId}`)
-    setIsVisible(storedValue ? JSON.parse(storedValue) : true)
-  }, [featureId])
-
-  const hideFeature = () => {
-    localStorage.setItem(`feature_${featureId}`, JSON.stringify(false))
-    setIsVisible(false)
-  }
-
-  return { isVisible: isVisible === null ? false : isVisible, hideFeature }
-}
-*/
 
 function useSwipe(onSwipe: (direction: "left" | "right") => void) {
   const handleDragEnd = (
@@ -66,13 +46,13 @@ function useSwipe(onSwipe: (direction: "left" | "right") => void) {
     info: PanInfo
   ) => {
     if (info.offset.x > 100) {
-      onSwipe("right")
+      onSwipe("right");
     } else if (info.offset.x < -100) {
-      onSwipe("left")
+      onSwipe("left");
     }
-  }
+  };
 
-  return { handleDragEnd }
+  return { handleDragEnd };
 }
 
 const fadeInScale = {
@@ -80,36 +60,36 @@ const fadeInScale = {
   animate: { opacity: 1, scale: 1 },
   exit: { opacity: 0, scale: 0.95 },
   transition: { duration: 0.2, ease: [0.23, 1, 0.32, 1] },
-}
+};
 
 const slideInOut = (direction: 1 | -1) => ({
   initial: { opacity: 0, x: 20 * direction },
   animate: { opacity: 1, x: 0 },
   exit: { opacity: 0, x: -20 * direction },
   transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] },
-})
+});
 
 const hoverScale = {
   whileHover: { scale: 1.01 },
   whileTap: { scale: 0.95 },
   transition: { duration: 0.2 },
-}
+};
 
 function StepPreview({ step, direction }: { step: Step; direction: 1 | -1 }) {
-  const controls = useAnimation()
+  const controls = useAnimation();
 
   React.useEffect(() => {
     controls.start({
       opacity: 1,
       y: 0,
       transition: { delay: 0.2, duration: 0.3 },
-    })
-  }, [controls, step])
+    });
+  }, [controls, step]);
 
   return (
     <motion.div
       {...slideInOut(direction)}
-      className="relative h-full w-full   overflow-hidden rounded-sm rounded-rb-lg rounded-tl-xl ring-2 ring-black/10 dark:ring-black/10 dark:ring-offset-black ring-offset-8"
+      className="relative h-full w-full overflow-hidden rounded-sm rounded-rb-lg rounded-tl-xl ring-2 ring-black/10 dark:ring-black/10 dark:ring-offset-black ring-offset-8"
     >
       {step.media ? (
         <div className="relative bg-black h-full w-full">
@@ -161,17 +141,19 @@ function StepPreview({ step, direction }: { step: Step; direction: 1 | -1 }) {
         </div>
       )}
     </motion.div>
-  )
+  );
 }
 
 interface StepTabProps {
-  step: Step
-  isActive: boolean
-  onClick: () => void
-  isCompleted: boolean
+  step: Step;
+  isActive: boolean;
+  onClick: () => void;
+  isCompleted: boolean;
 }
 
 function StepTab({ step, isActive, onClick, isCompleted }: StepTabProps) {
+  const { t } = useTranslation();
+
   return (
     <motion.button
       {...hoverScale}
@@ -182,7 +164,7 @@ function StepTab({ step, isActive, onClick, isCompleted }: StepTabProps) {
         "relative"
       )}
       aria-current={isActive ? "step" : undefined}
-      aria-label={`${step.title}${isCompleted ? " (completed)" : ""}`}
+      aria-label={`${step.title}${isCompleted ? t("client.components.disclosure.completed") : ""}`}
     >
       <div className="mb-1 text-sm font-medium">{step.title}</div>
       <div className="text-xs hidden md:block text-muted-foreground line-clamp-2">
@@ -196,47 +178,47 @@ function StepTab({ step, isActive, onClick, isCompleted }: StepTabProps) {
         </motion.div>
       )}
     </motion.button>
-  )
+  );
 }
 
 interface Step {
-  title: string
-  short_description: string
-  full_description: string
+  title: string;
+  short_description: string;
+  full_description: string;
   action?: {
-    label: string
-    onClick?: () => void
-    href?: string
-  }
+    label: string;
+    onClick?: () => void;
+    href?: string;
+  };
   media?: {
-    type: "image" | "video"
-    src: string
-    alt?: string
-  }
+    type: "image" | "video";
+    src: string;
+    alt?: string;
+  };
 }
 
 interface FeatureDisclosureProps {
-  steps: Step[]
-  featureId: string
-  onComplete?: () => void
-  onSkip?: () => void
-  showProgressBar?: boolean
-  open: boolean
-  setOpen: (open: boolean) => void
-  forceVariant?: "mobile" | "desktop"
+  steps: Step[];
+  featureId: string;
+  onComplete?: () => void;
+  onSkip?: () => void;
+  showProgressBar?: boolean;
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  forceVariant?: "mobile" | "desktop";
 }
 
 interface StepContentProps {
-  steps: Step[]
-  currentStep: number
-  onSkip: () => void
-  onNext: () => void
-  onPrevious: () => void
-  hideFeature: () => void
-  completedSteps: number[]
-  onStepSelect: (index: number) => void
-  direction: 1 | -1
-  isDesktop: boolean
+  steps: Step[];
+  currentStep: number;
+  onSkip: () => void;
+  onNext: () => void;
+  onPrevious: () => void;
+  hideFeature: () => void;
+  completedSteps: number[];
+  onStepSelect: (index: number) => void;
+  direction: 1 | -1;
+  isDesktop: boolean;
 }
 
 function StepContent({
@@ -251,10 +233,11 @@ function StepContent({
   isDesktop,
   stepRef,
 }: StepContentProps & { stepRef: React.RefObject<HTMLButtonElement> }) {
-  const [skipNextTime, _] = React.useState(false)
+  const [skipNextTime, _] = React.useState(false);
+  const { t } = useTranslation();
 
   const renderActionButton = (action: Step["action"]) => {
-    if (!action) return null
+    if (!action) return null;
 
     if (action.href) {
       return (
@@ -266,7 +249,7 @@ function StepContent({
             </span>
           </a>
         </Button>
-      )
+      );
     }
 
     return (
@@ -278,13 +261,13 @@ function StepContent({
       >
         {action.label}
       </Button>
-    )
-  }
+    );
+  };
 
   return (
     <div className="flex h-full flex-col max-w-3xl mx-auto">
       {isDesktop && (
-        <div className="flex-1  px-2 py-3">
+        <div className="flex-1 px-2 py-3">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -348,21 +331,23 @@ function StepContent({
                   variant="ghost"
                   className="rounded-full hover:bg-transparent"
                 >
-                  Previous
+                  {t("client.components.disclosure.previous")}
                 </Button>
               )}
               <Button
                 onClick={() => {
                   if (skipNextTime) {
-                    hideFeature()
+                    hideFeature();
                   }
-                  onNext()
+                  onNext();
                 }}
                 size="sm"
                 ref={stepRef}
                 className="rounded-full"
               >
-                {currentStep === steps.length - 1 ? "Done" : "Next"}
+                {currentStep === steps.length - 1
+                  ? t("client.components.disclosure.done")
+                  : t("client.components.disclosure.next")}
               </Button>
             </div>
             {/* Don't show again checkbox */}
@@ -370,7 +355,7 @@ function StepContent({
         </motion.div>
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
 export function IntroDisclosure({
@@ -382,84 +367,84 @@ export function IntroDisclosure({
   showProgressBar = true,
   forceVariant,
 }: FeatureDisclosureProps) {
-  const [currentStep, setCurrentStep] = React.useState(0)
-  const [completedSteps, setCompletedSteps] = React.useState<number[]>([0])
-  const [direction, setDirection] = React.useState<1 | -1>(1)
-  const isDesktopQuery = useMediaQuery("(min-width: 768px)")
-  const isDesktop = forceVariant ? forceVariant === "desktop" : isDesktopQuery
-  // Removed useFeatureVisibility hook usage
-  const stepRef = React.useRef<HTMLButtonElement>(null)
+  const [currentStep, setCurrentStep] = React.useState(0);
+  const [completedSteps, setCompletedSteps] = React.useState<number[]>([0]);
+  const [direction, setDirection] = React.useState<1 | -1>(1);
+  const isDesktopQuery = useMediaQuery("(min-width: 768px)");
+  const isDesktop = forceVariant ? forceVariant === "desktop" : isDesktopQuery;
+  const { t } = useTranslation();
+  const stepRef = React.useRef<HTMLButtonElement>(null);
 
   // Focus management
   React.useEffect(() => {
     if (open && stepRef.current) {
-      stepRef.current.focus()
+      stepRef.current.focus();
     }
-  }, [open, currentStep])
+  }, [open, currentStep]);
 
   // Early return if feature should be hidden
   if (!open) {
-    return null
+    return null;
   }
 
   const handleNext = () => {
-    setDirection(1)
+    setDirection(1);
     setCompletedSteps((prev) =>
       prev.includes(currentStep) ? prev : [...prev, currentStep]
-    )
+    );
     if (currentStep < steps.length - 1) {
-      setCurrentStep(currentStep + 1)
+      setCurrentStep(currentStep + 1);
     } else {
-      setOpen(false)
-      onComplete?.()
+      setOpen(false);
+      onComplete?.();
     }
-  }
+  };
 
   const handlePrevious = () => {
-    setDirection(-1)
+    setDirection(-1);
     if (currentStep > 0) {
-      setCurrentStep(currentStep - 1)
+      setCurrentStep(currentStep - 1);
     }
-  }
+  };
 
   const handleSkip = () => {
-    setOpen(false)
-    onSkip?.()
-  }
+    setOpen(false);
+    onSkip?.();
+  };
 
   const handleStepSelect = (index: number) => {
-    setDirection(index > currentStep ? 1 : -1)
+    setDirection(index > currentStep ? 1 : -1);
     // Mark all steps up to and including the selected step as completed
     setCompletedSteps((prev) => {
-      const newCompletedSteps = new Set(prev)
+      const newCompletedSteps = new Set(prev);
       // If moving forward, mark all steps up to the selected one as completed
       if (index > currentStep) {
         for (let i = currentStep; i <= index; i++) {
-          newCompletedSteps.add(i)
+          newCompletedSteps.add(i);
         }
       }
-      return Array.from(newCompletedSteps)
-    })
-    setCurrentStep(index)
-  }
+      return Array.from(newCompletedSteps);
+    });
+    setCurrentStep(index);
+  };
 
   const handleSwipe = (swipeDirection: "left" | "right") => {
     if (swipeDirection === "left") {
-      handleNext()
+      handleNext();
     } else {
-      handlePrevious()
+      handlePrevious();
     }
-  }
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-      handleNext()
+      handleNext();
     } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      handlePrevious()
+      handlePrevious();
     }
-  }
+  };
 
-  const { handleDragEnd } = useSwipe(handleSwipe)
+  const { handleDragEnd } = useSwipe(handleSwipe);
 
   if (isDesktop) {
     return (
@@ -469,15 +454,15 @@ export function IntroDisclosure({
           onKeyDown={handleKeyDown}
           onInteractOutside={(e) => {
             e.preventDefault();
-            }}
+          }}
         >
           <DialogHeader className="p-6 space-y-2 bg-muted border-b border-border">
-            <DialogTitle>Feature Tour</DialogTitle>
+            <DialogTitle>{t("client.components.disclosure.featureTour")}</DialogTitle>
             {showProgressBar && (
-              <div className="flex mt-2 w-full justify-center  ">
+              <div className="flex mt-2 w-full justify-center ">
                 <Progress
                   value={((currentStep + 1) / steps.length) * 100}
-                  className="  h-1 "
+                  className=" h-1 "
                 />
               </div>
             )}
@@ -509,13 +494,13 @@ export function IntroDisclosure({
           </div>
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   return (
     <Drawer open={open} onOpenChange={setOpen} dismissible={false}>
       <DrawerContent className="h-[95vh] max-h-[95vh] "
-      
+
         onInteractOutside={(e) => {
             e.preventDefault();
         }}
@@ -527,7 +512,7 @@ export function IntroDisclosure({
           onKeyDown={handleKeyDown}
           className="h-full flex flex-col max-w-3xl mx-auto"
         >
-          <DrawerHeader className="text-left  pb-4 space-y-4">
+          <DrawerHeader className="text-left pb-4 space-y-4">
             {showProgressBar && (
               <Progress
                 value={((currentStep + 1) / steps.length) * 100}
@@ -602,18 +587,20 @@ export function IntroDisclosure({
                       variant="ghost"
                       className="rounded-full hover:bg-transparent"
                     >
-                      Previous
+                      {t("client.components.disclosure.previous")}
                     </Button>
                   )}
                   <Button
                     onClick={() => {
-                      handleNext()
+                      handleNext();
                     }}
                     size="sm"
                     ref={stepRef}
                     className="rounded-full"
                   >
-                    {currentStep === steps.length - 1 ? "Done" : "Next"}
+                    {currentStep === steps.length - 1
+                      ? t("client.components.disclosure.done")
+                      : t("client.components.disclosure.next")}
                   </Button>
                 </div>
               </div>
@@ -622,5 +609,5 @@ export function IntroDisclosure({
         </motion.div>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }

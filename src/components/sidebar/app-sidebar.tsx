@@ -14,6 +14,7 @@ import {
   Car,
   Receipt,
   Package,
+  FileArchive,
 } from "lucide-react";
 import {
   InfoCard,
@@ -178,7 +179,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               items: [
                 { title: t("client.components.sidebar.upcomingDeliveries"), url: "/office/upcoming-deliveries" },
                 { title: t("client.components.sidebar.deliveryHistory"), url: "/office/delivery-history" },
-                { title: t("client.components.sidebar.deliveryHistory"), url: "/office/reviews-deliveryman" },
+                { title: t("client.components.sidebar.deliveryReviews"), url: "/office/reviews-deliveryman" },
               ],
             },
             {
@@ -224,9 +225,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             icon: MessageSquare,
           },
           {
-            title: "Mes documents",
+            title: t("client.components.sidebar.documentPage"),
             url: "/office/documents",
-            icon: MessageSquare,
+            icon: FileArchive,
           },
         ],
       },

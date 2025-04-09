@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/avatar";
 import { useDispatch } from 'react-redux';
 import { setBreadcrumb } from '@/redux/slices/breadcrumbSlice';
+import { useTranslation } from 'react-i18next';
 
 const fakeContacts = [
   { name: 'Jacquenetta Slowgrave', message: 'Super ! J\'ai hâte.', time: '10 min', online: true, avatar: 'https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg' },
@@ -63,15 +64,16 @@ export default function ChatPage() {
   const [messages, setMessages] = useState(fakeMessages);
   const [showContacts, setShowContacts] = useState(true);
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Messagerie"],
+        segments: [t("client.pages.office.chat.home"), t("client.pages.office.chat.messaging")],
         links: ["/office/dashboard"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   const filteredContacts = fakeContacts.filter(contact =>
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -116,10 +118,10 @@ export default function ChatPage() {
     <div className="flex h-[calc(100vh-150px)]">
       {(showContacts || window.innerWidth > 768) && (
         <div className="w-full lg:w-1/4 bg-background p-4">
-          <h2 className="text-lg font-semibold mb-4">Discussions</h2>
+          <h2 className="text-lg font-semibold mb-4">{t("client.pages.office.chat.discussions")}</h2>
           <Input
             type="text"
-            placeholder="Rechercher des discussions..."
+            placeholder={t("client.pages.office.chat.searchPlaceholder")}
             className="w-full p-2 mb-4 border rounded"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -139,7 +141,7 @@ export default function ChatPage() {
                     </Avatar>
                     {contact.online && (
                       <span className="border-background absolute -end-0.5 -bottom-0.5 size-3 rounded-full border-2 bg-primay">
-                        <span className="sr-only">En ligne</span>
+                        <span className="sr-only">{t("client.pages.office.chat.online")}</span>
                       </span>
                     )}
                   </div>
@@ -169,7 +171,7 @@ export default function ChatPage() {
               </Avatar>
               <div className="ml-2">
                 <h1 className="text-xl font-semibold">{selectedContactInfo?.name}</h1>
-                <p className="text-gray-600">{selectedContactInfo?.online ? 'En ligne' : 'Hors ligne'}</p>
+                <p className="text-gray-600">{selectedContactInfo?.online ? t("client.pages.office.chat.online") : t("client.pages.office.chat.offline")}</p>
               </div>
             </div>
             <ScrollArea className="flex-1" style={{ height: `calc(100% - 48px)` }}>
@@ -200,7 +202,7 @@ export default function ChatPage() {
               <ChatInput
                 name="chatInput"
                 className="min-h-12 bg-background shadow-none"
-                placeholder="Tapez votre message ici..."
+                placeholder={t("client.pages.office.chat.typeMessage")}
               />
               <Button
                 className="absolute top-1/2 right-2 transform size-8 -translate-y-1/2"
@@ -212,7 +214,7 @@ export default function ChatPage() {
             </form>
           </>
         ) : (
-          <p>Sélectionnez un contact pour commencer à discuter.</p>
+          <p>{t("client.pages.office.chat.selectContact")}</p>
         )}
       </div>
     </div>

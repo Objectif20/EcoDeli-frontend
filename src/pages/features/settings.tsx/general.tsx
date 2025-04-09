@@ -4,22 +4,24 @@ import { RootState } from "@/redux/store";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 const GeneralSettings: React.FC = () => {
+  const { t } = useTranslation();
 
   const formSchema = z.object({
-    nom: z.string().min(1, "Le nom est requis"),
-    prenom: z.string().min(1, "Le prénom est requis"),
-    email: z.string().email("Email invalide"),
+    nom: z.string().min(1, t("client.pages.office.settings.general.nameRequired")),
+    prenom: z.string().min(1, t("client.pages.office.settings.general.firstNameRequired")),
+    email: z.string().email(t("client.pages.office.settings.general.invalidEmail")),
     newsletter: z.boolean().default(false),
-  })
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -29,10 +31,10 @@ const GeneralSettings: React.FC = () => {
       email: "name@example.com",
       newsletter: true,
     },
-  })
+  });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+    console.log(values);
   }
 
   const dispatch = useDispatch();
@@ -45,99 +47,98 @@ const GeneralSettings: React.FC = () => {
 
   useEffect(() => {
     dispatch(setBreadcrumb({
-      segments: ["Accueil", "Paramètres", "Général"],
+      segments: [t("client.pages.office.settings.general.home"), t("client.pages.office.settings.general.settings"), t("client.pages.office.settings.general.generalSettings")],
       links: ['/office/dashboard'],
     }));
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   return (
     <div className="flex flex-col gap-8">
       <div className="mx-auto grid w-full max-w-6xl gap-2">
-        <h1 className="text-3xl font-semibold">Paramètres généraux</h1>
+        <h1 className="text-3xl font-semibold">{t("client.pages.office.settings.general.generalSettings")}</h1>
       </div>
       <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
         <nav className="grid gap-4 text-sm text-muted-foreground">
-          <Link to="/office/general-settings" className="font-semibold text-primary active-link">Paramètres généraux</Link>
-          <Link to="/office/profile">Profil</Link>
-          <Link to="/office/privacy">Confidentialité</Link>
-          <Link to="/office/contact-details">Coordonnées</Link>
+          <Link to="/office/general-settings" className="font-semibold text-primary active-link">{t("client.pages.office.settings.general.generalSettings")}</Link>
+          <Link to="/office/profile">{t("client.pages.office.settings.general.profile")}</Link>
+          <Link to="/office/privacy">{t("client.pages.office.settings.general.privacy")}</Link>
+          <Link to="/office/contact-details">{t("client.pages.office.settings.general.contactDetails")}</Link>
           {(isMerchant || isClient) && (
-            <Link to="/office/subscriptions">Abonnements</Link>
+            <Link to="/office/subscriptions">{t("client.pages.office.settings.general.subscriptions")}</Link>
           )}
           {(isProvider || isDeliveryman) && (
-            <Link to="/office/billing-settings">Facturations</Link>
+            <Link to="/office/billing-settings">{t("client.pages.office.settings.general.billing")}</Link>
           )}
-          <Link to="/office/reports">Signalements</Link>
+          <Link to="/office/reports">{t("client.pages.office.settings.general.reports")}</Link>
         </nav>
         <div className="grid gap-6">
-        <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium">Paramètres généraux</h3>
-        <p className="text-sm text-muted-foreground">Modifier vos informations personnelles</p>
-      </div>
-      <Separator />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="nom"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nom</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Votre nom" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="prenom"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Prénom</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Votre prénom" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="votre@email.com" {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="newsletter"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                  <FormControl>
-                    <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>J'accepte la Newsletter</FormLabel>
-                    <FormDescription>
-                      J'accepte de recevoir de la part de EcoDeli des emails concernant des publicités, des offres
-                      commerciales ou tout autre type de mails.
-                    </FormDescription>
-                  </div>
-                </FormItem>
-              )}
-            />
-            <Button type="submit">
-              Mettre à jour mes informations
-            </Button>
-          </form>
-        </Form>
-      </div>
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-lg font-medium">{t("client.pages.office.settings.general.generalSettings")}</h3>
+              <p className="text-sm text-muted-foreground">{t("client.pages.office.settings.general.modifyInfo")}</p>
+            </div>
+            <Separator />
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="nom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("client.pages.office.settings.general.lastName")}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t("client.pages.office.settings.general.yourLastName")} {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="prenom"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("client.pages.office.settings.general.firstName")}</FormLabel>
+                      <FormControl>
+                        <Input placeholder={t("client.pages.office.settings.general.yourFirstName")} {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("client.pages.office.settings.general.email")}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="votre@email.com" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="newsletter"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormControl>
+                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>{t("client.pages.office.settings.general.acceptNewsletter")}</FormLabel>
+                        <FormDescription>
+                          {t("client.pages.office.settings.general.newsletterDescription")}
+                        </FormDescription>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit">
+                  {t("client.pages.office.settings.general.updateInfo")}
+                </Button>
+              </form>
+            </Form>
+          </div>
         </div>
       </div>
     </div>

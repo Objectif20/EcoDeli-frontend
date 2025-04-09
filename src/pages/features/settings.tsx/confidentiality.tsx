@@ -7,104 +7,102 @@ import type React from "react"
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 const PrivacySettings: React.FC = () => {
-  const dispatch = useDispatch()
-  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user)
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
 
-  const isProvider = user?.profile.includes("PROVIDER")
-  const isClient = user?.profile.includes("CLIENT")
-  const isMerchant = user?.profile.includes("MERCHANT")
-  const isDeliveryman = user?.profile.includes("DELIVERYMAN")
+  const isProvider = user?.profile.includes("PROVIDER");
+  const isClient = user?.profile.includes("CLIENT");
+  const isMerchant = user?.profile.includes("MERCHANT");
+  const isDeliveryman = user?.profile.includes("DELIVERYMAN");
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Paramètres", "Confidentialité"],
+        segments: [t("client.pages.office.settings.confidentiality.home"), t("client.pages.office.settings.confidentiality.settings"), t("client.pages.office.settings.confidentiality.privacy")],
         links: ["/office/dashboard"],
       }),
-    )
-  }, [dispatch])
+    );
+  }, [dispatch, t]);
 
   return (
     <div className="flex flex-col gap-8">
       <div className="mx-auto grid w-full max-w-6xl gap-2">
-        <h1 className="text-3xl font-semibold">Confidentialité</h1>
+        <h1 className="text-3xl font-semibold">{t("client.pages.office.settings.confidentiality.privacy")}</h1>
       </div>
       <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
         <nav className="grid gap-4 text-sm text-muted-foreground">
-          <Link to="/office/general-settings">Paramètres généraux</Link>
-          <Link to="/office/profile">Profil</Link>
+          <Link to="/office/general-settings">{t("client.pages.office.settings.confidentiality.generalSettings")}</Link>
+          <Link to="/office/profile">{t("client.pages.office.settings.confidentiality.profile")}</Link>
           <Link to="/office/privacy" className="font-semibold text-primary active-link">
-            Confidentialité
+            {t("client.pages.office.settings.confidentiality.privacy")}
           </Link>
-          <Link to="/office/contact-details">Coordonnées</Link>
-          {(isMerchant || isClient) && <Link to="/office/subscriptions">Abonnements</Link>}
-          {(isProvider || isDeliveryman) && <Link to="/office/billing-settings">Facturations</Link>}
-          <Link to="/office/reports">Signalements</Link>
+          <Link to="/office/contact-details">{t("client.pages.office.settings.confidentiality.contactDetails")}</Link>
+          {(isMerchant || isClient) && <Link to="/office/subscriptions">{t("client.pages.office.settings.confidentiality.subscriptions")}</Link>}
+          {(isProvider || isDeliveryman) && <Link to="/office/billing-settings">{t("client.pages.office.settings.confidentiality.billing")}</Link>}
+          <Link to="/office/reports">{t("client.pages.office.settings.confidentiality.reports")}</Link>
         </nav>
         <div className="grid gap-6">
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-semibold mb-1">Confidentialité</h2>
-              <p className="text-sm text-muted-foreground">Modifier votre configuration de confidentialité</p>
+              <h2 className="text-xl font-semibold mb-1">{t("client.pages.office.settings.confidentiality.privacy")}</h2>
+              <p className="text-sm text-muted-foreground">{t("client.pages.office.settings.confidentiality.modifyPrivacy")}</p>
               <div className="h-px bg-border my-6"></div>
             </div>
 
             <div className="space-y-4">
               <div>
-                <h3 className="text-base font-medium">Mise à jour de votre mot de passe</h3>
+                <h3 className="text-base font-medium">{t("client.pages.office.settings.confidentiality.updatePassword")}</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Pour mettre à jour votre mot de passe, nous pouvons vous envoyer un email afin de le réinitialiser.
-                  <br />
-                  Si vous avez activé la double authentification, elle vous sera demandée avant la modification.
-                </p>
-              </div>
-              <Button className=" px-4 py-2 rounded-md text-sm transition-colors">
-                Modifier mon mot de passe
-              </Button>
-            </div>
-
-            <div className="space-y-4 pt-4">
-              <div>
-                <h3 className="text-base font-medium">Télécharger mes données</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  En conformité avec l'article 20 du RGPD, EcoDeli se doit de vous mettre à disposition un document
-                  recensant l'ensemble des informations personnelles que EcoDeli possède.
-                </p>
-              </div>
-              <Button className=" px-4 py-2 rounded-md text-sm transition-colors">
-                Télécharger ce document
-              </Button>
-            </div>
-
-            <div className="space-y-4 pt-4">
-              <div>
-                <h3 className="text-base font-medium">Activer la double authentification</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Afin d'améliorer la sécurité de votre compte, EcoDeli vous recommande d'activer cette double
-                  authentification. Pour se faire, vous avez besoin d'une application d'authentification (Authy...)
+                  {t("client.pages.office.settings.confidentiality.updatePasswordDescription")}
                 </p>
               </div>
               <Button className="px-4 py-2 rounded-md text-sm transition-colors">
-                Activer la double authentification
+                {t("client.pages.office.settings.confidentiality.changePassword")}
+              </Button>
+            </div>
+
+            <div className="space-y-4 pt-4">
+              <div>
+                <h3 className="text-base font-medium">{t("client.pages.office.settings.confidentiality.downloadData")}</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t("client.pages.office.settings.confidentiality.downloadDataDescription")}
+                </p>
+              </div>
+              <Button className="px-4 py-2 rounded-md text-sm transition-colors">
+                {t("client.pages.office.settings.confidentiality.downloadDocument")}
+              </Button>
+            </div>
+
+            <div className="space-y-4 pt-4">
+              <div>
+                <h3 className="text-base font-medium">{t("client.pages.office.settings.confidentiality.enable2FA")}</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t("client.pages.office.settings.confidentiality.enable2FADescription")}
+                </p>
+              </div>
+              <Button className="px-4 py-2 rounded-md text-sm transition-colors">
+                {t("client.pages.office.settings.confidentiality.activate2FA")}
               </Button>
             </div>
 
             <div className="pt-2">
               <p className="text-sm">
-                Qu'est-ce que l'A2F ? Retrouvez l'explication juste{" "}
+                {t("client.pages.office.settings.confidentiality.whatIs2FA")}
                 <a href="#" className="text-primary hover:underline">
-                  ici
+                  {t("client.pages.office.settings.confidentiality.here")}
                 </a>
               </p>
             </div>
 
             <div className="pt-6">
               <p className="text-sm">
-                Accéder à la{" "}
+                {t("client.pages.office.settings.confidentiality.accessPrivacyPolicy")}
                 <a href="#" className="text-primary hover:underline">
-                  politique de confidentialité de EcoDeli
+                  {t("client.pages.office.settings.confidentiality.privacyPolicy")}
                 </a>
               </p>
             </div>
@@ -112,8 +110,7 @@ const PrivacySettings: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PrivacySettings
-
+export default PrivacySettings;

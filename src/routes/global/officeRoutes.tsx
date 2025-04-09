@@ -24,15 +24,9 @@ import SubscriptionSettings from "@/pages/features/settings.tsx/subscriptions";
 import { IntroDisclosureDemo } from "@/components/text";
 
 const OfficeRoute: React.FC = () => {
-
-
-
-
   return (
-    <div>
-
-        <IntroDisclosureDemo />
-
+    <>
+      <IntroDisclosureDemo />
       <Routes>
         <Route element={<PrivateProfileRoutes requiredProfile="MERCHANT" requireAuth={false} />}>
           <Route path="deliveries" element={<DeliveriesPage />} />
@@ -89,7 +83,7 @@ const OfficeRoute: React.FC = () => {
         <Route path="documents" element={<DocumentsPage />} />
         <Route path="/dashboard" element={<h1>Dashboard</h1>} />
       </Routes>
-    </div>
+    </>
   );
 };
 

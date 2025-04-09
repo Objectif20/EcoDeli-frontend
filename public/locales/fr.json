@@ -701,7 +701,94 @@
             "description": "Description"
           }
         }
+      },
+      "office": {
+        "myDocuments": {
+          "home": "Accueil",
+          "myDocuments": "Mes documents",
+          "error": "Erreur lors du téléchargement du PDF :",
+          "noDocumentSelected": "Aucun document sélectionné",
+          "selectDocument": "Veuillez sélectionner un document pour l'afficher."
+        },
+        "chat": {
+          "home": "Accueil",
+          "messaging": "Messagerie",
+          "discussions": "Discussions",
+          "searchPlaceholder": "Rechercher des discussions...",
+          "online": "En ligne",
+          "offline": "Hors ligne",
+          "typeMessage": "Tapez votre message ici...",
+          "selectContact": "Sélectionnez un contact pour commencer à discuter."
+        },
+        "settings": {
+          "general": {
+            "home": "Accueil",
+            "settings": "Paramètres",
+            "generalSettings": "Paramètres généraux",
+            "profile": "Profil",
+            "privacy": "Confidentialité",
+            "contactDetails": "Coordonnées",
+            "subscriptions": "Abonnements",
+            "billing": "Facturations",
+            "reports": "Signalements",
+            "modifyInfo": "Modifier vos informations personnelles",
+            "lastName": "Nom",
+            "yourLastName": "Votre nom",
+            "firstName": "Prénom",
+            "yourFirstName": "Votre prénom",
+            "email": "Email",
+            "nameRequired": "Le nom est requis",
+            "firstNameRequired": "Le prénom est requis",
+            "invalidEmail": "Email invalide",
+            "acceptNewsletter": "J'accepte la Newsletter",
+            "newsletterDescription": "J'accepte de recevoir de la part de EcoDeli des emails concernant des publicités, des offres commerciales ou tout autre type de mails.",
+            "updateInfo": "Mettre à jour mes informations"
+          },
+          "profile": {
+            "home": "Accueil",
+            "settings": "Paramètres",
+            "profile": "Profil",
+            "generalSettings": "Paramètres généraux",
+            "privacy": "Confidentialité",
+            "contactDetails": "Coordonnées",
+            "subscriptions": "Abonnements",
+            "billing": "Facturations",
+            "reports": "Signalements",
+            "modifyProfile": "Modifier votre profil",
+            "profilePicture": "Photo de profil",
+            "blockedUsers": "Liste des utilisateurs que vous avez bloqués",
+            "options": "Options",
+            "unblockUser": "Débloquer l'utilisateur",
+            "noBlockedUsers": "Vous n'avez bloqué aucun utilisateur."
+          },
+          "confidentiality": {
+            "home": "Accueil",
+            "settings": "Paramètres",
+            "privacy": "Confidentialité",
+            "generalSettings": "Paramètres généraux",
+            "profile": "Profil",
+            "contactDetails": "Coordonnées",
+            "subscriptions": "Abonnements",
+            "billing": "Facturations",
+            "reports": "Signalements",
+            "modifyPrivacy": "Modifier votre configuration de confidentialité",
+            "updatePassword": "Mise à jour de votre mot de passe",
+            "updatePasswordDescription": "Pour mettre à jour votre mot de passe, nous pouvons vous envoyer un email afin de le réinitialiser. Si vous avez activé la double authentification, elle vous sera demandée avant la modification.",
+            "changePassword": "Modifier mon mot de passe",
+            "downloadData": "Télécharger mes données",
+            "downloadDataDescription": "En conformité avec l'article 20 du RGPD, EcoDeli se doit de vous mettre à disposition un document recensant l'ensemble des informations personnelles que EcoDeli possède.",
+            "downloadDocument": "Télécharger ce document",
+            "enable2FA": "Activer la double authentification",
+            "enable2FADescription": "Afin d'améliorer la sécurité de votre compte, EcoDeli vous recommande d'activer cette double authentification. Pour cela, vous avez besoin d'une application d'authentification (Authy...)",
+            "activate2FA": "Activer la double authentification",
+            "whatIs2FA": "Qu'est-ce que l'A2F ? Retrouvez l'explication juste",
+            "here": "ici",
+            "accessPrivacyPolicy": "Accéder à la",
+            "privacyPolicy": "politique de confidentialité de EcoDeli"
+          }
+        }
       }
+
     }, 
     "components" : {
       "footer": {
@@ -782,7 +869,16 @@
         "myVehicles": "Mes véhicules",
         "myInvoices": "Mes factures",
         "individualSpace": "Espace Particulier",
-        "serviceSpace": "Espace Prestation"
+        "serviceSpace": "Espace Prestation",
+        "documentPage": "Mes documents",
+        "deliveryReviews" : "Avis sur mes livraisons"
+      },
+      "disclosure": {
+        "completed": "(complété)",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "done": "Terminé",
+        "featureTour": "Visite guidée des fonctionnalités"
       }
     }
   }

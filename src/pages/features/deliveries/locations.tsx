@@ -80,6 +80,7 @@ const DeliveriesLocationPage = () => {
   });
 
   return (
+
     <div className="w-full h-full z-0">
       <MapContainer bounds={franceBounds} className="w-full h-full z-0" attributionControl={true}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -112,6 +113,7 @@ const DeliveriesLocationPage = () => {
         ))}
       </MapContainer>
     </div>
+
   );
 };
 

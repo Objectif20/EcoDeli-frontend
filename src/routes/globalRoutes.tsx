@@ -13,6 +13,8 @@ export default function GlobalRoutes() {
             <Route path="auth/*" element={<AuthRoutes />} />
 
             <Route element={<PrivateRoute requireAuth={false} />}>
+
+
                 <Route path="/office/*" element={<OfficeRoute />} />
             </Route>
 

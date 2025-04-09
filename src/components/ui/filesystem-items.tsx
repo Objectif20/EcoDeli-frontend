@@ -76,13 +76,16 @@ type Node = {
               <ChevronIcon />
             </button>
           )}
-  
+
           {node.nodes ? (
-            <Folder
-              className={`size-6 text-primary fill-primary ${
-                node.nodes.length === 0 ? "ml-[22px]" : ""
-              }`}
-            />
+            <>
+              <Folder
+                className={`size-6 text-primary fill-primary ${
+                  node.nodes.length === 0 ? "ml-[22px]" : ""
+                }`}
+              />
+              {node.name}
+            </>
           ) : (
             <button
               onClick={() => node.url && onFileClick && onFileClick(node.url)}
@@ -92,7 +95,6 @@ type Node = {
               {node.name}
             </button>
           )}
-          {node.name}
         </span>
   
         <ChildrenList />

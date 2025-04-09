@@ -1,52 +1,47 @@
-import { useState } from "react";
-import axios from "axios";
-
+import { useState, useEffect } from "react";
 import { FilesystemItem } from "@/components/ui/filesystem-items";
+import axiosInstance from "@/api/axiosInstance";
+import { File } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
+import { useTranslation } from "react-i18next";
 
 const nodes = [
   {
     name: "Home",
     nodes: [
       {
-        name: "Movies",
-        nodes: [
-          {
-            name: "Action",
-            nodes: [
-              {
-                name: "2000s",
-                nodes: [
-                  { name: "Gladiator.mp4" },
-                  { name: "The-Dark-Knight.mp4" },
-                ],
-              },
-              { name: "2010s", nodes: [] },
-            ],
-          },
-          {
-            name: "Comedy",
-            nodes: [{ name: "2000s", nodes: [{ name: "Superbad.mp4" }] }],
-          },
-          {
-            name: "Drama",
-            nodes: [
-              { name: "2000s", nodes: [{ name: "American-Beauty.mp4" }] },
-            ],
-          },
-        ],
-      },
-      {
-        name: "Music",
-        nodes: [
-          { name: "Rock", nodes: [] },
-          { name: "Classical", nodes: [] },
-        ],
-      },
-      { name: "Pictures", nodes: [] },
-      {
         name: "Documents",
         nodes: [
           { name: "report.pdf", url: "https://console.minio.remythibaut.fr/api/v1/buckets/test/objects/download?prefix=CV2A_V2.pdf&version_id=null" },
+          {
+            name: "Factures",
+            nodes: [
+              { name: "January.pdf" },
+              { name: "February.pdf" },
+            ],
+          },
+          {
+            name: "Contrats",
+            nodes: [
+              { name: "Contract-2023.pdf" },
+              { name: "NDA-2023.pdf" },
+            ],
+          },
+          {
+            name: "Rapports",
+            nodes: [
+              { name: "Annual-Report-2023.pdf" },
+              { name: "Project-Review.pdf" },
+            ],
+          },
+          {
+            name: "Correspondance",
+            nodes: [
+              { name: "Letter-to-Client.pdf" },
+              { name: "Internal-Memo.pdf" },
+            ],
+          },
         ],
       },
       { name: "passwords.txt" },
@@ -56,31 +51,61 @@ const nodes = [
 
 export default function DocumentsPage() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setBreadcrumb({
+        segments: [t("client.pages.office.myDocuments.home"), t("client.pages.office.myDocuments.myDocuments")],
+        links: ["/office/dashboard"],
+      })
+    );
+  }, [dispatch, t]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const handleFileClick = async (url: string) => {
     try {
-      const response = await axios.get('http://localhost:3000/admin/global/documents', {
+      const response = await axiosInstance.get('/client/utils/document', {
         params: { url },
         responseType: 'arraybuffer',
       });
 
       const blob = new Blob([response.data], { type: "application/pdf" });
 
-      const objectURL = URL.createObjectURL(blob);
-      setPdfUrl(objectURL);
+      if (isMobile) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "document.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        const objectURL = URL.createObjectURL(blob);
+        setPdfUrl(objectURL);
+      }
 
-      const link = document.createElement("a");
-      link.href = objectURL;
-      link.download = "document.pdf"; 
-      link.click();
     } catch (error) {
-      console.error("Erreur lors du téléchargement du PDF :", error);
+      console.error(t("client.pages.office.myDocuments.error"), error);
     }
   };
 
   return (
-    <div className="flex h-screen">
-      <div className="w-1/4 p-4 border-r overflow-y-auto">
+    <div className="flex flex-col h-full md:flex-row">
+      <div className="w-full md:w-1/4 p-4 md:border-r overflow-y-auto">
         <ul>
           {nodes.map((node) => (
             <FilesystemItem
@@ -92,29 +117,25 @@ export default function DocumentsPage() {
           ))}
         </ul>
       </div>
-      <div className="w-3/4 p-4">
-        {pdfUrl ? (
-          <>
-            <iframe
-              src={pdfUrl} 
-              width="100%"
-              height="600"
-              style={{ border: "none" }}
-            />
-            <button
-              onClick={() => {
-                const link = document.createElement("a");
-                link.href = pdfUrl;
-                link.download = "document.pdf"; 
-                link.click();
-              }}
-              className="mt-4 p-2 bg-blue-500 text-white"
-            >
-              Télécharger le PDF
-            </button>
-          </>
-        ) : (
-          <p>Choisis un PDF</p>
+      <div className="w-full md:w-3/4 p-4">
+        {pdfUrl && !isMobile && (
+          <iframe
+            src={pdfUrl}
+            className="w-full h-full"
+            style={{ border: "none" }}
+          />
+        )}
+        {!pdfUrl && !isMobile && (
+          <div className="flex min-h-[70svh] flex-col items-center justify-center py-16 text-center">
+              <File
+                size={32}
+                className="text-muted-foreground/50 mb-2"
+              />
+              <h3 className="text-lg font-medium">{t("client.pages.office.myDocuments.noDocumentSelected")}</h3>
+              <p className="text-muted-foreground">
+                {t("client.pages.office.myDocuments.selectDocument")}
+              </p>
+        </div>
         )}
       </div>
     </div>

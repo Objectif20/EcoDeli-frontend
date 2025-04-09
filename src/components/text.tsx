@@ -6,59 +6,84 @@ import { IntroDisclosure } from "@/components/ui/intro-disclosure"
 
 const steps = [
   {
-    title: "Lorem Ipsum Dolor",
-    short_description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    title: "Devenir Partenaire Livreur",
+    short_description: "Commencez votre parcours en tant que partenaire livreur avec nous.",
     full_description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies aliquam, nunc nisl aliquet nunc, vitae aliquam nisl nunc eu nisl.",
+      "Rejoignez notre équipe de partenaires livreurs et profitez d'horaires flexibles et d'une rémunération compétitive. Inscrivez-vous dès aujourd'hui et commencez à livrer en toute simplicité.",
     media: {
       type: "image" as const,
-      src: "/feature-3.png",
-      alt: "Lorem ipsum image",
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Devenir partenaire livreur",
     },
   },
   {
-    title: "Sed Do Eiusmod",
-    short_description: "Sed do eiusmod tempor incididunt ut labore et dolore.",
+    title: "Compléter Votre Profil",
+    short_description: "Remplissez votre profil avec les détails nécessaires.",
     full_description:
-      "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "Assurez-vous que votre profil est complet avec des informations précises. Cela inclut vos coordonnées, les informations sur votre véhicule et vos disponibilités.",
     media: {
       type: "image" as const,
-      src: "/feature-2.png",
-      alt: "Lorem ipsum customization",
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Compléter votre profil",
     },
     action: {
-      label: "View Lorem Ipsum",
-      href: "/docs/lorem-ipsum",
+      label: "Mettre à Jour le Profil",
+      href: "/profil/mettre-a-jour",
     },
   },
   {
-    title: "Duis Aute Irure",
-    short_description: "Duis aute irure dolor in reprehenderit in voluptate.",
+    title: "Accepter les Demandes de Livraison",
+    short_description: "Commencez à accepter les demandes de livraison dans votre zone.",
     full_description:
-      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+      "Une fois votre profil complet, vous pouvez commencer à accepter les demandes de livraison. Utilisez notre application pour voir les livraisons disponibles et accepter celles qui correspondent à votre emploi du temps.",
     media: {
       type: "image" as const,
-      src: "/feature-1.png",
-      alt: "Lorem ipsum responsive design",
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Accepter les demandes de livraison",
     },
   },
   {
-    title: "Excepteur Sint",
-    short_description: "Excepteur sint occaecat cupidatat non proident.",
+    title: "Récupérer le Colis",
+    short_description: "Récupérez le colis à l'emplacement désigné.",
     full_description:
-      "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    action: {
-      label: "View Lorem Ipsum Components",
-      href: "/docs/lorem-ipsum-components",
+      "Utilisez l'application pour vous rendre au lieu de récupération. Assurez-vous d'avoir le bon colis et scannez-le avec l'application avant de partir.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Récupérer le colis",
     },
   },
-]
+  {
+    title: "Livrer le Colis",
+    short_description: "Livrez le colis au destinataire.",
+    full_description:
+      "Suivez les indications de l'application pour vous rendre au lieu de livraison. Assurez-vous que le colis est livré en toute sécurité et obtenez une signature ou une confirmation photo si nécessaire.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Livrer le colis",
+    },
+  },
+  {
+    title: "Finaliser la Livraison",
+    short_description: "Marquez la livraison comme terminée dans l'application.",
+    full_description:
+      "Une fois le colis livré, marquez la livraison comme terminée dans l'application. Vous pouvez également laisser un retour sur votre expérience.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Finaliser la livraison",
+    },
+    action: {
+      label: "Voir l'Historique des Livraisons",
+      href: "/livraisons/historique",
+    },
+  },
+];
 
 export function IntroDisclosureDemo() {
   const [open, setOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -76,15 +101,18 @@ export function IntroDisclosureDemo() {
 
   return (
     <div>
+      {open && (
         <IntroDisclosure
-          open={open}
-          setOpen={setOpen}
-          steps={steps}
-          featureId={isMobile ? "intro-demo-mobile" : "intro-demo"}
-          onComplete={() => toast.success("Tour completed")}
-          onSkip={() => toast.info("Tour skipped")}
-          forceVariant={isMobile ? "mobile" : undefined}
-        />
+        open={open}
+        setOpen={setOpen}
+        steps={steps}
+        featureId={isMobile ? "intro-demo-mobile" : "intro-demo"}
+        onComplete={() => toast.success("Tour completed")}
+        onSkip={() => toast.info("Tour skipped")}
+        forceVariant={isMobile ? "mobile" : undefined}
+      />
+      )}
+        
     </div>
   )
 }

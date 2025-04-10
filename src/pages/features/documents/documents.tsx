@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FilesystemItem } from "@/components/ui/filesystem-items";
 import axiosInstance from "@/api/axiosInstance";
 import { File } from "lucide-react";
@@ -77,31 +77,44 @@ export default function DocumentsPage() {
     };
   }, []);
 
-  const handleFileClick = async (url: string) => {
+  const handleFileClick = useCallback(async (url: string) => {
     try {
       const response = await axiosInstance.get('/client/utils/document', {
         params: { url },
         responseType: 'arraybuffer',
       });
-
-      const blob = new Blob([response.data], { type: "application/pdf" });
-
-      if (isMobile) {
+  
+      const contentType = response.headers['content-type'];
+      const blob = new Blob([response.data], { type: contentType });
+  
+      if (contentType === 'application/pdf') {
+        if (isMobile) {
+          const link = document.createElement("a");
+          link.href = URL.createObjectURL(blob);
+          link.download = "document.pdf";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          const objectURL = URL.createObjectURL(blob);
+          setPdfUrl(objectURL);
+        }
+      } else if (contentType.startsWith('image/')) {
+        const objectURL = URL.createObjectURL(blob);
+        setPdfUrl(objectURL);
+      } else {
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "document.pdf";
+        link.download = url.split('/').pop() || 'download';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-      } else {
-        const objectURL = URL.createObjectURL(blob);
-        setPdfUrl(objectURL);
       }
-
+  
     } catch (error) {
       console.error(t("client.pages.office.myDocuments.error"), error);
     }
-  };
+  }, [isMobile, t]);
 
   return (
     <div className="flex flex-col h-full md:flex-row">
@@ -127,15 +140,15 @@ export default function DocumentsPage() {
         )}
         {!pdfUrl && !isMobile && (
           <div className="flex min-h-[70svh] flex-col items-center justify-center py-16 text-center">
-              <File
-                size={32}
-                className="text-muted-foreground/50 mb-2"
-              />
-              <h3 className="text-lg font-medium">{t("client.pages.office.myDocuments.noDocumentSelected")}</h3>
-              <p className="text-muted-foreground">
-                {t("client.pages.office.myDocuments.selectDocument")}
-              </p>
-        </div>
+            <File
+              size={32}
+              className="text-muted-foreground/50 mb-2"
+            />
+            <h3 className="text-lg font-medium">{t("client.pages.office.myDocuments.noDocumentSelected")}</h3>
+            <p className="text-muted-foreground">
+              {t("client.pages.office.myDocuments.selectDocument")}
+            </p>
+          </div>
         )}
       </div>
     </div>

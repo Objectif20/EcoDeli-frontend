@@ -21,7 +21,7 @@ import GeneralSettings from "@/pages/features/settings.tsx/general";
 import ProfileSettings from "@/pages/features/settings.tsx/profile";
 import ReportSettings from "@/pages/features/settings.tsx/reports";
 import SubscriptionSettings from "@/pages/features/settings.tsx/subscriptions";
-import { IntroDisclosureDemo } from "@/components/text";
+import { IntroDisclosureDemo } from "@/components/test";
 
 const OfficeRoute: React.FC = () => {
   return (

@@ -90,10 +90,10 @@ export function IntroDisclosureDemo() {
       setIsMobile(window.innerWidth <= 768)
     }
 
-    handleResize() // Check the initial window size
+    handleResize()
     window.addEventListener("resize", handleResize)
 
-    setOpen(true) // Open the intro on component mount
+    setOpen(false)
 
     return () => window.removeEventListener("resize", handleResize)
   }, [])

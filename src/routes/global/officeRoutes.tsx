@@ -22,6 +22,7 @@ import ProfileSettings from "@/pages/features/settings.tsx/profile";
 import ReportSettings from "@/pages/features/settings.tsx/reports";
 import SubscriptionSettings from "@/pages/features/settings.tsx/subscriptions";
 import { IntroDisclosureDemo } from "@/components/test";
+import ProofsPage from "@/pages/features/documents/proofs";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -60,6 +61,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="planning-provider" element={<h1>Planning Provider</h1>} />
           <Route path="billing-settings" element={<BillingSettings />} />
           <Route path="/services/create" element={<CreateService />} />
+          <Route path="/proofs" element={<ProofsPage />} />
         </Route>
 
         <Route element={<PrivateProfileRoutes requiredProfile="DELIVERYMAN" requireAuth={false} />}>
@@ -67,7 +69,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="upcoming-deliveries" element={<h1>Upcoming Deliveries</h1>} />
           <Route path="delivery-history" element={<h1>Delivery History</h1>} />
           <Route path="reviews-deliveryman" element={<ReviewDeliveryanPage />} />
-          <Route path="proofs" element={<h1>Proofs</h1>} />
+          <Route path="proofs" element={<ProofsPage />} />
           <Route path="my-vehicles" element={<VehicleListPage />} />
           <Route path="add-vehicle" element={<AddVehicle />} />
           <Route path="my-invoices" element={<h1>My Invoices</h1>} />

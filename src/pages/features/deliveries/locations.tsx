@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/avatar"
 import { useDispatch } from 'react-redux';
 import { setBreadcrumb } from '@/redux/slices/breadcrumbSlice';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 interface Deliveries {
   id: string;
@@ -29,6 +31,7 @@ const DeliveriesLocationPage = () => {
   const [, setSelectedDelivery] = useState<Deliveries | null>(null);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
     useEffect(() => {
       dispatch(setBreadcrumb({
@@ -97,7 +100,7 @@ const DeliveriesLocationPage = () => {
                 <strong className="block mb-2">{delivery.potential_address}</strong>
                 {delivery.deliveryman && (
                   <div className="flex items-center">
-                      <Avatar className='mr-2'>
+                      <Avatar className='mr-2 mb-8'>
                         <AvatarImage src={delivery.deliveryman.photo} alt={delivery.deliveryman.name} />
                         <AvatarFallback>{delivery.deliveryman.name}</AvatarFallback>
                       </Avatar>
@@ -105,6 +108,8 @@ const DeliveriesLocationPage = () => {
                       <strong>Livreur:</strong> {delivery.deliveryman.name}
                       <br />
                       <strong>Email:</strong> {delivery.deliveryman.email}
+                      <Button variant="link" onClick={() => navigate(`/office/deliveries/${delivery.id}`)}>Accéder aux détails</Button>
+
                     </div>
                   </div>
                 )}

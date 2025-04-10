@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { useTranslation } from "react-i18next";
 
+
 const nodes = [
   {
     name: "Home",
@@ -132,11 +133,14 @@ export default function DocumentsPage() {
       </div>
       <div className="w-full md:w-3/4 p-4">
         {pdfUrl && !isMobile && (
-          <iframe
+          <>
+            <iframe
             src={pdfUrl}
             className="w-full h-full"
             style={{ border: "none" }}
           />
+          </>
+
         )}
         {!pdfUrl && !isMobile && (
           <div className="flex min-h-[70svh] flex-col items-center justify-center py-16 text-center">

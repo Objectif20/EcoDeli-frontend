@@ -1,70 +1,34 @@
-# Étape 1 : Build de l'application
-FROM node:22 AS builder
+# Étape 1 : Utiliser l'image Node 22 officielle
+FROM node:22
 
+# Étape 2 : Définir le répertoire de travail
 WORKDIR /app
 
-# Installer npm et dépendances
-RUN npm install -g npm@10
+# Étape 3 : Installer npm 10 et serve
+RUN npm install -g npm@10 serve
 
+# Étape 4 : Copier les fichiers package.json et package-lock.json
 COPY package*.json ./
+
+# Étape 5 : Installer les dépendances
 RUN npm install
 
-# Copier le code source et construire l'application
-COPY . .
+# Étape 6 : Copier tout le code source
+COPY . . 
+
+# Étape 7 : Récupérer les variables passées en argument du build
 ARG VITE_API_BASE_URL
 ARG VITE_STRIPE_PUBLIC_KEY
 
+# Étape 8 : Définir ces variables dans l'environnement pour Vite
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 ENV VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
 
-# Limiter la mémoire à 768 Mo et ralentir le build pour éviter de surcharger le serveur
-# Étape 1 : Build de l'application
-FROM node:22 AS builder
+# Étape 9 : Construire l'application React
+RUN npm run build
 
-WORKDIR /app
-
-# Installer npm et dépendances
-RUN npm install -g npm@10
-
-COPY package*.json ./
-RUN npm install
-
-# Copier le code source et construire l'application
-COPY . .
-ARG VITE_API_BASE_URL
-ARG VITE_STRIPE_PUBLIC_KEY
-
-ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
-ENV VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
-
-# Limiter la mémoire à 1024 Mo et ralentir le build pour éviter de surcharger le serveur
-RUN NODE_OPTIONS="--max-old-space-size=1024" nice -n 19 npm run build
-
-# Étape 2 : Image finale plus légère avec juste les fichiers build
-FROM node:22 AS runner
-
-WORKDIR /app
-
-# Installer `serve` pour servir l'app
-RUN npm install -g serve
-
-# Copier uniquement les fichiers de build
-COPY --from=builder /app/dist dist/
-
+# Étape 10 : Exposer le port 5174
 EXPOSE 5174
 
-CMD ["serve", "-s", "dist", "-l", "5174"]
-# Étape 2 : Image finale plus légère avec juste les fichiers build
-FROM node:22 AS runner
-
-WORKDIR /app
-
-# Installer `serve` pour servir l'app
-RUN npm install -g serve
-
-# Copier uniquement les fichiers de build
-COPY --from=builder /app/dist dist/
-
-EXPOSE 5174
-
+# Étape 11 : Lancer un serveur statique
 CMD ["serve", "-s", "dist", "-l", "5174"]

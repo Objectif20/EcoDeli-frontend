@@ -38,7 +38,7 @@ ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 ENV VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
 
 # Limiter la mémoire à 1024 Mo et ralentir le build pour éviter de surcharger le serveur
-RUN NODE_OPTIONS="--max-old-space-size=768" nice -n 19 npm run build
+RUN NODE_OPTIONS="--max-old-space-size=1024" nice -n 19 npm run build
 
 # Étape 2 : Image finale plus légère avec juste les fichiers build
 FROM node:22 AS runner

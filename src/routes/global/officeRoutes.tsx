@@ -23,6 +23,7 @@ import ReportSettings from "@/pages/features/settings.tsx/reports";
 import SubscriptionSettings from "@/pages/features/settings.tsx/subscriptions";
 import { IntroDisclosureDemo } from "@/components/test";
 import ProofsPage from "@/pages/features/documents/proofs";
+import DeliveryDetailsPage from "@/pages/features/deliveries/delivery-details";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -31,6 +32,7 @@ const OfficeRoute: React.FC = () => {
       <Routes>
         <Route element={<PrivateProfileRoutes requiredProfile="MERCHANT" requireAuth={false} />}>
           <Route path="deliveries" element={<DeliveriesPage />} />
+          <Route path="deliveries/:id" element={<DeliveryDetailsPage />} />
           <Route path='deliveries/create' element={<CreateDeliveryPage />} />
           <Route path="ads-history" element={<h1>Ads History</h1>} />
           <Route path="insurance" element={<h1>Insurance</h1>} />
@@ -43,6 +45,7 @@ const OfficeRoute: React.FC = () => {
 
         <Route element={<PrivateProfileRoutes requiredProfile="CLIENT" requireAuth={false} />}>
           <Route path="deliveries" element={<DeliveriesPage />} />
+          <Route path="deliveries/:id" element={<DeliveryDetailsPage />} />
           <Route path='deliveries/create' element={<CreateDeliveryPage />} />
           <Route path="ads-history" element={<h1>Ads History</h1>} />
           <Route path="insurance" element={<h1>Insurance</h1>} />

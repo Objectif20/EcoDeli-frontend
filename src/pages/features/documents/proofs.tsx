@@ -110,31 +110,31 @@ export default function ProofsPage() {
   return (
     <div className="w-full">
       <h1 className="text-2xl font-semibold mb-4">Liste des Documents</h1>
-      <div className="flex justify-between mb-4">
-        <Dialog>
-          <DialogTrigger>
-            <Button>Ajouter un justificatif</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Ajouter un justificatif</DialogTitle>
-              <DialogDescription>
-                Veuillez sélectionner un fichier et donner un nom au document.
-              </DialogDescription>
-            </DialogHeader>
-            <FileUpload />
-            <Label htmlFor="document-name">Nom du document</Label>
-            <Input 
-              id="document-name" 
-              placeholder="Entrez un nom" 
-              value={documentName}
-              onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setDocumentName(e.target.value)}
-            />
-            <Button onClick={handleSubmit} className="mt-4">Envoyer</Button>
-          </DialogContent>
-        </Dialog>
-        <Button onClick={() => navigate("/office/documents")} className="ml-auto">Accéder à tous mes documents</Button>
-      </div>
+      <div className="flex flex-col md:flex-row justify-between mb-4 space-y-2 md:space-y-0">
+          <Dialog>
+            <DialogTrigger>
+              <Button className="w-full md:w-auto">Ajouter un justificatif</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Ajouter un justificatif</DialogTitle>
+                <DialogDescription>
+                  Veuillez sélectionner un fichier et donner un nom au document.
+                </DialogDescription>
+              </DialogHeader>
+              <FileUpload />
+              <Label htmlFor="document-name">Nom du document</Label>
+              <Input
+                id="document-name"
+                placeholder="Entrez un nom"
+                value={documentName}
+                onChange={(e) => setDocumentName(e.target.value)}
+              />
+              <Button onClick={handleSubmit} className="mt-4">Envoyer</Button>
+            </DialogContent>
+          </Dialog>
+          <Button onClick={() => navigate("/office/documents")} className="w-full md:w-auto md:ml-auto">Accéder à tous mes documents</Button>
+        </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {documents.map((doc) => (
           <div

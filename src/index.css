@@ -104,16 +104,15 @@
   white-space: pre-line;
 }
 
-.leaflet-routing-container{
-  visibility: hidden;
-}
-
-#react-day-picker-1, .capitalize, .rdp-head {
+/* Forcer le calendrier à ajouter une majuscule au début de chaque terme (notamment les jours de la semaine en fr) */
+[id^="react-day-picker-"],
+.capitalize,
+.rdp-head {
   text-transform: capitalize;
 }
 
-
-.leaflet-layer,
+/* Couleurs de la map Leaflet en mode sombre */
+ .leaflet-layer,
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out,
 .leaflet-control-attribution {
@@ -125,4 +124,43 @@
 .dark .leaflet-control-zoom-out,
 .dark .leaflet-control-attribution {
   filter: brightness(0.6) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3) brightness(0.7);
+}
+
+.leaflet-routing-container{
+  visibility: hidden;
+}
+
+
+/* Couleurs pour les sidebar des components */
+
+.sidebar {
+  background-color: var(--sidebar-background);
+  color: var(--sidebar-foreground);
+  border-color: var(--sidebar-border);
+}
+
+.sidebar .primary {
+  background-color: var(--sidebar-primary);
+  color: var(--sidebar-primary-foreground);
+}
+
+.sidebar .accent {
+  background-color: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+}
+
+.dark .sidebar {
+  background-color: var(--sidebar-background);
+  color: var(--sidebar-foreground);
+  border-color: var(--sidebar-border);
+}
+
+.dark .sidebar .primary {
+  background-color: var(--sidebar-primary);
+  color: var(--sidebar-primary-foreground);
+}
+
+.dark .sidebar .accent {
+  background-color: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
 }

@@ -5,7 +5,7 @@ import { File } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { useTranslation } from "react-i18next";
-
+import MyPDFReader from "@/components/pdf-viewer";
 
 const nodes = [
   {
@@ -134,11 +134,12 @@ export default function DocumentsPage() {
       <div className="w-full md:w-3/4 p-4">
         {pdfUrl && !isMobile && (
           <>
-            <iframe
+            {/*<iframe
             src={pdfUrl}
             className="w-full h-full"
             style={{ border: "none" }}
-          />
+          />*/}
+          <MyPDFReader fileURL={pdfUrl} />
           </>
 
         )}

@@ -699,6 +699,37 @@
             "phone": "Téléphone",
             "language": "Langue",
             "description": "Description"
+          },
+          "deliverymanProfile": {
+            "title": "Inscription Livreur",
+            "description": "Remplissez ce formulaire afin que votre profil transporteur puisse être étudié par un administrateur.",
+            "license": "Numéro de licence",
+            "licenseError": "Le numéro de licence est requis",
+            "status": "Statut",
+            "statusError": "Le statut est requis",
+            "email": "Email professionnel",
+            "emailError": "Adresse email invalide",
+            "phone": "Numéro de téléphone",
+            "phoneError": "Numéro de téléphone invalide",
+            "country": "Pays",
+            "countryError": "Le pays est requis",
+            "city": "Ville",
+            "cityError": "La ville est requise",
+            "address": "Adresse",
+            "addressError": "L'adresse est requise",
+            "postalCode": "Code postal",
+            "postalCodeError": "Code postal invalide",
+            "language": "Langue",
+            "userId": "ID utilisateur",
+            "userIdError": "ID utilisateur invalide",
+            "categoryId": "ID de catégorie",
+            "categoryIdError": "L'ID de catégorie est requis",
+            "signature": "Signature",
+            "continueButton": "Continuer",
+            "breadcrumb" : {
+              "home": "Accueil",
+              "deliverymanProfile": "Devenir transporteur"
+            }
           }
         }
       },

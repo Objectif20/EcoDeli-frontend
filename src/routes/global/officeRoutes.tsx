@@ -24,6 +24,7 @@ import SubscriptionSettings from "@/pages/features/settings.tsx/subscriptions";
 import { IntroDisclosureDemo } from "@/components/test";
 import ProofsPage from "@/pages/features/documents/proofs";
 import DeliveryDetailsPage from "@/pages/features/deliveries/delivery-details";
+import RegisterDeliveryman from "@/pages/auth/register/deliveryman/register";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -54,6 +55,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="billing" element={<h1>Billing</h1>} />
           <Route path="planning" element={<PlanningPage />} />
           <Route path="subscriptions" element={<SubscriptionSettings />} />
+          <Route path="register-deliveryman" element={<RegisterDeliveryman />} />
         </Route>
 
         <Route element={<PrivateProfileRoutes requiredProfile="PROVIDER" requireAuth={false} />}>

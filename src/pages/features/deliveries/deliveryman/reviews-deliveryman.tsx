@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { PaginationControls } from "@/components/pagination-controle";
 import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
-import { DataTable } from "@/components/features/deliveries/reviews-deliveryman";
+import { DataTable } from "@/components/features/deliveries/deliverman/reviews-deliveryman";
 
 interface Review {
   id: string;

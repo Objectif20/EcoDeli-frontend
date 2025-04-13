@@ -34,7 +34,7 @@ export class UserApi{
                 active: true,
                 language: "fr",
                 iso_code: "FR",
-                profile: ["CLIENT"],
+                profile: ["CLIENT", "MERCHANT", "DELIVERYMAN", "PROVIDER"],
                 otp: false,
                 updgradablePlan: true,
                 planName: "Premium",

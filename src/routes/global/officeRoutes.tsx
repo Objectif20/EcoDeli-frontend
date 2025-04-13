@@ -26,7 +26,7 @@ import ProofsPage from "@/pages/features/documents/proofs";
 import DeliveryDetailsPage from "@/pages/features/deliveries/delivery-details";
 import RegisterDeliveryman from "@/pages/auth/register/deliveryman/register";
 import MyDeliveryHistoryPage from "@/pages/features/deliveries/deliveryman/history";
-import DeliveryPublicDetailsPage from "@/pages/features/deliveries/deliveryman/delivery-details";
+import DeliveryTransporterView from "@/pages/features/deliveries/deliveryman/delivery-details";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -75,7 +75,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="upcoming-deliveries" element={<h1>Upcoming Deliveries</h1>} />
           <Route path="delivery-history" element={<MyDeliveryHistoryPage />} />
           <Route path="reviews-deliveryman" element={<ReviewDeliveryanPage />} />
-          <Route path="deliveries/public/:id" element={<DeliveryPublicDetailsPage />} />
+          <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
           <Route path="proofs" element={<ProofsPage />} />
           <Route path="my-vehicles" element={<VehicleListPage />} />
           <Route path="add-vehicle" element={<AddVehicle />} />

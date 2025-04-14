@@ -24,6 +24,7 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { Progress } from "@/components/ui/progress";
+import { UserApi } from "@/api/user.api";
 
 function useMediaQuery(query: string) {
   const [matches, setMatches] = React.useState<boolean | null>(null);
@@ -395,6 +396,7 @@ export function IntroDisclosure({
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      UserApi.addFirstLogin?.();
       setOpen(false);
       onComplete?.();
     }

@@ -1,5 +1,6 @@
 import { setError, setLoading, setUser } from '@/redux/slices/userSlice';
 import { AppDispatch } from '@/redux/store';
+import axiosInstance from './axiosInstance';
 
 
 export interface User {
@@ -47,6 +48,25 @@ export class UserApi{
               dispatch(setLoading(false));
             }
           };
+
+
+          static async isFirstLogin () {
+              const response = await axiosInstance.get("/client/theme/firstLogin/check");
+              if (response.data.firstLogin === true) {
+                  return true;
+              } else {
+                  return false;
+              }
+          }
+
+          static async addFirstLogin () {
+            const response = await axiosInstance.post("/client/theme/firstLogin/");
+            if (response.status === 200) {
+                return true;
+            }
+            return false;
+          }
+
 
 
 } 

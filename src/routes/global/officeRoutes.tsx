@@ -12,7 +12,7 @@ import DocumentsPage from "@/pages/features/documents/documents";
 import ChatPage from "@/pages/features/messaging/chat";
 import PlanningPage from "@/pages/features/planning/planning";
 import CreateService from "@/pages/features/services/create-services";
-import ReviewServicesPage from "@/pages/features/services/services";
+import ReviewServicesPage from "@/pages/features/services/services-reviews";
 import MyServicesList from "@/pages/features/services/services-list";
 import BillingSettings from "@/pages/features/settings.tsx/billings";
 import PrivacySettings from "@/pages/features/settings.tsx/confidentiality";

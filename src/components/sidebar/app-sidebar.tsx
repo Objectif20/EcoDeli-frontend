@@ -68,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         name: "EcoDeli",
         logo: GalleryVerticalEnd,
-        plan: user?.planName || "Free",
+        plan: user?.planName || "",
       },
     ],
     navMain: [

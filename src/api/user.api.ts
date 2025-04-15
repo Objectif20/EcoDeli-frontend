@@ -24,27 +24,18 @@ export class UserApi{
             dispatch(setLoading(true));
           
             try {
-              await new Promise(resolve => setTimeout(resolve, 10));
-          
-              const userData: User = {
-                user_id: "12345",
-                first_name: "Jean",
-                last_name: "Dupont",
-                email: "jean.dupont@example.com",
-                photo: "https://example.com/photo.jpg",
-                active: true,
-                language: "fr",
-                iso_code: "FR",
-                profile: ["CLIENT", "MERCHANT", "DELIVERYMAN", "PROVIDER"],
-                otp: false,
-                updgradablePlan: true,
-                planName: "Premium",
-              };
-          
+              const response = await axiosInstance.get("/client/profile/me");
+
+              if (response && response.data) {
+              const userData = response.data;
               dispatch(setUser(userData));
-              dispatch(setLoading(false));
+              } else {
+              throw new Error("Invalid response data");
+              }
             } catch (error) {
+              console.error("Error fetching user data:", error);
               dispatch(setError("Erreur lors de la récupération des données de l'utilisateur"));
+            } finally {
               dispatch(setLoading(false));
             }
           };

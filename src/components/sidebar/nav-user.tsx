@@ -97,7 +97,7 @@ export function NavUser({
                 {t("sidebar.main.menuUser.profil")}
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Link to="/office/settings" className="flex items-center gap-2">
+                <Link to="/office/general-settings" className="flex items-center gap-2">
                 <Settings />
                 {t("sidebar.main.menuUser.parametres")}
               </Link>

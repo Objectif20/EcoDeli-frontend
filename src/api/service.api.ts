@@ -22,4 +22,14 @@ export class ServiceApi {
         return response.data;
     }
 
+
+    static async createService(data: FormData): Promise<Service> {
+        const response = await axiosInstance.post<Service>('/client/service', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    }
+
 }

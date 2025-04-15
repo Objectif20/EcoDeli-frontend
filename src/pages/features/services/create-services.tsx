@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 import { Button } from "@/components/ui/button";
@@ -19,30 +19,53 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { XIcon } from "lucide-react";
-import { FileUpload } from "@/components/file-upload";
+import { ServiceApi } from "@/api/service.api";
+import { useDispatch } from "react-redux";
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
+import { useNavigate } from "react-router-dom";
 
 const FormSchema = z.object({
-  serviceName: z.string().min(2, { message: "Le nom de la prestation doit comporter au moins 2 caractères." }),
-  description: z.string().min(10, { message: "La description doit comporter au moins 10 caractères." }),
-  price: z.string().regex(/^\d+(\.\d{1,2})?$/, { message: "Veuillez entrer un prix valide." }),
-  acceptTerms: z.boolean().refine(val => val === true, { message: "Vous devez accepter les conditions." }),
-  justificatif: z.instanceof(File).optional(),
+  service_type: z.string().min(1, "Type de service requis"),
+  name: z.string().min(2, "Nom requis"),
+  description: z.string().min(10, "Description trop courte"),
+  city: z.string().min(1, "Ville requise"),
+  price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Prix invalide"),
+  duration_minute: z.string().regex(/^\d+$/, "Durée invalide"),
+  keywords: z.string().optional(),
+  acceptTerms: z.boolean().refine(val => val === true, {
+    message: "Vous devez accepter les conditions.",
+  }),
 });
 
 export default function CreateService() {
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      serviceName: "",
+      service_type: "",
+      name: "",
       description: "",
+      city: "",
       price: "",
+      duration_minute: "",
+      keywords: "",
       acceptTerms: false,
-      justificatif: undefined,
     },
   });
 
   const [images, setImages] = useState<File[]>([]);
   const [imageError, setImageError] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  
+    useEffect(() => {
+      dispatch(
+        setBreadcrumb({
+          segments: ["Accueil", "Mes prestations", "Créer une prestation"],
+          links: ["/office/dashboard", "/office/my-services"],
+        })
+      );
+    }, [dispatch]);
 
   const onDrop = (acceptedFiles: File[]) => {
     setImages(prev => [...prev, ...acceptedFiles].slice(0, 5));
@@ -64,17 +87,58 @@ export default function CreateService() {
       setImageError("Vous devez ajouter au moins une image.");
       return;
     }
-    console.log("Form submitted:", { ...data, images });
+  
+    const formData = new FormData();
+    formData.append("service_type", data.service_type);
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("city", data.city);
+    formData.append("price", data.price);
+    formData.append("duration_minute", data.duration_minute);
+    if (data.keywords) {
+      data.keywords.split(",").map((k: string) => k.trim()).forEach((keyword: string) => {
+      formData.append("keywords[]", keyword);
+      });
+    }
+    formData.append("status", "pending");
+    formData.append("available", "true");
+    formData.append("validated", "false");
+
+  
+    images.forEach((image, index) => {
+      formData.append(`image${index + 1}`, image);
+    });
+  
+    ServiceApi.createService(formData)
+      .then(() => {
+        navigate("/office/services/success");
+      })
+      .catch(error => {
+        console.error("Erreur lors de la création du service:", error);
+      });
   }
 
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-2">Créer une nouvelle prestation</h1>
-      <p className="text-gray-600 mb-6">Remplissez les informations ci-dessous pour proposer votre prestation sur notre plateforme.</p>
-      
+      <p className="text-gray-600 mb-6">
+        Remplissez les informations ci-dessous pour proposer votre prestation sur notre plateforme.
+      </p>
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField control={form.control} name="serviceName" render={({ field }) => (
+
+          <FormField control={form.control} name="service_type" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Type de service</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+
+          <FormField control={form.control} name="name" render={({ field }) => (
             <FormItem>
               <FormLabel>Nom de la prestation</FormLabel>
               <FormControl>
@@ -83,6 +147,7 @@ export default function CreateService() {
               <FormMessage />
             </FormItem>
           )} />
+
           <FormField control={form.control} name="description" render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
@@ -92,6 +157,17 @@ export default function CreateService() {
               <FormMessage />
             </FormItem>
           )} />
+
+          <FormField control={form.control} name="city" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Ville</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+
           <FormField control={form.control} name="price" render={({ field }) => (
             <FormItem>
               <FormLabel>Prix</FormLabel>
@@ -101,6 +177,27 @@ export default function CreateService() {
               <FormMessage />
             </FormItem>
           )} />
+
+          <FormField control={form.control} name="duration_minute" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Durée (en minutes)</FormLabel>
+              <FormControl>
+                <Input type="number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+
+          <FormField control={form.control} name="keywords" render={({ field }) => (
+            <FormItem>
+              <FormLabel>Mots-clés (séparés par des virgules)</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )} />
+
           <FormField control={form.control} name="acceptTerms" render={({ field }) => (
             <FormItem className="flex items-center gap-2">
               <FormControl>
@@ -110,7 +207,7 @@ export default function CreateService() {
               <FormMessage />
             </FormItem>
           )} />
-          
+
           <div className="w-full flex flex-col items-center gap-4 border p-4 rounded-lg">
             <div {...getRootProps()} className={`w-full border-2 border-dashed p-4 ${isDragActive ? 'ring-2 ring-blue-500' : ''}`}>
               <input {...getInputProps()} />
@@ -128,17 +225,7 @@ export default function CreateService() {
               ))}
             </div>
           </div>
-          
-          <FormField control={form.control} name="justificatif" render={({ field }) => (
-            <FormItem>
-              <FormLabel>Justificatif</FormLabel>
-              <FormControl>
-                <FileUpload onChange={(files) => field.onChange(files[0])} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )} />
-          
+
           <Button type="submit" className="w-full">Envoyer ma demande de prestation</Button>
         </form>
       </Form>

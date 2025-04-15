@@ -67,6 +67,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="planning-provider" element={<PlanningPage />} />
           <Route path="billing-settings" element={<BillingSettings />} />
           <Route path="/services/create" element={<CreateService />} />
+          <Route path="/services/success" element={<h1>Service Created Successfully</h1>} />œ
           <Route path="/proofs" element={<ProofsPage />} />
         </Route>
 

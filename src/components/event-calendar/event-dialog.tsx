@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 
 import type { CalendarEvent } from "@/components/event-calendar";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -78,20 +77,6 @@ export function EventDialog({ event, isOpen, onClose }: EventDialogProps) {
             <Label>Lieu</Label>
             <p>{event?.location || "(aucun lieu)"}</p>
           </div>
-
-          <fieldset className="space-y-4">
-            <legend className="text-foreground text-sm leading-none font-medium">Étiquette</legend>
-            <div className="flex gap-1.5">
-              <div
-                className={cn(
-                  "size-6 shadow-none",
-                  `bg-${event?.color}-400`,
-                  `border-${event?.color}-400`
-                )}
-              />
-              <p>{event?.color}</p>
-            </div>
-          </fieldset>
         </div>
         <DialogFooter className="flex-row sm:justify-end">
           <Button variant="outline" onClick={onClose}>

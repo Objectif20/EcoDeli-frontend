@@ -54,7 +54,7 @@ export const loginUser = async (email: string, password: string) => {
 
 export const loginUserA2F = async (email: string, password: string, code: string) => {
   try {
-    const response = await axiosInstance.post("/client/auth/2fa/login", { email, password, code });
+    const response = await axiosInstance.post("/client/auth/a2f/login", { email, password, code });
 
     if (response && response.data && response.data.access_token) {
       return { accessToken: response.data.access_token };
@@ -113,7 +113,7 @@ export const enableA2F = async (userId: string) => {
 
 export const disableA2F = async (userId: string, code: string) => {
   try {
-    const response = await axiosInstance.post("/client/auth/2fa/disable", { userId, code });
+    const response = await axiosInstance.post("/client/auth/a2f/disable", { userId, code });
     return response.data;
   } catch (error) {
     console.error("Erreur lors de la désactivation de la double authentification", error);
@@ -123,7 +123,7 @@ export const disableA2F = async (userId: string, code: string) => {
 
 export const validateA2F = async (userId: string, code: string) => {
   try {
-    const response = await axiosInstance.post("/client/auth/2fa/validate", { userId, code });
+    const response = await axiosInstance.post("/client/auth/a2f/validate", { userId, code });
     return response.data;
   } catch (error) {
     console.error("Erreur lors de la validation 2FA", error);
@@ -153,7 +153,7 @@ export const newPassword = async (password: string, secretCode: string) => {
 
 export const newPasswordA2F = async (password: string, code: string, secretCode: string) => {
   try {
-    const response = await axiosInstance.post("/client/auth/2fa/password", { password, code, secretCode });
+    const response = await axiosInstance.post("/client/auth/a2f/password", { password, code, secretCode });
     return response.data;
   } catch (error) {
     console.error("Erreur lors de la réinitialisation du mot de passe avec 2FA", error);

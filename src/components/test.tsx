@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { IntroDisclosure } from "@/components/ui/intro-disclosure"
+import { UserApi } from "@/api/user.api";
 
 const steps = [
   {
@@ -87,16 +88,27 @@ export function IntroDisclosureDemo() {
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768)
-    }
-
-    handleResize()
-    window.addEventListener("resize", handleResize)
-
-    setOpen(false)
-
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
+      setIsMobile(window.innerWidth <= 768);
+    };
+  
+    handleResize();
+    window.addEventListener("resize", handleResize);
+  
+    const checkFirstLogin = async () => {
+      try {
+        console.log("courou");
+        const isFirstLogin = await UserApi.isFirstLogin();
+        console.log("isFirstLogin", isFirstLogin);
+        setOpen(!isFirstLogin);
+      } catch (error) {
+        console.error("Erreur lors du check first login", error);
+      }
+    };
+  
+    checkFirstLogin();
+  
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
 
   return (

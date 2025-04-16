@@ -39,11 +39,13 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { RootState } from "@/redux/store";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation();
   const user = useSelector((state: RootState) => state.user.user);
+  const navigate = useNavigate();
 
   const userData = {
     name: `${user?.first_name} ${user?.last_name}`,
@@ -66,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         name: "EcoDeli",
         logo: GalleryVerticalEnd,
-        plan: user?.planName || "Free",
+        plan: user?.planName || "",
       },
     ],
     navMain: [
@@ -83,7 +85,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               items: [
                 { title: t("client.components.sidebar.activeAds"), url: "/office/deliveries" },
                 { title: t("client.components.sidebar.history"), url: "/office/ads-history" },
-                { title: t("client.components.sidebar.insurance"), url: "/office/insurance" },
                 { title: t("client.components.sidebar.reviews"), url: "/office/reviews" },
                 { title: t("client.components.sidebar.location"), url: "/office/location" },
               ],
@@ -114,7 +115,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               items: [
                 { title: t("client.components.sidebar.activeAds"), url: "/office/deliveries"},
                 { title: t("client.components.sidebar.history"), url: "/office/ads-history" },
-                { title: t("client.components.sidebar.insurance"), url: "/office/insurance" },
                 { title: t("client.components.sidebar.reviews"), url: "/office/reviews" },
                 { title: t("client.components.sidebar.location"), url: "/office/location" },
               ],
@@ -244,8 +244,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
+      
       <ScrollArea className="h-full">
         <SidebarContent>
+          {
+            isClient && !isDeliveryman && (
+              <div className="mx-4">
+                <Button className="w-full" onClick={() => navigate("/office/register-deliveryman")}>
+                  {t("client.components.sidebar.becomeDeliveryman")}
+                </Button>
+              </div>
+            )
+          }
           {data.navMain.map((nav, index) => (
             <NavMain key={index} items={nav.items} title={nav.title} />
           ))}

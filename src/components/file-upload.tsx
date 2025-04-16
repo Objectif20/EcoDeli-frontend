@@ -2,8 +2,7 @@ import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useDropzone } from "react-dropzone";
-import { IconUpload } from "@tabler/icons-react";
-
+import { Upload } from "lucide-react";
 
 const mainVariant = {
   initial: {
@@ -28,23 +27,37 @@ const secondaryVariant = {
 
 export const FileUpload = ({
   onChange,
+  multiple = false,
+  maxFiles = 1,
 }: {
   onChange?: (files: File[]) => void;
+  multiple?: boolean;
+  maxFiles?: number;
 }) => {
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (newFiles: File[]) => {
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    onChange && onChange(newFiles);
+    if (multiple) {
+      const allFiles = [...files, ...newFiles];
+      if (allFiles.length > maxFiles) {
+        alert(`Vous ne pouvez télécharger que ${maxFiles} fichiers maximum.`);
+        return;
+      }
+      setFiles(allFiles);
+      onChange && onChange(allFiles);
+    } else {
+      setFiles(newFiles);
+      onChange && onChange(newFiles);
+    }
   };
 
   const handleClick = () => {
     fileInputRef.current?.click();
   };
 
-  const { getRootProps, isDragActive } = useDropzone({
-    multiple: false,
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    multiple,
     noClick: true,
     onDrop: handleFileChange,
     onDropRejected: (error) => {
@@ -63,12 +76,10 @@ export const FileUpload = ({
           ref={fileInputRef}
           id="file-upload-handle"
           type="file"
+          {...getInputProps()}
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
         />
-        {/* <div className="absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,white,transparent)]">
-          <GridPattern />
-        </div> */}
         <div className="flex flex-col items-center justify-center">
           <p className="relative z-20 font-sans font-bold text-neutral-700 dark:text-neutral-300 text-base">
             Importer un document
@@ -148,10 +159,10 @@ export const FileUpload = ({
                     className="text-neutral-600 flex flex-col items-center"
                   >
                     Drop it
-                    <IconUpload className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
+                    <Upload className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                   </motion.p>
                 ) : (
-                  <IconUpload className="h-4 w-4 text-neutral-600 dark:text-neutral-300" />
+                  <Upload className="h-4 w-4 text-neutral-600 dark:text-neutral-300" />
                 )}
               </motion.div>
             )}

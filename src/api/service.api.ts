@@ -22,4 +22,20 @@ export class ServiceApi {
         return response.data;
     }
 
+
+    static async createService(data: FormData): Promise<Service> {
+        const response = await axiosInstance.post<Service>('/client/service', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        return response.data;
+    }
+
+
+    static async getMyServices(total : number, page : number) {
+            const response = await axiosInstance.get(`/client/service/me?total=${total}&page=${page}`);
+            return response;
+    }
+
 }

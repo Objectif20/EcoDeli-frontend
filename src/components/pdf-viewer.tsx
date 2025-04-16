@@ -1,8 +1,7 @@
 import React from 'react';
 import { Root, CurrentPage, ZoomOut, ZoomIn, Viewport, Pages, Page, CanvasLayer, CurrentZoom } from '@fileforge/pdfreader';
 import { Spinner } from './ui/spinner';
-import { Download } from 'lucide-react'; // Importez l'icône de téléchargement
-import { Button } from './ui/button';
+import { Download } from 'lucide-react';
 
 interface MyPdfReaderProps {
   fileURL: string;
@@ -11,11 +10,10 @@ interface MyPdfReaderProps {
 
 const MyPDFReader: React.FC<MyPdfReaderProps> = ({ fileURL, className }) => {
 
-  // Fonction pour télécharger le fichier PDF
   const handleDownload = () => {
     const link = document.createElement('a');
     link.href = fileURL;
-    link.download = 'document.pdf'; // Nom par défaut du fichier téléchargé
+    link.download = 'document.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -35,9 +33,9 @@ const MyPDFReader: React.FC<MyPdfReaderProps> = ({ fileURL, className }) => {
 
         <div className="flex items-center gap-2">
           Zoom
-          <Button variant="ghost"><ZoomOut>-</ZoomOut></Button>
+          <ZoomOut>-</ZoomOut>
           <CurrentZoom className="bg-background rounded-full px-3 py-1 border text-center w-16" />
-          <Button variant="ghost"><ZoomIn>+</ZoomIn></Button>
+          <ZoomIn>+</ZoomIn>
         </div>
 
         <div className="flex items-center  mr-4">

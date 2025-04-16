@@ -4,6 +4,7 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useNavigate } from "react-router-dom";
 import {
   File,
@@ -22,6 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { UserApi } from "@/api/user.api";
 
 interface Document {
   id: string;
@@ -54,7 +56,10 @@ export default function ProofsPage() {
   const dispatch = useDispatch();
   const [documents, setDocuments] = useState<Document[]>([]);
   const navigate = useNavigate();
+
   const [documentName, setDocumentName] = useState("");
+  const [documentDescription, setDocumentDescription] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     dispatch(
@@ -65,75 +70,86 @@ export default function ProofsPage() {
     );
   }, [dispatch]);
 
+  const fetchDocuments = async () => {
+    try {
+      const data = await UserApi.getProviderDocuments();
+
+      const mappedDocs: Document[] = data.map((doc: any) => ({
+        id: doc.provider_documents_id,
+        name: doc.name,
+        extension: doc.name.split('.').pop() || '',
+        uploadDate: doc.submission_date,
+        url: doc.download_url,
+      }));
+
+      setDocuments(mappedDocs);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des documents", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchDocuments = async () => {
-      try {
-        const response = {
-          data: [
-            {
-              id: "1",
-              name: "Rapport Annuel",
-              extension: "pdf",
-              uploadDate: "2023-10-01",
-              url: "https://example.com/rapport-annuel.pdf",
-            },
-            {
-              id: "2",
-              name: "Présentation",
-              extension: "pptx",
-              uploadDate: "2023-09-25",
-              url: "https://example.com/presentation.pptx",
-            },
-            {
-              id: "3",
-              name: "Image de Profil",
-              extension: "jpg",
-              uploadDate: "2023-09-20",
-              url: "https://example.com/profile-image.jpg",
-            },
-          ],
-        };
-
-        setDocuments(response.data);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des documents", error);
-      }
-    };
-
     fetchDocuments();
   }, []);
 
-  const handleSubmit = () => {
-    console.log("Nom du document:", documentName);
+  const handleSubmit = async () => {
+    if (!selectedFile || !documentName) {
+      alert("Veuillez sélectionner un fichier et entrer un nom.");
+      return;
+    }
+
+    try {
+      await UserApi.uploadProviderDocument(selectedFile, documentName, documentDescription);
+      setDocumentName("");
+      setDocumentDescription("");
+      setSelectedFile(null);
+      await fetchDocuments(); // 🔁 Refresh list
+    } catch (error) {
+      console.error("Erreur lors de l'envoi du document :", error);
+    }
   };
 
   return (
     <div className="w-full">
       <h1 className="text-2xl font-semibold mb-4">Liste des Documents</h1>
-      <div className="flex justify-between mb-4">
+      <div className="flex flex-col md:flex-row justify-between mb-4 space-y-2 md:space-y-0">
         <Dialog>
           <DialogTrigger>
-            <Button>Ajouter un justificatif</Button>
+            <Button className="w-full md:w-auto">Ajouter un justificatif</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Ajouter un justificatif</DialogTitle>
               <DialogDescription>
-                Veuillez sélectionner un fichier et donner un nom au document.
+                Veuillez sélectionner un fichier, donner un nom et une description.
               </DialogDescription>
             </DialogHeader>
-            <FileUpload />
+            <FileUpload onChange={(files) => setSelectedFile(files[0] || null)} />
             <Label htmlFor="document-name">Nom du document</Label>
-            <Input 
-              id="document-name" 
-              placeholder="Entrez un nom" 
+            <Input
+              id="document-name"
+              placeholder="Entrez un nom"
               value={documentName}
-              onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setDocumentName(e.target.value)}
+              onChange={(e) => setDocumentName(e.target.value)}
             />
-            <Button onClick={handleSubmit} className="mt-4">Envoyer</Button>
+            <Label htmlFor="document-description" className="mt-2">Description</Label>
+            <Textarea
+              id="document-description"
+              placeholder="Entrez une description"
+              value={documentDescription}
+              onChange={(e) => setDocumentDescription(e.target.value)}
+            />
+            <Button onClick={handleSubmit} className="mt-4">
+              Envoyer
+            </Button>
           </DialogContent>
         </Dialog>
-        <Button onClick={() => navigate("/office/documents")} className="ml-auto">Accéder à tous mes documents</Button>
+        <Button
+          onClick={() => navigate("/office/documents")}
+          className="w-full md:w-auto md:ml-auto"
+        >
+          Accéder à tous mes documents
+        </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {documents.map((doc) => (

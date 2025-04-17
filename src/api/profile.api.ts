@@ -25,4 +25,8 @@ export class ProfileAPI {
         const response = await axiosInstance.get<CalendarEvent[]>("/client/planning");
         return response.data;
     }
+
+    static async createReport(message : string) : Promise<void> {
+        await axiosInstance.post("/client/profile/report", { report_message : message });
+    }
 }

@@ -5,6 +5,7 @@ import { getAccessToken } from '../api/auth.api';
 import { AppDispatch } from '../redux/store';
 import Layout from '@/pages/features/layout';
 import { UserApi } from '@/api/user.api';
+import { Spinner } from './ui/spinner';
 
 type PrivateRouteProps = {
   requireAuth?: boolean;
@@ -39,7 +40,11 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ requireAuth = true }) => {
   }, [dispatch]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
   }
 
   if (requireAuth && !isAuthenticated) {

@@ -1,17 +1,21 @@
 "use client"
 
-import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
-import type { RootState } from "@/redux/store"
-import type React from "react"
 import { useEffect, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 import { MoreVertical, Camera, X } from "lucide-react"
+
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
+import type { RootState } from "@/redux/store"
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { useTranslation } from "react-i18next"
+import { ProfileAPI } from "@/api/profile.api"
+import { toast } from "sonner"
+
 
 interface BlockedUser {
   id: string
@@ -19,58 +23,81 @@ interface BlockedUser {
   avatar: string
 }
 
-const ProfileSettings: React.FC = () => {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
-  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
+const ProfileSettings = () => {
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
+  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user)
 
-  const isProvider = user?.profile.includes("PROVIDER");
-  const isClient = user?.profile.includes("CLIENT");
-  const isMerchant = user?.profile.includes("MERCHANT");
-  const isDeliveryman = user?.profile.includes("DELIVERYMAN");
+  const isProvider = user?.profile.includes("PROVIDER")
+  const isClient = user?.profile.includes("CLIENT")
+  const isMerchant = user?.profile.includes("MERCHANT")
+  const isDeliveryman = user?.profile.includes("DELIVERYMAN")
 
-  const [profileImage, setProfileImage] = useState<string | null>(user?.avatar || null);
-
-  const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([
-    { id: "1", name: "Nom prénom", avatar: "/placeholder.svg?height=40&width=40" },
-    { id: "2", name: "Nom prénom", avatar: "/placeholder.svg?height=40&width=40" },
-    { id: "3", name: "Nom prénom", avatar: "/placeholder.svg?height=40&width=40" },
-    { id: "4", name: "Nom prénom", avatar: "/placeholder.svg?height=40&width=40" },
-  ]);
+  const [profileImage, setProfileImage] = useState<string | null>(user?.photo || null)
+  const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([])
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: [t("client.pages.office.settings.profile.home"), t("client.pages.office.settings.profile.settings"), t("client.pages.office.settings.profile.profile")],
+        segments: [
+          t("client.pages.office.settings.profile.home"),
+          t("client.pages.office.settings.profile.settings"),
+          t("client.pages.office.settings.profile.profile"),
+        ],
         links: ["/office/dashboard"],
-      }),
-    );
-  }, [dispatch, t]);
+      })
+    )
+
+    const fetchBlockedUsers = async () => {
+      try {
+        const data = await ProfileAPI.getAllBlockedUsers()
+        setProfileImage(data.photo || null)
+        const formatted = data.blocked.map((u) => ({
+          id: u.user_id,
+          name: `${u.first_name} ${u.last_name}`,
+          avatar: u.photo || "/placeholder.svg?height=40&width=40",
+        }))
+        setBlockedUsers(formatted)
+      } catch (err) {
+        console.error("Erreur lors de la récupération des utilisateurs bloqués", err)
+      }
+    }
+
+    fetchBlockedUsers()
+  }, [dispatch, t])
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const file = event.target.files?.[0]
     if (file) {
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = (e) => {
-        setProfileImage(e.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+        setProfileImage(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
     }
-  };
+  }
 
   const removeProfileImage = () => {
-    setProfileImage(null);
-  };
+    setProfileImage(null)
+  }
 
   const unblockUser = (userId: string) => {
-    setBlockedUsers(blockedUsers.filter((user) => user.id !== userId));
-  };
+    setBlockedUsers((prev) => prev.filter((u) => u.id !== userId))
+    ProfileAPI.unblockUser(userId)
+      .then(() => {
+        toast.success(t("client.pages.office.settings.profile.unblockUserSuccess"))
+      })
+      .catch(() => {
+        toast.error(t("client.pages.office.settings.profile.unblockUserError"))
+      })
+  }
 
   return (
     <div className="flex flex-col gap-8">
       <div className="mx-auto grid w-full max-w-6xl gap-2">
         <h1 className="text-3xl font-semibold">{t("client.pages.office.settings.profile.profile")}</h1>
       </div>
+
       <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
         <nav className="grid gap-4 text-sm text-muted-foreground">
           <Link to="/office/general-settings">{t("client.pages.office.settings.profile.generalSettings")}</Link>
@@ -118,49 +145,47 @@ const ProfileSettings: React.FC = () => {
               )}
             </div>
 
-            <Separator className="my-6" />
+            {blockedUsers.length > 0 && (
+              <>
+                <Separator className="my-6" />
+                <div>
+                  <h2 className="text-lg font-medium mb-4">{t("client.pages.office.settings.profile.blockedUsers")}</h2>
 
-            <div>
-              <h2 className="text-lg font-medium mb-4">{t("client.pages.office.settings.profile.blockedUsers")}</h2>
+                  <div className="space-y-4">
+                    {blockedUsers.map((user) => (
+                      <div key={user.id} className="flex items-center justify-between py-2 border-b">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarImage src={user.avatar} alt={user.name} />
+                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span>{user.name}</span>
+                        </div>
 
-              <div className="space-y-4">
-                {blockedUsers.map((user) => (
-                  <div key={user.id} className="flex items-center justify-between py-2 border-b">
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={user.avatar} alt={user.name} />
-                        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <span>{user.name}</span>
-                    </div>
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                          <MoreVertical className="h-4 w-4" />
-                          <span className="sr-only">{t("client.pages.office.settings.profile.options")}</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem className="cursor-default">{user.name}</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => unblockUser(user.id)}>
-                          {t("client.pages.office.settings.profile.unblockUser")}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem disabled>{user.name}</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => unblockUser(user.id)}>
+                              {t("client.pages.office.settings.profile.unblockUser")}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    ))}
                   </div>
-                ))}
-
-                {blockedUsers.length === 0 && (
-                  <p className="text-sm text-muted-foreground">{t("client.pages.office.settings.profile.noBlockedUsers")}</p>
-                )}
-              </div>
-            </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ProfileSettings;
+export default ProfileSettings

@@ -12,6 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import { ProfileAPI } from "@/api/profile.api";
+import { toast } from "sonner";
 
 const GeneralSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -22,21 +24,7 @@ const GeneralSettings: React.FC = () => {
     email: z.string().email(t("client.pages.office.settings.general.invalidEmail")),
     newsletter: z.boolean().default(false),
   });
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      nom: "THIBAUT",
-      prenom: "Rémy",
-      email: "name@example.com",
-      newsletter: true,
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
-
+  
   const dispatch = useDispatch();
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
 
@@ -44,6 +32,60 @@ const GeneralSettings: React.FC = () => {
   const isClient = user?.profile.includes('CLIENT');
   const isMerchant = user?.profile.includes('MERCHANT');
   const isDeliveryman = user?.profile.includes('DELIVERYMAN');
+
+  const fetchGeneralProfile = async () => {
+      try {
+        const response = await ProfileAPI.getMyGeneralProfile();
+        form.reset({
+          nom: response.last_name,
+          prenom: response.first_name,
+          email: response.email,
+          newsletter: response.newsletter,
+        });
+      }
+      catch (error) {
+        console.error("Erreur lors de la récupération du profil général :", error);
+      }
+  }
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      nom: "",
+      prenom: "",
+      email: "",
+      newsletter: false,
+    },
+  });
+
+  useEffect(() => {
+    fetchGeneralProfile();
+  }, []);
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+
+    ProfileAPI.updateMyGeneralProfile({
+      email: values.email,
+      first_name: values.prenom,
+      last_name: values.nom,
+      newsletter: values.newsletter,
+    })
+      .then(() => {
+        console.log("Profil mis à jour avec succès !");
+        toast.success(t("client.pages.office.settings.general.updateSuccess"));
+      }
+      )
+      .catch((error) => {
+        console.error("Erreur lors de la mise à jour du profil :", error);
+        toast.error(t("client.pages.office.settings.general.updateError"));
+      }
+      );
+
+
+  }
+
+
 
   useEffect(() => {
     dispatch(setBreadcrumb({

@@ -1,3 +1,4 @@
+import { ProfileAPI } from "@/api/profile.api";
 import { MinimalTiptapEditorTextOnly } from "@/components/minimal-tiptap";
 import { Button } from "@/components/ui/button";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
@@ -5,6 +6,7 @@ import { RootState } from "@/redux/store";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const ReportSettings: React.FC = () => {
   const dispatch = useDispatch();
@@ -23,6 +25,20 @@ const ReportSettings: React.FC = () => {
       links: ['/office/dashboard'],
     }));
   }, [dispatch]);
+
+  const handleSubmit = () => {
+    console.log("Contenu du signalement :", description);
+    try {
+        ProfileAPI.createReport(description)
+          .then(() => {
+            console.log("Signalement envoyé avec succès !");
+            setDescription("");
+            toast.success("Signalement envoyé avec succès !");
+          })
+    } catch (error) {
+      console.error("Erreur lors de l'envoi du signalement :", error);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -59,7 +75,7 @@ const ReportSettings: React.FC = () => {
               editable={true}
               editorClassName="focus:outline-none"
           />
-          <Button>Envoyer le signalement</Button>
+          <Button onClick={handleSubmit}>Envoyer le signalement</Button>
         </div>
       </div>
     </div>

@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/chat/chat-bubble';
 import { ChatInput } from '@/components/ui/chat/chat-input';
 import { ChatMessageList } from '@/components/ui/chat/chat-message-list';
-import { Send, ChevronLeft, File, Download } from 'lucide-react';
+import { Send, ChevronLeft, File, Download, Contact } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -262,92 +262,100 @@ const ChatPage = () => {
           <>
             <div className="flex items-center mb-4">
               {window.innerWidth <= 768 && (
-                <Button onClick={handleBackClick} className="mr-2" variant={"ghost"}>
-                  <ChevronLeft className="size-4" />
-                </Button>
+          <Button onClick={handleBackClick} className="mr-2" variant={"ghost"}>
+            <ChevronLeft className="size-4" />
+          </Button>
               )}
               <Avatar>
-                <AvatarImage src={selectedContactInfo?.photo} alt={selectedContactInfo?.first_name} />
-                <AvatarFallback>{selectedContactInfo?.first_name.charAt(0)}</AvatarFallback>
+          <AvatarImage src={selectedContactInfo?.photo} alt={selectedContactInfo?.first_name} />
+          <AvatarFallback>{selectedContactInfo?.first_name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div className="ml-2">
-                <h1 className="text-xl font-semibold">{selectedContactInfo?.first_name} {selectedContactInfo?.last_name}</h1>
-                <p className="text-gray-600">{selectedContactInfo?.online ? t("client.pages.office.chat.online") : t("client.pages.office.chat.offline")}</p>
+          <h1 className="text-xl font-semibold">{selectedContactInfo?.first_name} {selectedContactInfo?.last_name}</h1>
+          <p className="text-gray-600">{selectedContactInfo?.online ? t("client.pages.office.chat.online") : t("client.pages.office.chat.offline")}</p>
               </div>
             </div>
             <ScrollArea className="flex-1" style={{ height: `calc(100% - 48px)` }}>
               <ChatMessageList ref={messageListRef}>
-                {messages[selectedContact]?.map((msg) => (
-                  <ChatBubble key={msg._id} variant={msg.senderId === selectedContact ? 'received' : 'sent'}>
-                    {msg.senderId !== myUserId && (
-                      <ChatBubbleAvatar src={selectedContactInfo?.photo} />
-                    )}
-                    <ChatBubbleMessage isLoading={msg.isLoading}>
-                      {msg.fileUrl ? (
-                        <div>
-                          {getFileType(msg.fileUrl) === 'image' ? (
-                            <img src={msg.fileUrl} alt="File" className="max-w-full h-auto" style={{ maxHeight: '300px' }} />
-                          ) : (
-                            <Button onClick={() => msg.fileUrl && navigate(msg.fileUrl)} className="flex items-center">
-                              <Download className="mr-2" />
-                              Télécharger un document
-                            </Button>
-                          )}
-                        </div>
-                      ) : (
-                        msg.content
-                      )}
-                    </ChatBubbleMessage>
-                  </ChatBubble>
-                ))}
-                <div ref={bottomRef}></div>
+          {messages[selectedContact]?.map((msg) => (
+            <ChatBubble key={msg._id} variant={msg.senderId === selectedContact ? 'received' : 'sent'}>
+              {msg.senderId !== myUserId && (
+                <ChatBubbleAvatar src={selectedContactInfo?.photo} />
+              )}
+              <ChatBubbleMessage isLoading={msg.isLoading}>
+                {msg.fileUrl ? (
+            <div>
+              {getFileType(msg.fileUrl) === 'image' ? (
+                <img src={msg.fileUrl} alt="File" className="max-w-full h-auto" style={{ maxHeight: '300px' }} />
+              ) : (
+                <Button onClick={() => msg.fileUrl && navigate(msg.fileUrl)} className="flex items-center">
+                  <Download className="mr-2" />
+                  Télécharger un document
+                </Button>
+              )}
+            </div>
+                ) : (
+            msg.content
+                )}
+              </ChatBubbleMessage>
+            </ChatBubble>
+          ))}
+          <div ref={bottomRef}></div>
               </ChatMessageList>
             </ScrollArea>
             <form
               className="flex relative gap-2 mt-4"
               onSubmit={(e) => {
-                e.preventDefault();
-                const input = (e.target as HTMLFormElement).elements.namedItem('chatInput') as HTMLInputElement;
-                handleSendMessage(input.value);
-                input.value = '';
+          e.preventDefault();
+          const input = (e.target as HTMLFormElement).elements.namedItem('chatInput') as HTMLInputElement;
+          handleSendMessage(input.value);
+          input.value = '';
               }}
             >
               <ChatInput
-                name="chatInput"
-                className="min-h-12 bg-background shadow-none"
-                placeholder={t("client.pages.office.chat.typeMessage")}
+          name="chatInput"
+          className="min-h-12 bg-background shadow-none"
+          placeholder={t("client.pages.office.chat.typeMessage")}
               />
               <Button
-                className="absolute top-1/2 right-12 transform size-8 -translate-y-1/2"
-                size="icon"
-                type="button"
-                onClick={() => document.getElementById('fileInput')?.click()}
+          className="absolute top-1/2 right-12 transform size-8 -translate-y-1/2"
+          size="icon"
+          type="button"
+          onClick={() => document.getElementById('fileInput')?.click()}
               >
-                <File className="size-4" />
+          <File className="size-4" />
               </Button>
               <input
-                type="file"
-                id="fileInput"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setSelectedFile(file);
-                    handleFileUpload();
-                  }
-                }}
+          type="file"
+          id="fileInput"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              setSelectedFile(file);
+              handleFileUpload();
+            }
+          }}
               />
               <Button
-                className="absolute top-1/2 right-2 transform size-8 -translate-y-1/2"
-                size="icon"
-                type="submit"
+          className="absolute top-1/2 right-2 transform size-8 -translate-y-1/2"
+          size="icon"
+          type="submit"
               >
-                <Send className="size-4" />
+          <Send className="size-4" />
               </Button>
             </form>
           </>
         ) : (
-          <p>{t("client.pages.office.chat.selectContact")}</p>
+          <div className="flex items-center justify-center h-full">
+            <div className="flex min-h-[70svh] flex-col items-center justify-center py-16 text-center">
+            <Contact
+              size={32}
+              className="text-muted-foreground/50 mb-2"
+            />
+            <h3 className="text-lg font-medium">{t("client.pages.office.chat.selectContact")}</h3>
+          </div>
+          </div>
         )}
       </div>
     </div>

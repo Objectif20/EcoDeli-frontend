@@ -41,10 +41,23 @@ export interface blockedList {
 }
 
 export interface StripeIntent {
-    client_secret: string;  // Le client secret du SetupIntent
-    id: string;  // ID du SetupIntent
-    status: string;  // Statut du SetupIntent
+    client_secret: string; 
+    id: string;  
+    status: string;
 }
+
+export interface Availability {
+    day_of_week: number;
+    morning: boolean;
+    morning_start_time: string | null;
+    morning_end_time: string | null;
+    afternoon: boolean;
+    afternoon_start_time: string | null;
+    afternoon_end_time: string | null;
+    evening: boolean;
+    evening_start_time: string | null;
+    evening_end_time: string | null;
+  }
 
 export class ProfileAPI {
     static async getMyPlanning(): Promise<CalendarEvent[]> {
@@ -112,6 +125,18 @@ export class ProfileAPI {
           url_complete?: string;
         }>("/client/profile/stripe-validity");
       
+        return response.data;
+      }
+
+      static async getMyAvailability(): Promise<Availability[]> {
+        const response = await axiosInstance.get<Availability[]>("/client/profile/availability");
+        return response.data;
+      }
+      
+      static async updateMyAvailability(availabilities: Availability[]): Promise<Availability[]> {
+        const response = await axiosInstance.put<Availability[]>("/client/profile/availability", {
+          availabilities,
+        });
         return response.data;
       }
 

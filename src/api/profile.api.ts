@@ -40,6 +40,12 @@ export interface blockedList {
     ]
 }
 
+export interface StripeIntent {
+    client_secret: string;  // Le client secret du SetupIntent
+    id: string;  // ID du SetupIntent
+    status: string;  // Statut du SetupIntent
+}
+
 export class ProfileAPI {
     static async getMyPlanning(): Promise<CalendarEvent[]> {
         const response = await axiosInstance.get<CalendarEvent[]>("/client/planning");
@@ -77,4 +83,36 @@ export class ProfileAPI {
     static async unblockUser(userId: string): Promise<void> {
         await axiosInstance.delete(`/client/profile/blocked/${userId}`);
     }
+
+    static async getStripeAccount() : Promise<{stripeAccountId : string}> {
+        const response = await axiosInstance.get<{stripeAccountId : string}>("/client/profile/stripe-account");
+        return response.data;
+    }
+
+    static async createStripeAccount(accountToken: string): Promise<{ StripeAccountId: string }> {
+        const response = await axiosInstance.post<{ StripeAccountId: string }>(
+          "/client/profile/create-account",
+          {
+            accountToken,
+          }
+        );
+        return response.data;
+      }
+
+      static async getStripeAccountValidity(): Promise<{
+        valid: boolean;
+        enabled: boolean;
+        needs_id_card: boolean;
+        url_complete?: string;
+      }> {
+        const response = await axiosInstance.get<{
+          valid: boolean;
+          enabled: boolean;
+          needs_id_card: boolean;
+          url_complete?: string;
+        }>("/client/profile/stripe-validity");
+      
+        return response.data;
+      }
+
 }

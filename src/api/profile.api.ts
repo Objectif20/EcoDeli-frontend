@@ -140,4 +140,10 @@ export class ProfileAPI {
         return response.data;
       }
 
+
+      static async getMyProfileDocuments() {
+        const response = await axiosInstance.get("/client/profile/myDocuments");
+        return response.data;
+      }
+
 }

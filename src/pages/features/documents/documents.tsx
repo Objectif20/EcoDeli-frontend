@@ -6,55 +6,15 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { useTranslation } from "react-i18next";
 import MyPDFReader from "@/components/pdf-viewer";
-
-const nodes = [
-  {
-    name: "Home",
-    nodes: [
-      {
-        name: "Documents",
-        nodes: [
-          { name: "report.pdf", url: "https://console.minio.remythibaut.fr/api/v1/buckets/test/objects/download?prefix=CV2A_V2.pdf&version_id=null" },
-          {
-            name: "Factures",
-            nodes: [
-              { name: "January.pdf" },
-              { name: "February.pdf" },
-            ],
-          },
-          {
-            name: "Contrats",
-            nodes: [
-              { name: "Contract-2023.pdf" },
-              { name: "NDA-2023.pdf" },
-            ],
-          },
-          {
-            name: "Rapports",
-            nodes: [
-              { name: "Annual-Report-2023.pdf" },
-              { name: "Project-Review.pdf" },
-            ],
-          },
-          {
-            name: "Correspondance",
-            nodes: [
-              { name: "Letter-to-Client.pdf" },
-              { name: "Internal-Memo.pdf" },
-            ],
-          },
-        ],
-      },
-      { name: "passwords.txt" },
-    ],
-  },
-];
+import { ProfileAPI } from "@/api/profile.api";
 
 export default function DocumentsPage() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
   const { t } = useTranslation();
   const dispatch = useDispatch();
+
+  const [nodes, setNodes] = useState<{ name: string }[]>([]);
 
   useEffect(() => {
     dispatch(
@@ -77,6 +37,20 @@ export default function DocumentsPage() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  useEffect(() =>{
+
+    const fetchMyDocuments = async () => {
+      try {
+        const response = await ProfileAPI.getMyProfileDocuments();
+        setNodes([response]);
+      } catch (error) {
+        console.error(t("client.pages.office.myDocuments.error"), error);
+      }
+    };
+    fetchMyDocuments();
+
+  }, [])
 
   const handleFileClick = useCallback(async (url: string) => {
     try {

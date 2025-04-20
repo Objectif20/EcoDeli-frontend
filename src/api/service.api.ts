@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import { Availability } from "./profile.api";
 
 export interface Service {
     service_id: string
@@ -43,6 +44,18 @@ export interface Service {
   }
 
 
+  export interface providerDisponibilities {
+    availabilities : [Availability],
+    appointments : [
+       {
+        date : string,
+        time : string,
+        end : string
+       }
+    ]
+  }
+
+
 export class ServiceApi {
 
     static async getServices(
@@ -74,5 +87,19 @@ export class ServiceApi {
             const response = await axiosInstance.get(`/client/service/me?total=${total}&page=${page}`);
             return response;
     }
+
+    static async getProviderDisponibilites(service_id : string) : Promise<providerDisponibilities> {
+        const response = await axiosInstance.get(`/client/service/${service_id}/providerDisponibility`);
+        return response.data;
+    } 
+
+    static async addAppointment(service_id : string, date : Date) {
+        const response = await axiosInstance.post(`/client/service/${service_id}/appointments`, {
+            date: date,
+        });
+        return response;
+    }
+
+
 
 }

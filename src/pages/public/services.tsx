@@ -290,8 +290,9 @@ export default function ServicesPage() {
                     </div>
                   </div>
                 </CardContent>
-
+                  {isClient && (
                 <TakeAppointment duration={60} service_id={selectedService.service_id}/>
+                  )}
 
                 <CardFooter className="border-t pt-4">
                 </CardFooter>
@@ -357,12 +358,9 @@ export default function ServicesPage() {
             </div>
           </div>
           <DrawerFooter>
-            <Button className="w-full font-medium py-2">
-              {t('client.pages.public.services.appointmentButton')}
-            </Button>
             <DrawerClose asChild>
-              { (
-                <Button variant="outline">{t('client.pages.public.services.closeButton')}</Button>
+            {isClient && (
+                <TakeAppointment duration={60} service_id={selectedService?.service_id || ""}/>
               )}
             </DrawerClose>
           </DrawerFooter>

@@ -1,13 +1,13 @@
-import { format, isBefore, isSameDay, parseISO, addMinutes, startOfDay } from "date-fns"
-import { fr } from "date-fns/locale"
-import { CalendarIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Calendar } from "@/components/ui/calendar"
+import { format, isBefore, isSameDay, parseISO, addMinutes, startOfDay } from "date-fns";
+import { fr } from "date-fns/locale";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import {
   Dialog,
   DialogContent,
@@ -16,147 +16,131 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { ServiceApi } from "@/api/service.api";
+import { Availability } from "@/api/profile.api";
+import { toast } from "sonner";
 
-const providerData = [
-  {
-    id: "62284293-7bbb-4467-9b89-2519301e1155",
-    day_of_week: 0, // Lundi
-    morning: true,
-    afternoon: true,
-    evening: false,
-    morning_start_time: "08:00:00",
-    morning_end_time: "12:00:00",
-    afternoon_start_time: "14:00:00",
-    afternoon_end_time: "18:00:00",
-    evening_start_time: null,
-    evening_end_time: null,
-  },
-  {
-    id: "8a7ded02-638c-4690-9f5f-7a20e0495c13",
-    day_of_week: 6, // Dimanche
-    morning: true,
-    afternoon: true,
-    evening: true,
-    morning_start_time: "09:00:00",
-    morning_end_time: "12:00:00",
-    afternoon_start_time: "13:00:00",
-    afternoon_end_time: "17:00:00",
-    evening_start_time: "18:00:00",
-    evening_end_time: "21:00:00",
-  },
-]
-
-const appointmentsData = [
-  {
-    date: "2025-04-2",
-    time: "09:00",
-    end: "09:30",
-  },
-  {
-    date: "2023-10-01",
-    time: "10:00",
-    end: "10:30",
-  },
-  {
-    date: "2023-10-01",
-    time: "11:00",
-    end: "11:30",
-  },
-  {
-    date: "2023-10-01",
-    time: "12:00",
-    end: "12:30",
-  },
-]
-
-const mapToJSWeekday = (day: number) => (day + 1) % 7
-
-const timeStringToDate = (baseDate: Date, time: string) => {
-  const [hour, minute] = time.split(":")
-  const date = new Date(baseDate)
-  date.setHours(Number(hour), Number(minute), 0, 0)
-  return date
+interface Appointment {
+  date: string;
+  time: string;
+  end: string;
 }
 
-const generateSlots = (start: Date, end: Date, duration: number) => {
-  const slots = []
-  let current = new Date(start)
+interface ProviderDisponibilities {
+  availabilities: Availability[];
+  appointments: Appointment[];
+}
+
+interface TakeAppointmentProps {
+  duration: number;
+  service_id: string;
+}
+
+const mapFromJSWeekday = (jsDay: number): number => (jsDay + 6) % 7;
+
+const timeStringToDate = (baseDate: Date, time: string | null): Date => {
+  if (!time) throw new Error("Heure invalide.");
+  const [hour, minute] = time.split(":");
+  const date = new Date(baseDate);
+  date.setHours(Number(hour), Number(minute), 0, 0);
+  return date;
+};
+
+const generateSlots = (start: Date, end: Date, duration: number): Date[] => {
+  const slots: Date[] = [];
+  let current = new Date(start);
   while (addMinutes(current, duration) <= end) {
-    slots.push(current)
-    current = addMinutes(current, duration)
+    slots.push(current);
+    current = addMinutes(current, duration);
   }
-  return slots
-}
+  return slots;
+};
 
-type TakeAppointmentProps = {
-  duration: number
-  service_id: string
-}
+const TakeAppointment: React.FC<TakeAppointmentProps> = ({ duration, service_id }) => {
+  const [date, setDate] = useState<Date | undefined>();
+  const [time, setTime] = useState<Date | null>(null);
+  const [providerData, setProviderData] = useState<Availability[]>([]);
+  const [appointmentsData, setAppointmentsData] = useState<Appointment[]>([]);
 
-export default function TakeAppointment({ duration, service_id }: TakeAppointmentProps) {
-  const [date, setDate] = useState<Date>()
-  const [time, setTime] = useState<Date | null>(null)
+  useEffect(() => {
+    const fetchProviderDisponibilites = async () => {
+      try {
+        const data: ProviderDisponibilities = await ServiceApi.getProviderDisponibilites(service_id);
+        setProviderData(data.availabilities);
+        setAppointmentsData(data.appointments);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des disponibilités du fournisseur:", error);
+      }
+    };
 
-  const disabledDays = (day: Date) => {
-    const jsDay = day.getDay()
-    const isPast = isBefore(day, startOfDay(new Date()))
-    const provider = providerData.find(p => mapToJSWeekday(p.day_of_week) === jsDay)
+    fetchProviderDisponibilites();
+  }, [service_id]);
 
-    if (!provider || isPast) return true
+  const disabledDays = (day: Date): boolean => {
+    const jsDay = day.getDay();
+    const isPast = isBefore(day, startOfDay(new Date()));
+    const provider = providerData.find(p => p.day_of_week === mapFromJSWeekday(jsDay));
+    if (!provider || isPast) return true;
 
-    const slots = computeAvailableSlots(day, provider, duration)
-    return slots.length === 0
-  }
+    const slots = computeAvailableSlots(day, provider, duration);
+    return slots.length === 0;
+  };
 
-  const computeAvailableSlots = (selectedDate: Date, provider: any, duration: number) => {
-    const allSlots: Date[] = []
+  const computeAvailableSlots = (selectedDate: Date, provider: Availability, duration: number): Date[] => {
+    const allSlots: Date[] = [];
 
-    const addSlots = (start: string, end: string | null) => {
-      if (!start || !end) return
-      const from = timeStringToDate(selectedDate, start)
-      const to = timeStringToDate(selectedDate, end)
-      allSlots.push(...generateSlots(from, to, duration))
-    }
+    const addSlots = (start: string | null, end: string | null) => {
+      if (!start || !end) return;
+      const from = timeStringToDate(selectedDate, start);
+      const to = timeStringToDate(selectedDate, end);
+      allSlots.push(...generateSlots(from, to, duration));
+    };
 
-    if (provider.morning) addSlots(provider.morning_start_time, provider.morning_end_time)
-    if (provider.afternoon) addSlots(provider.afternoon_start_time, provider.afternoon_end_time)
-    if (provider.evening) addSlots(provider.evening_start_time, provider.evening_end_time)
+    // Affiche les créneaux même si morning/afternoon/evening sont false mais que les heures sont présentes
+    addSlots(provider.morning_start_time, provider.morning_end_time);
+    addSlots(provider.afternoon_start_time, provider.afternoon_end_time);
+    addSlots(provider.evening_start_time, provider.evening_end_time);
 
     const dayAppointments = appointmentsData
       .filter(app => isSameDay(parseISO(app.date), selectedDate))
       .map(app => ({
         start: timeStringToDate(selectedDate, app.time),
         end: timeStringToDate(selectedDate, app.end),
-      }))
+      }));
 
     return allSlots.filter(slot => {
-      const end = addMinutes(slot, duration)
+      const end = addMinutes(slot, duration);
       return !dayAppointments.some(app =>
         (slot >= app.start && slot < app.end) ||
         (end > app.start && end <= app.end) ||
         (slot <= app.start && end >= app.end)
-      )
-    })
-  }
+      );
+    });
+  };
 
   const selectedProvider = date
-    ? providerData.find(p => mapToJSWeekday(p.day_of_week) === date.getDay())
-    : null
+    ? providerData.find(p => p.day_of_week === mapFromJSWeekday(date.getDay()))
+    : null;
 
   const availableSlots = date && selectedProvider
     ? computeAvailableSlots(date, selectedProvider, duration)
-    : []
+    : [];
 
-  const handleReservation = () => {
+  const handleReservation = async () => {
     if (date && time) {
-      console.log("Date:", format(date, "yyyy-MM-dd"))
-      console.log("Heure:", format(time, "HH:mm"))
-      console.log("ID du service:", service_id)
+      try {
+        const appointmentDate = new Date(date);
+        appointmentDate.setHours(time.getHours(), time.getMinutes(), 0, 0);
+        await ServiceApi.addAppointment(service_id, appointmentDate);
+        toast.success("Rendez-vous réservé avec succès !");
+      } catch (error) {
+        toast.error("Erreur lors de la réservation du rendez-vous.");
+      }
     }
-  }
+  };
 
   return (
     <Dialog>
@@ -218,9 +202,13 @@ export default function TakeAppointment({ duration, service_id }: TakeAppointmen
         </div>
 
         <DialogFooter>
-          <Button type="button" onClick={handleReservation} disabled={!date || !time}>Réserver</Button>
+          <Button type="button" onClick={handleReservation} disabled={!date || !time}>
+            Réserver
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
+
+export default TakeAppointment;

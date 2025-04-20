@@ -28,7 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { Service, ServiceApi } from "@/api/service.api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-
+import TakeAppointment from "@/components/public/services/planning";
 export default function ServicesPage() {
   const { t } = useTranslation();
   const [services, setServices] = useState<Service[]>([]);
@@ -291,12 +291,9 @@ export default function ServicesPage() {
                   </div>
                 </CardContent>
 
+                <TakeAppointment duration={60} service_id={selectedService.service_id}/>
+
                 <CardFooter className="border-t pt-4">
-                  {isClient && (
-                    <Button className="w-full font-medium py-2">
-                      {t('client.pages.public.services.appointmentButton')}
-                    </Button>
-                  )}
                 </CardFooter>
               </div>
             ) : (
@@ -364,7 +361,7 @@ export default function ServicesPage() {
               {t('client.pages.public.services.appointmentButton')}
             </Button>
             <DrawerClose asChild>
-              {isClient && (
+              { (
                 <Button variant="outline">{t('client.pages.public.services.closeButton')}</Button>
               )}
             </DrawerClose>

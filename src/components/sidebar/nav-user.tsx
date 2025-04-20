@@ -1,12 +1,12 @@
 "use client"
 
 import {
+  ArrowBigLeft,
   ChevronsUpDown,
   LogOut,
   Moon,
   Settings,
   Sun,
-  User,
 } from "lucide-react"
 
 import {
@@ -92,10 +92,7 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <User />
-                {t("sidebar.main.menuUser.profil")}
-              </DropdownMenuItem>
+
               <DropdownMenuItem>
                 <Link to="/office/general-settings" className="flex items-center gap-2">
                 <Settings />
@@ -106,6 +103,12 @@ export function NavUser({
               {theme === "dark" ? <Sun /> : <Moon />}
               {theme === "dark" ? t("sidebar.main.menuUser.light") : t("sidebar.main.menuUser.dark")}
             </DropdownMenuItem>
+            <DropdownMenuItem>
+            <Link to="/" className="flex items-center gap-2">
+              <ArrowBigLeft />
+                {t("sidebar.main.menuUser.back")}
+              </Link>
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

@@ -26,6 +26,8 @@ import {
 } from '@/components/ui/sheet';
 import logoSvg from '@/assets/logo.svg';
 import { cn } from '@/lib/utils';
+import { RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
 
 interface MenuItem {
   titleKey: string;
@@ -72,15 +74,16 @@ const Navbar = ({
       url: '/',
       items: [
         {
+          titleKey: 'client.components.navbar.livraison.trouverLivraison',
+          description: 'client.components.navbar.livraison.trouverLivraisonDescription',
+          url: '/deliveries',
+        },
+        {
           titleKey: 'client.components.navbar.livraison.devenirLivreur',
           description: 'client.components.navbar.livraison.devenirLivreurDescription',
           url: '#',
         },
-        {
-          titleKey: 'client.components.navbar.livraison.trouverLivraison',
-          description: 'client.components.navbar.livraison.trouverLivraisonDescription',
-          url: '#',
-        },
+
       ],
     },
     {
@@ -88,15 +91,15 @@ const Navbar = ({
       url: '#',
       items: [
         {
+          titleKey: 'client.components.navbar.prestation.trouverPrestations',
+          description: 'client.components.navbar.prestation.trouverPrestationsDescription',
+          url: '/services',
+        },
+        {
           titleKey: 'client.components.navbar.prestation.devenirPrestataire',
           description: 'client.components.navbar.prestation.devenirPrestataireDescription',
           url: '#',
-        },
-        {
-          titleKey: 'client.components.navbar.prestation.trouverPrestations',
-          description: 'client.components.navbar.prestation.trouverPrestationsDescription',
-          url: '#',
-        },
+        }
       ],
     },
     {
@@ -111,9 +114,12 @@ const Navbar = ({
 }: NavbarProps) => {
   const { t } = useTranslation();
 
+  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
+
   return (
     <section className='py-4 h-16'>
       <div className='container'>
+        {/* Desktop Navbar */}
         <nav className='hidden justify-between lg:flex'>
           <div className='flex items-center gap-6'>
             <Link to={logo.url} className='flex items-center gap-2'>
@@ -130,15 +136,29 @@ const Navbar = ({
               </NavigationMenu>
             </div>
           </div>
+
+          {/* Desktop Buttons */}
           <div className='flex gap-2'>
-          <Button asChild className='w-full' variant={"link"}>
-                      <Link to={auth.register.url}>{t(auth.register.textKey)}</Link>
-                    </Button>
-            <Button asChild size='sm'>
-              <Link to={auth.login.url}>{t(auth.login.textKey)}</Link>
-            </Button>
+            {user?.user_id ? (
+              <Button asChild size='sm'>
+                <Link to="/office/dashboard">
+                  {t('client.components.navbar.goToDashboard') || 'Accéder à mon compte'}
+                </Link>
+              </Button>
+            ) : (
+              <>
+                <Button asChild className='w-full' variant='link'>
+                  <Link to={auth.register.url}>{t(auth.register.textKey)}</Link>
+                </Button>
+                <Button asChild size='sm'>
+                  <Link to={auth.login.url}>{t(auth.login.textKey)}</Link>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
+
+        {/* Mobile Navbar */}
         <div className='block lg:hidden'>
           <div className='flex items-center justify-between'>
             <Link to={logo.url} className='flex items-center gap-2'>
@@ -156,12 +176,12 @@ const Navbar = ({
                   <SheetTitle>
                     <Link to={logo.url} className='flex items-center gap-2'>
                       <img src={logo.src} className='w-8' alt={logo.alt} />
-                      <span className='text-lg font-semibold'>
-                        {logo.title}
-                      </span>
+                      <span className='text-lg font-semibold'>{logo.title}</span>
                     </Link>
                   </SheetTitle>
                 </SheetHeader>
+
+                {/* Mobile Menu Items */}
                 <div className='my-6 flex flex-col gap-4'>
                   <Accordion
                     type='single'
@@ -170,13 +190,25 @@ const Navbar = ({
                   >
                     {menu.map((item) => renderMobileMenuItem(item, t))}
                   </Accordion>
-                  <div className='flex flex-col gap-2'>
-                  <Button asChild className='w-full' variant={"link"}>
-                      <Link to={auth.register.url}>{t(auth.register.textKey)}</Link>
-                    </Button>
-                    <Button asChild className='w-full'>
-                      <Link to={auth.login.url}>{t(auth.login.textKey)}</Link>
-                    </Button>
+
+                  {/* Mobile Buttons */}
+                  <div className='flex flex-col gap-2 mt-4'>
+                    {user?.user_id ? (
+                      <Button asChild className='w-full'>
+                        <Link to="/office/dashboard">
+                          {t('client.components.navbar.goToDashboard') || 'Accéder à mon compte'}
+                        </Link>
+                      </Button>
+                    ) : (
+                      <>
+                        <Button asChild className='w-full' variant='link'>
+                          <Link to={auth.register.url}>{t(auth.register.textKey)}</Link>
+                        </Button>
+                        <Button asChild className='w-full'>
+                          <Link to={auth.login.url}>{t(auth.login.textKey)}</Link>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>

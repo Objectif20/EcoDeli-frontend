@@ -169,7 +169,7 @@
         "listeCommercant": "Liste des commerçants"
       },
       "menuUser": {
-        "profil": "Profil",
+        "back": "Revenir à l'accueil",
         "deconnexion": "Déconnexion",
         "parametres": "Paramètres",
         "light": "Mode clair",
@@ -866,7 +866,8 @@
         },
         "qui_sommes_nous" :  "Qui sommes-nous ?",
         "register" : "S'inscrire",
-        "login" : "Se connecter"
+        "login" : "Se connecter",
+        "goToDashboard" : "Accéder à mon espace"
       },
       "sidebar": {
         "becomeDeliveryman": "Devenir Transporteur ?",

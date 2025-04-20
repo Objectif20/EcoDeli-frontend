@@ -53,7 +53,7 @@ export interface Service {
         end : string
        }
     ]
-  }
+  }    
 
 
 export class ServiceApi {
@@ -98,6 +98,11 @@ export class ServiceApi {
             date: date,
         });
         return response;
+    }
+
+    static async getServiceDetails(service_id: string): Promise<Service> {
+        const response = await axiosInstance.get<Service>(`/client/service/${service_id}`);
+        return response.data;
     }
 
 

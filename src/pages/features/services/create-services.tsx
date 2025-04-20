@@ -23,6 +23,11 @@ import { ServiceApi } from "@/api/service.api";
 import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { useNavigate } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { Tag, TagInput } from "emblor"
+import { useId } from "react";
+
+
 
 const FormSchema = z.object({
   service_type: z.string().min(1, "Type de service requis"),
@@ -51,6 +56,11 @@ export default function CreateService() {
       acceptTerms: false,
     },
   });
+
+  const [keywords, setKeywords] = useState<Tag[]>([]);
+  const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
+  const id = useId();
+
 
   const [images, setImages] = useState<File[]>([]);
   const [imageError, setImageError] = useState("");
@@ -188,15 +198,29 @@ export default function CreateService() {
             </FormItem>
           )} />
 
-          <FormField control={form.control} name="keywords" render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mots-clés (séparés par des virgules)</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )} />
+        <div className="space-y-2">
+            <Label htmlFor={id}>Mots-clés</Label>
+            <TagInput
+              id={id}
+              tags={keywords}
+              setTags={setKeywords}
+              placeholder="Ajoutez un mot-clé"
+              styleClasses={{
+                tagList: { container: "gap-1" },
+                input:
+                  "rounded-md transition-[color,box-shadow] placeholder:text-muted-foreground/70 focus-visible:border-ring outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                tag: {
+                  body: "relative h-7 bg-background border border-input hover:bg-background rounded-md font-medium text-xs ps-2 pe-7",
+                  closeButton:
+                    "absolute -inset-y-px -end-px p-0 rounded-s-none rounded-e-md flex size-7 transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] text-muted-foreground/80 hover:text-foreground",
+                },
+              }}
+              activeTagIndex={activeTagIndex}
+              setActiveTagIndex={setActiveTagIndex}
+              inlineTags={false}
+              inputFieldPosition="top"
+            />
+          </div>
 
           <FormField control={form.control} name="acceptTerms" render={({ field }) => (
             <FormItem className="flex items-center gap-2">

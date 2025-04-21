@@ -105,6 +105,17 @@ export class ServiceApi {
         return response.data;
     }
 
+    static async getProviderReviews(limit : number, page : number) {
+        const response = await axiosInstance.get(`/client/service/reviews?limit=${limit}&page=${page}`);
+        return response.data;
+    }
+
+    static async reponseToReview(review_id : string, content : string) {
+        const response = await axiosInstance.post(`/client/service/reviews/${review_id}/reply`, {
+            content: content,
+        });
+        return response;
+    }
 
 
 }

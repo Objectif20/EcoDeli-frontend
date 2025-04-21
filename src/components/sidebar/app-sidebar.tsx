@@ -149,11 +149,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               ],
             },
             {
-              title: t("client.components.sidebar.billing"),
-              url: "/office/billing-provider",
-              icon: Receipt,
-            },
-            {
               title: t("client.components.sidebar.planning"),
               url: "/office/planning-provider",
               icon: Calendar,
@@ -186,11 +181,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 { title: t("client.components.sidebar.deliveryHistory"), url: "/office/delivery-history" },
                 { title: t("client.components.sidebar.deliveryReviews"), url: "/office/reviews-deliveryman" },
               ],
-            },
-            {
-              title: t("client.components.sidebar.proofs"),
-              url: "/office/proofs",
-              icon: FileText,
             },
             {
               title: t("client.components.sidebar.myVehicles"),

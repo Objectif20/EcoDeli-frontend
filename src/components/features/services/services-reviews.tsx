@@ -39,6 +39,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
+import { ServiceApi } from "@/api/service.api";
 
 
 export const schema = z.object({
@@ -64,97 +65,115 @@ export const columnLink = [
 ];
 
 export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
-    const [selectedReview, setSelectedReview] = useState<any>(null);
-    const [replyMessage, setReplyMessage] = useState("");
+  const [selectedReview, setSelectedReview] = useState<any>(null);
+  const replyMessageRef = React.useRef<HTMLTextAreaElement>(null); 
 
-  
-    const handleClose = () => {
-      setSelectedReview(null);
-      setReplyMessage("");
-    };
-  
-    const handleReplySubmit = () => {
-      console.log(`Réponse à l'avis ID ${selectedReview?.id}: ${replyMessage}`);
-      setReplyMessage("");
-    };
-  
-    return [
-      {
-        id: "author",
-        accessorKey: "author.name",
-        header: "Auteur",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <Avatar>
-              <AvatarImage src={row.original.author.photo} />
-              <AvatarFallback>{row.original.author.name[0]}</AvatarFallback>
-            </Avatar>
-            <span>{row.original.author.name}</span>
-          </div>
-        ),
-        enableHiding: false,
-      },
-      {
-        accessorKey: "content",
-        header: "Message",
-        cell: ({ row }) => (
-          <span>
-            {row.original.content.length > 30
-              ? `${row.original.content.substring(0, 30)}...`
-              : row.original.content}
-          </span>
-        ),
-      },
-      { accessorKey: "services_name", header: "Service", cell: ({ row }) => row.original.services_name },
-      { accessorKey: "rate", header: "Note", cell: ({ row }) => row.original.rate },
-      { accessorKey: "date", header: "Date", cell: ({ row }) => row.original.date },
-      {
-        id: "actions",
-        cell: ({ row }) => (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="link"
-                className="w-fit px-0 text-left text-foreground"
-              >
-                Détails
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader className="flex flex-col items-center text-center">
-                <Avatar className="w-16 h-16 mb-2">
-                  <AvatarImage src={row.original?.author.photo} />
-                  <AvatarFallback>{row.original?.author.name[0]}</AvatarFallback>
-                </Avatar>
-                <DialogTitle className="text-lg font-semibold">
-                  {row.original?.author.name}
-                </DialogTitle>
-                <DialogDescription className="text-sm text-gray-500">
-                  {row.original?.date}
-                </DialogDescription>
-              </DialogHeader>
-              <p className="text-sm text-center text-gray-600">{row.original?.content}</p>
-              {!row.original?.reply && (
-                <div className="mt-4">
-                  <Textarea
-                    placeholder="Répondre à cet avis..."
-                  />
-                  <Button className="mt-2 w-full" onClick={handleReplySubmit}>Envoyer</Button>
-                </div>
-              )}
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button type="button" onClick={handleClose}>
-                    Fermer
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        ),
-      },
-    ];
+  const handleReplySubmit = async () => {
+    const replyMessage = replyMessageRef.current?.value;  
+    console.log("Message de réponse:", replyMessage);  
+    console.log("ID de l'avis sélectionné:", selectedReview?.id);
+
+    if (replyMessage) {
+      await ServiceApi.reponseToReview(selectedReview?.id, replyMessage);
+    }
+
+    if (replyMessageRef.current) {
+      replyMessageRef.current.value = ""; 
+    }
+
+    handleClose();  
   };
+
+  const handleClose = () => {
+    setSelectedReview(null);
+    if (replyMessageRef.current) {
+      replyMessageRef.current.value = "";
+    }
+  };
+
+  return [
+    {
+      id: "author",
+      accessorKey: "author.name",
+      header: "Auteur",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Avatar>
+            <AvatarImage src={row.original.author.photo} />
+            <AvatarFallback>{row.original.author.name[0]}</AvatarFallback>
+          </Avatar>
+          <span>{row.original.author.name}</span>
+        </div>
+      ),
+      enableHiding: false,
+    },
+    {
+      accessorKey: "content",
+      header: "Message",
+      cell: ({ row }) => (
+        <span>
+          {row.original.content.length > 30
+            ? `${row.original.content.substring(0, 30)}...`
+            : row.original.content}
+        </span>
+      ),
+        },
+        { accessorKey: "services_name", header: "Service", cell: ({ row }) => row.original.services_name },
+        { accessorKey: "rate", header: "Note", cell: ({ row }) => row.original.rate },
+        { 
+      accessorKey: "date", 
+      header: "Date", 
+      cell: ({ row }) => {
+        const date = new Date(row.original.date);
+        return date.toLocaleDateString("fr-FR");
+      }
+        },
+        {
+      id: "actions",
+      cell: ({ row }) => (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant="link"
+              className="w-fit px-0 text-left text-foreground"
+              onClick={() => setSelectedReview(row.original)}
+            >
+              Détails
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader className="flex flex-col items-center text-center">
+              <Avatar className="w-16 h-16 mb-2">
+                <AvatarImage src={row.original?.author.photo} />
+                <AvatarFallback>{row.original?.author.name[0]}</AvatarFallback>
+              </Avatar>
+              <DialogTitle className="text-lg font-semibold">
+                {row.original?.author.name}
+              </DialogTitle>
+              <DialogDescription className="text-sm text-gray-500">
+                {row.original?.date}
+              </DialogDescription>
+            </DialogHeader>
+            <p className="text-sm text-center text-gray-600">{row.original?.content}</p>
+            {!row.original?.reply && (
+              <div className="mt-4">
+                <Textarea
+                  ref={replyMessageRef}
+                  placeholder="Répondre à cet avis..."
+                />
+              </div>
+            )}
+            <DialogFooter>
+              <DialogClose asChild>
+              <Button className="mt-2 w-full" onClick={handleReplySubmit}>Envoyer</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      ),
+    },
+  ];
+};
 
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
   const [data, setData] = React.useState(initialData);

@@ -40,6 +40,25 @@ export interface blockedList {
     ]
 }
 
+export interface StripeIntent {
+    client_secret: string; 
+    id: string;  
+    status: string;
+}
+
+export interface Availability {
+    day_of_week: number;
+    morning: boolean;
+    morning_start_time: string | null;
+    morning_end_time: string | null;
+    afternoon: boolean;
+    afternoon_start_time: string | null;
+    afternoon_end_time: string | null;
+    evening: boolean;
+    evening_start_time: string | null;
+    evening_end_time: string | null;
+  }
+
 export class ProfileAPI {
     static async getMyPlanning(): Promise<CalendarEvent[]> {
         const response = await axiosInstance.get<CalendarEvent[]>("/client/planning");
@@ -77,4 +96,54 @@ export class ProfileAPI {
     static async unblockUser(userId: string): Promise<void> {
         await axiosInstance.delete(`/client/profile/blocked/${userId}`);
     }
+
+    static async getStripeAccount() : Promise<{stripeAccountId : string}> {
+        const response = await axiosInstance.get<{stripeAccountId : string}>("/client/profile/stripe-account");
+        return response.data;
+    }
+
+    static async createStripeAccount(accountToken: string): Promise<{ StripeAccountId: string }> {
+        const response = await axiosInstance.post<{ StripeAccountId: string }>(
+          "/client/profile/create-account",
+          {
+            accountToken,
+          }
+        );
+        return response.data;
+      }
+
+      static async getStripeAccountValidity(): Promise<{
+        valid: boolean;
+        enabled: boolean;
+        needs_id_card: boolean;
+        url_complete?: string;
+      }> {
+        const response = await axiosInstance.get<{
+          valid: boolean;
+          enabled: boolean;
+          needs_id_card: boolean;
+          url_complete?: string;
+        }>("/client/profile/stripe-validity");
+      
+        return response.data;
+      }
+
+      static async getMyAvailability(): Promise<Availability[]> {
+        const response = await axiosInstance.get<Availability[]>("/client/profile/availability");
+        return response.data;
+      }
+      
+      static async updateMyAvailability(availabilities: Availability[]): Promise<Availability[]> {
+        const response = await axiosInstance.put<Availability[]>("/client/profile/availability", {
+          availabilities,
+        });
+        return response.data;
+      }
+
+
+      static async getMyProfileDocuments() {
+        const response = await axiosInstance.get("/client/profile/myDocuments");
+        return response.data;
+      }
+
 }

@@ -1,10 +1,102 @@
-export default function HistoryDeliveriesClientPage() 
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
+import { PaginationControls } from "@/components/pagination-controle";
+import { DataTable } from "@/components/features/deliveries/client/history";
 
-{
+interface Delivery {
+  id: string;
+  deliveryman: {
+    id: string;
+    name: string;
+    photo: string;
+  };
+  departureDate: string;
+  arrivalDate: string;
+  departureCity: string;
+  arrivalCity: string;
+  announcementName: string;
+}
+
+export default function HistoryDeliveriesClientPage() {
+  const dispatch = useDispatch();
+  const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+
+  useEffect(() => {
+    dispatch(
+      setBreadcrumb({
+        segments: ["Accueil", "Livraisons", "Historique des livraisons"],
+        links: ["/office/dashboard"],
+      })
+    );
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchDeliveries = async () => {
+      try {
+        const response = {
+          data: [
+            {
+              id: "1",
+              deliveryman: {
+                id: "dm1",
+                name: "Jean Dupont",
+                photo: "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
+              },
+              departureDate: "2023-10-01",
+              arrivalDate: "2023-10-02",
+              departureCity: "Paris",
+              arrivalCity: "Lyon",
+              announcementName: "Livraison de meubles",
+            },
+            {
+              id: "2",
+              deliveryman: {
+                id: "dm2",
+                name: "Marie Martin",
+                photo: "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
+              },
+              departureDate: "2023-10-03",
+              arrivalDate: "2023-10-04",
+              departureCity: "Marseille",
+              arrivalCity: "Nice",
+              announcementName: "Livraison de colis",
+            },
+            // Add more simulated data as needed
+          ],
+          totalRows: 2,
+        };
+
+        setDeliveries(response.data);
+        setTotalItems(response.totalRows);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des livraisons", error);
+      }
+    };
+
+    fetchDeliveries();
+  }, [pageIndex, pageSize]);
+
   return (
-    <div>
-      <h1>History Deliveries Client</h1>
-      <p>This is the history deliveries client page.</p>
+    <div className="w-full">
+      <h1 className="text-2xl font-semibold mb-4">Historique des livraisons</h1>
+      <DataTable
+        key={`${pageIndex}-${pageSize}`}
+        data={deliveries}
+      />
+      <PaginationControls
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageIndexChange={setPageIndex}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setPageIndex(0);
+        }}
+      />
     </div>
   );
 }

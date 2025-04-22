@@ -3,50 +3,32 @@
 import * as React from "react";
 import {
   ColumnDef,
-  ColumnFiltersState,
+  getCoreRowModel,
+  useReactTable,
+  getSortedRowModel,
+  getFilteredRowModel,
   SortingState,
   VisibilityState,
+  ColumnFiltersState,
   flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable,
 } from "@tanstack/react-table";
-import {
-  ColumnsIcon,
-  ChevronDownIcon,
-} from "lucide-react";
+
 import { z } from "zod";
-
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { ChevronDownIcon, ColumnsIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
+// Schéma pour validation
 export const schema = z.object({
   id: z.string(),
-  content: z.string(),
+  price: z.number(),
   provider: z.object({
     id: z.string(),
     name: z.string(),
@@ -61,10 +43,13 @@ export const columnLink = [
   { column_id: "provider.name", text: "Prestataire" },
   { column_id: "service_name", text: "Service" },
   { column_id: "rate", text: "Note" },
+  { column_id: "price", text: "Prix (€)" },
   { column_id: "date", text: "Date" },
 ];
 
 export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
+  const navigate = useNavigate();
+
   return [
     {
       id: "provider",
@@ -76,38 +61,18 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
             <AvatarImage src={row.original.provider.photo} />
             <AvatarFallback>{row.original.provider.name[0]}</AvatarFallback>
           </Avatar>
-          <div>
-            <span>{row.original.provider.name}</span>
-          </div>
+          <span>{row.original.provider.name}</span>
         </div>
       ),
       enableHiding: false,
     },
+    { accessorKey: "service_name", header: "Service" },
+    { accessorKey: "rate", header: "Note" },
     {
-      accessorKey: "content",
-      header: "Message",
-      cell: ({ row }) => (
-        <Dialog>
-          <DialogTrigger asChild>
-            <span className="text-blue-500 cursor-pointer">
-              {row.original.content.length > 30
-                ? `${row.original.content.substring(0, 30)}...`
-                : row.original.content}
-            </span>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Message complet</DialogTitle>
-              <DialogDescription>
-                {row.original.content}
-              </DialogDescription>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-      ),
+      accessorKey: "price",
+      header: "Prix (€)",
+      cell: ({ row }) => `${row.original.price.toFixed(2)} €`,
     },
-    { accessorKey: "service_name", header: "Service", cell: ({ row }) => row.original.service_name },
-    { accessorKey: "rate", header: "Note", cell: ({ row }) => row.original.rate },
     {
       accessorKey: "date",
       header: "Date",
@@ -115,6 +80,19 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
         const date = new Date(row.original.date);
         return date.toLocaleDateString("fr-FR");
       },
+    },
+    {
+      id: "actions",
+      header: "Action",
+      cell: ({ row }) => (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => navigate(`/office/service/${row.original.id}`)}
+        >
+          Voir
+        </Button>
+      ),
     },
   ];
 };

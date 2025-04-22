@@ -30,6 +30,7 @@ import DeliveryTransporterView from "@/pages/features/deliveries/deliveryman/del
 import ServiceDetailsPage from "@/pages/features/services/service-details";
 import HistoryServices from "@/pages/features/services/client/history-services";
 import MyServiceReviews from "@/pages/features/services/client/my-reviews";
+import ServiceDetailsPageClient from "@/pages/features/services/client/service-details";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -62,6 +63,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="register-deliveryman" element={<RegisterDeliveryman />} />
           <Route path="services-history" element={<HistoryServices />} />
           <Route path="my-service-reviews" element={<MyServiceReviews />} />
+          <Route path="/service/:id" element={<ServiceDetailsPageClient />} />
         </Route>
 
         <Route element={<PrivateProfileRoutes requiredProfile="PROVIDER" requireAuth={false} />}>

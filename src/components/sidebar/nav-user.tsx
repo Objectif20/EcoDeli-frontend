@@ -112,7 +112,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link to="/logout" className="flex items-center gap-2">
+              <Link to="/auth/logout" className="flex items-center gap-2">
                 <LogOut />
                 {t("sidebar.main.menuUser.deconnexion")}
               </Link>

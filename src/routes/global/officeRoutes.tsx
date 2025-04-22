@@ -28,6 +28,8 @@ import RegisterDeliveryman from "@/pages/auth/register/deliveryman/register";
 import MyDeliveryHistoryPage from "@/pages/features/deliveries/deliveryman/history";
 import DeliveryTransporterView from "@/pages/features/deliveries/deliveryman/delivery-details";
 import ServiceDetailsPage from "@/pages/features/services/service-details";
+import HistoryServices from "@/pages/features/services/client/history-services";
+import MyServiceReviews from "@/pages/features/services/client/my-reviews";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -58,6 +60,8 @@ const OfficeRoute: React.FC = () => {
           <Route path="planning" element={<PlanningPage />} />
           <Route path="subscriptions" element={<SubscriptionSettings />} />
           <Route path="register-deliveryman" element={<RegisterDeliveryman />} />
+          <Route path="services-history" element={<HistoryServices />} />
+          <Route path="my-service-reviews" element={<MyServiceReviews />} />
         </Route>
 
         <Route element={<PrivateProfileRoutes requiredProfile="PROVIDER" requireAuth={false} />}>

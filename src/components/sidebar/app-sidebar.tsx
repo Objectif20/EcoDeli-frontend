@@ -120,6 +120,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               ],
             },
             {
+              title: "Les prestations",
+              url: "#",
+              icon: ShoppingCart,
+              items: [
+                { title: "Mon historique", url: "/office/services-history" },
+                { title: "Mes avis", url: "/office/my-service-reviews" },
+              ],
+            },
+            {
               title: t("client.components.sidebar.billing"),
               url: "/office/billing",
               icon: Receipt,

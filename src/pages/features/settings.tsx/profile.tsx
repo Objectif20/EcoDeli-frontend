@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { Link } from "react-router-dom"
 import { useTranslation } from "react-i18next"
 import { MoreVertical, Camera, X } from "lucide-react"
-
+import { setUser } from "@/redux/slices/userSlice"
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 import type { RootState } from "@/redux/store"
 
@@ -15,7 +15,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Separator } from "@/components/ui/separator"
 import { ProfileAPI } from "@/api/profile.api"
 import { toast } from "sonner"
-
 
 interface BlockedUser {
   id: string
@@ -34,6 +33,7 @@ const ProfileSettings = () => {
   const isDeliveryman = user?.profile.includes("DELIVERYMAN")
 
   const [profileImage, setProfileImage] = useState<string | null>(user?.photo || null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [blockedUsers, setBlockedUsers] = useState<BlockedUser[]>([])
 
   useEffect(() => {
@@ -69,6 +69,7 @@ const ProfileSettings = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
+      setSelectedFile(file)
       const reader = new FileReader()
       reader.onload = (e) => {
         setProfileImage(e.target?.result as string)
@@ -77,8 +78,27 @@ const ProfileSettings = () => {
     }
   }
 
+  const handleUpdateProfileImage = async () => {
+    if (selectedFile) {
+      try {
+        const response = await ProfileAPI.updateMyProfileImage(selectedFile)
+        if (response.url) {
+          dispatch(setUser({ ...user, photo: response.url }))
+          setProfileImage(response.url)
+        }
+        toast.success(t("client.pages.office.settings.profile.profileImageUpdateSuccess"))
+      } catch (error) {
+        toast.error(t("client.pages.office.settings.profile.profileImageUpdateError"))
+        console.error(error)
+      }
+    } else {
+      toast.error(t("client.pages.office.settings.profile.profileImageSelectError"))
+    }
+  }
+
   const removeProfileImage = () => {
     setProfileImage(null)
+    setSelectedFile(null)
   }
 
   const unblockUser = (userId: string) => {
@@ -143,6 +163,10 @@ const ProfileSettings = () => {
                   <X className="h-4 w-4" />
                 </Button>
               )}
+
+              <Button onClick={handleUpdateProfileImage}>
+                {t("client.pages.office.settings.profile.updateProfileImage")}
+              </Button>
             </div>
 
             {blockedUsers.length > 0 && (

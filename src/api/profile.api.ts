@@ -78,14 +78,15 @@ export class ProfileAPI {
         await axiosInstance.patch("/client/profile/general-settings", data);
     }
 
-    static async updateMyProfileImage(file : File) : Promise<void> {
+    static async updateMyProfileImage(file : File) : Promise<{ url: string }> {
         const formData = new FormData();
         formData.append("image", file);
-        await axiosInstance.post("/client/profile/photo", formData, {
+        const response = await axiosInstance.put("/client/profile/picture", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         });
+        return response.data;
     }
 
     static async getAllBlockedUsers(): Promise<blockedList> {

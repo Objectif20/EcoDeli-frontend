@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import ClientDashboard from "./client";
 import DeliveryManDashboard from "./deliveryman";
+import ProviderDashboard from "./provider";
 
 export default function Dashboard() {
     const user = useSelector((state: RootState) => state.user.user);
@@ -55,7 +56,7 @@ export default function Dashboard() {
             {!isClientAndDeliveryman && (
                 <div className="text-center mt-6">
                     {isMerchant && <p>Bienvenue sur le dashboard du Marchand.</p>}
-                    {isProvider && <p>Bienvenue sur le dashboard du Prestataire.</p>}
+                    {isProvider && <ProviderDashboard />}
                     {isClient && !isDeliveryman && <p>Bienvenue sur le dashboard du Client.</p>}
                     {isDeliveryman && !isClientOnly && (
                         <p>Le rôle Transporteur est uniquement accessible si vous êtes uniquement Client.</p>

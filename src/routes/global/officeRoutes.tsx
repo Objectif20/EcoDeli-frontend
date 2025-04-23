@@ -32,6 +32,7 @@ import HistoryServices from "@/pages/features/services/client/history-services";
 import MyServiceReviews from "@/pages/features/services/client/my-reviews";
 import ServiceDetailsPageClient from "@/pages/features/services/client/service-details";
 import HistoryDeliveriesClientPage from "@/pages/features/deliveries/history-client";
+import Dashboard from "@/pages/features/dashboard/dashboard";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -90,7 +91,7 @@ const OfficeRoute: React.FC = () => {
         <Route path="reports" element={<ReportSettings />} />
         <Route path="messaging" element={<ChatPage />} />
         <Route path="documents" element={<DocumentsPage />} />
-        <Route path="/dashboard" element={<h1>Dashboard</h1>} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </>
   );

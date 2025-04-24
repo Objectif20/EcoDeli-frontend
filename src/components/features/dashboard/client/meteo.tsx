@@ -12,7 +12,6 @@ export default function Meteo() {
     date: new Date(),
   })
 
-  // Fonction pour obtenir l'icône météo en fonction de la condition
   const getWeatherIcon = (condition: string) => {
     switch (condition) {
       case "sunny":
@@ -28,7 +27,6 @@ export default function Meteo() {
     }
   }
 
-  // Formater la date
   const formattedDate = new Intl.DateTimeFormat("fr-FR", {
     weekday: "short",
     day: "numeric",

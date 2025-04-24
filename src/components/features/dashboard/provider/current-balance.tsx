@@ -22,7 +22,7 @@ export default function CurrentBalance() {
           </div>
           <span className="text-xs text-muted-foreground mt-1">actuellement dans votre solde</span>
         </div>
-        <div className="flex items-center justify-center bg-green-100 p-2 rounded-full">
+        <div className="flex items-center justify-center  p-2 rounded-full">
           <Euro className="h-6 w-6 text-primary" />
         </div>
       </CardContent>

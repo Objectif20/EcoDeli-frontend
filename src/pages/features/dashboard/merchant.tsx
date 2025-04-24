@@ -3,7 +3,6 @@ import FinishedDeliveries from "@/components/features/dashboard/client/completed
 import DeliveryCarriers from "@/components/features/dashboard/client/delivery-carriers";
 import LastDelivery from "@/components/features/dashboard/client/last-delivery";
 import Meteo from "@/components/features/dashboard/client/meteo";
-import NextService from "@/components/features/dashboard/client/next-service";
 import { PackageStats } from "@/components/features/dashboard/client/piechart";
 
 export default function MerchantDashboard() {

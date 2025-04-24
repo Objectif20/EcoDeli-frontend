@@ -27,7 +27,7 @@ export default function Dashboard() {
       useEffect(() => {
         dispatch(
           setBreadcrumb({
-            segments: [t("client.pages.office.myDocuments.home"), "Dashboard"],
+            segments: [t("client.pages.office.myDocuments.home")],
             links: ["/office/dashboard"],
           })
         );

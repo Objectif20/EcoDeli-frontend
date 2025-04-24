@@ -95,7 +95,7 @@ export class ServiceApi {
 
     static async addAppointment(service_id : string, date : Date) {
         const response = await axiosInstance.post(`/client/service/${service_id}/appointments`, {
-            date: date,
+            service_date: date,
         });
         return response;
     }

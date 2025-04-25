@@ -1,89 +1,127 @@
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import { Clock, LocateIcon, Tag } from "lucide-react";
+"use client"
 
-// Données intégrées directement dans le fichier
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import "leaflet/dist/leaflet.css"
+import { Truck } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+
+import { useEffect } from "react"
+import L from "leaflet"
+
 const deliveryData = {
   delivery: {
     id: "#A7EHDK7",
     from: "Paris",
     to: "Marseille",
     status: "En cours de livraison",
-    pickupDate: "12 mars 2023",
-    estimatedDeliveryDate: "14 mars 2023",
+    pickupDate: "12 mai 2025",
+    estimatedDeliveryDate: "14 mai 2025",
     coordinates: {
-      latitude: 45.764043,
-      longitude: 4.835659,
+      origin: [48.8566, 2.3522], 
+      destination: [43.2965, 5.3698], 
+      current: [45.764043, 4.835659], 
     },
   },
-};
+}
 
 export default function LastDelivery() {
-  const { delivery } = deliveryData;
+  const { delivery } = deliveryData
+
+  useEffect(() => {
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
+      iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+      shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+    })
+  }, [])
 
   if (!delivery) {
     return (
       <Card className="rounded-xl shadow-lg border border-gray-200 bg-white">
         <CardHeader className="text-center">
           <CardTitle className="text-xl font-semibold text-gray-800">Aucune livraison en cours</CardTitle>
-          <CardDescription className="text-gray-500">Vous n'avez pas de livraison en cours.</CardDescription>
+          <p className="text-gray-500">Vous n'avez pas de livraison en cours.</p>
         </CardHeader>
-        <CardFooter className="flex justify-center">
-          <Button className="bg-primary text-white hover:bg-primary/80 rounded-xl shadow-md">Créer une demande de livraison</Button>
-        </CardFooter>
       </Card>
-    );
+    )
   }
 
   return (
-    <Card className="rounded-xl shadow-lg border border-gray-200 bg-white">
-      <CardHeader className="text-center">
-        <CardTitle className="text-xl font-semibold text-gray-800">Votre dernière demande</CardTitle>
-        <CardDescription className="text-primary">{delivery.status}</CardDescription>
+    <Card className="rounded-xl">
+      <CardHeader className="flex flex-row items-center justify-between pb-2">
+        <div className="flex items-center gap-3">
+          <div className="bg-primary/20 p-2 rounded-full">
+            <Truck className="h-5 w-5 text-primary" />
+          </div>
+          <CardTitle className="text-xl font-semibold">Votre dernière demande</CardTitle>
+        </div>
+        <Badge variant="outline" className="bg-primary/20 text-primary hover:bg-primary/20 px-4 py-1.5 rounded-full">
+          {delivery.status}
+        </Badge>
       </CardHeader>
-      <CardContent className="p-6">
-        <div className="flex flex-col md:flex-row gap-6">
-          <div className="w-full md:w-1/2 rounded-xl shadow-md overflow-hidden">
+      <CardContent className="p-0">
+        <div className="relative w-full h-[300px] overflow-hidden rounded-md">
+          {typeof window !== "undefined" && (
             <MapContainer
-              center={[delivery.coordinates.latitude, delivery.coordinates.longitude]}
+              center={delivery.coordinates.current as [number, number]}
               zoom={6}
-              style={{ height: "300px", borderRadius: "12px" }}
+              style={{ height: "100%", width: "100%" }}
+              zoomControl={false}
             >
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <Marker position={[delivery.coordinates.latitude, delivery.coordinates.longitude]}>
-                <Popup>Livraison en cours</Popup>
+              <Marker position={delivery.coordinates.origin as [number, number]}>
+                <Popup>Départ: {delivery.from}</Popup>
+              </Marker>
+              <Marker position={delivery.coordinates.destination as [number, number]}>
+                <Popup>Arrivée: {delivery.to}</Popup>
               </Marker>
             </MapContainer>
-          </div>
+          )}
+        </div>
 
-          <div className="w-full md:w-1/2 flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <Tag className="text-primary" />
-              <p><strong>ID :</strong> {delivery.id}</p>
+        <div className="p-6">
+          <div className="flex flex-col space-y-6">
+            <div className="flex items-center">
+              <p className="text-gray-700 font-medium">ID : </p>
+              <span className="text-primary font-semibold ml-2">{delivery.id}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <LocateIcon className="text-primary" />
-              <p><strong>De :</strong> {delivery.from}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <LocateIcon className="text-primary" />
-              <p><strong>À :</strong> {delivery.to}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="text-primary" />
-              <p><strong>Date de collecte :</strong> {delivery.pickupDate}</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="text-primary" />
-              <p><strong>Date d'arrivée estimée :</strong> {delivery.estimatedDeliveryDate}</p>
+
+            <div className="flex justify-between items-center">
+              <div className="flex flex-col items-start">
+                <span className="text-xl font-semibold">{delivery.from}</span>
+                <div className="flex items-center mt-2">
+                  <div className="bg-primary w-4 h-4 rounded-full"></div>
+                  <div className="text-sm text-gray-600 ml-2">
+                    Colis transmis
+                    <div className="font-semibold">{delivery.pickupDate}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 mx-4 relative">
+                <div className="h-1 bg-gray-200 w-full absolute top-1/2 transform -translate-y-1/2"></div>
+                <div className="h-1 bg-primary w-1/2 absolute top-1/2 transform -translate-y-1/2"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-1 rounded-full border-2 border-primary">
+                  <Truck className="h-4 w-4 text-primary" />
+                </div>
+              </div>
+
+              <div className="flex flex-col items-end">
+                <span className="text-xl font-semibold">{delivery.to}</span>
+                <div className="flex items-center mt-2 justify-end">
+                  <div className="text-sm text-gray-600 mr-2 text-right">
+                    Date d'arrivé estimé pour le :<div className="font-semibold">{delivery.estimatedDeliveryDate}</div>
+                  </div>
+                  <div className="bg-gray-200 w-4 h-4 rounded-full"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

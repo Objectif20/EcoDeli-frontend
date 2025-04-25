@@ -7,6 +7,7 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import ClientDashboard from "./client";
 import DeliveryManDashboard from "./deliveryman";
 import ProviderDashboard from "./provider";
+import MerchantDashboard from "./merchant";
 
 export default function Dashboard() {
     const user = useSelector((state: RootState) => state.user.user);
@@ -26,7 +27,7 @@ export default function Dashboard() {
       useEffect(() => {
         dispatch(
           setBreadcrumb({
-            segments: [t("client.pages.office.myDocuments.home"), "Dashboard"],
+            segments: [t("client.pages.office.myDocuments.home")],
             links: ["/office/dashboard"],
           })
         );
@@ -55,7 +56,7 @@ export default function Dashboard() {
 
             {!isClientAndDeliveryman && (
                 <div className="text-center mt-6">
-                    {isMerchant && <p>Bienvenue sur le dashboard du Marchand.</p>}
+                    {isMerchant && <MerchantDashboard />}
                     {isProvider && <ProviderDashboard />}
                     {isClient && !isDeliveryman && <p>Bienvenue sur le dashboard du Client.</p>}
                     {isDeliveryman && !isClientOnly && (

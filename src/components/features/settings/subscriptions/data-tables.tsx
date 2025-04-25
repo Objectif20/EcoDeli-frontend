@@ -83,7 +83,7 @@ export const columns: ColumnDef<Subscription>[] = [
       const status = row.getValue("status") as string
 
       return (
-        <Badge variant="outline" className="bg-green-100 text-green-700 hover:bg-green-100 border-green-200">
+        <Badge variant="outline" className=" text-green-700 border-green-200">
           {status}
         </Badge>
       )

@@ -82,6 +82,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="add-vehicle" element={<AddVehicle />} />
           <Route path="my-invoices" element={<h1>My Invoices</h1>} />
           <Route path="billing-settings" element={<BillingSettings />} />
+          <Route path="my-routes" element={<h1>My Routes</h1>} />
         </Route>
 
         <Route path="general-settings" element={<GeneralSettings />} />

@@ -1,28 +1,15 @@
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
-
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  FileText,
-  MapPin,
-} from "lucide-react";
-import "leaflet/dist/leaflet.css";
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
-import { Truck, AlertTriangle, Clock, DollarSign } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
+import { Button } from "@/components/ui/button";
+import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Clock, MapPin, AlertTriangle, EuroIcon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 const fakeDeliveries = {
   details: {
@@ -35,8 +22,8 @@ const fakeDeliveries = {
       coordinates: [48.8566, 2.3522],
     },
     arrival: {
-      city: "Lyon",
-      coordinates: [45.764, 4.8357],
+      city: "Marseille",
+      coordinates: [43.2965, 5.3698],
     },
     departure_date: "2023-10-01",
     arrival_date: "2023-10-03",
@@ -129,52 +116,23 @@ const fakeDeliveries = {
         photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
       },
     },
-    {
-      id: 3,
-      title: "Step 3",
-      description: "Final delivery to the customer.",
-      date: "2023-10-03",
-      departure: {
-        city: "Marseille",
-        coordinates: [43.2965, 5.3698],
-      },
-      arrival: {
-        city: "Nice",
-        coordinates: [43.7102, 7.262],
-      },
-      courier: {
-        name: "Paul Leclerc",
-        photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
-      },
-    },
   ],
-}
+};
 
 export default function DeliveryDetailsPage() {
-  const dispatch = useDispatch();
+  const [_, setActiveTab] = useState("overview");
 
-  useEffect(() => {
-    dispatch(
-      setBreadcrumb({
-        segments: ["Home", "Deliveries", "Delivery Details"],
-        links: ["/office/dashboard", "/office/deliveries"],
-      })
-    );
-  }, [dispatch]);
+  const delivery = fakeDeliveries;
 
-    const [_, setActiveTab] = useState("overview")
-  
-    const delivery = fakeDeliveries
-  
-    const lastStep = delivery.steps[delivery.steps.length - 1]
-  
-    const totalPrice = delivery.details.price_with_step.reduce((sum, step) => sum + step.price, 0)
-  
-    const progress = (delivery.steps.length / 3) * 100
-  
-    const formatDate = (dateString: string) => {
-      return format(new Date(dateString), "d MMMM yyyy", { locale: fr })
-    }
+  const lastStep = delivery.steps[delivery.steps.length - 1];
+
+  const totalPrice = delivery.details.price_with_step.reduce((sum, step) => sum + step.price, 0);
+
+  const progress = (delivery.steps.length / 3) * 100;
+
+  const formatDate = (dateString : string) => {
+    return format(new Date(dateString), "d MMMM yyyy", { locale: fr });
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -196,7 +154,7 @@ export default function DeliveryDetailsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-6">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-secondary text-primary px-3 py-1">
+                  <Badge variant="outline" className="bg-secondary px-3 py-1">
                     <Clock className="w-4 h-4 mr-1" />
                     Livraison prévue le {formatDate(delivery.details.arrival_date)}
                   </Badge>
@@ -211,8 +169,8 @@ export default function DeliveryDetailsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">Départ</p>
-                      <h3 className="text-lg font-semibold">{delivery.details.departure.city}</h3>
-                      <p className="text-sm text-foreground">Collecte le {formatDate(delivery.details.departure_date)}</p>
+                      <h3 className="text-lg font-semibold">{lastStep.departure.city}</h3>
+                      <p className="text-sm text-foreground">Collecte le {formatDate(lastStep.date)}</p>
                     </div>
                   </div>
 
@@ -248,26 +206,18 @@ export default function DeliveryDetailsPage() {
                   <p className="text-sm text-foreground">Prix initial: {delivery.details.initial_price} €</p>
                 </div>
 
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
-                    Voir la facture
-                  </Button>
-                  <Button className="flex items-center gap-2">
-                    <Truck className="w-4 h-4" />
-                    Suivre la livraison
-                  </Button>
-                </div>
+                <Button className="w-full bg-green-500 text-white hover:bg-green-600">
+                  Prendre la livraison
+                </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Tabs defaultValue="overview" onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-3 mb-6">
+          <TabsList className="grid grid-cols-2 mb-6">
             <TabsTrigger value="overview">Aperçu</TabsTrigger>
             <TabsTrigger value="packages">Colis ({delivery.package.length})</TabsTrigger>
-            <TabsTrigger value="steps">Étapes ({delivery.steps.length})</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
@@ -276,7 +226,7 @@ export default function DeliveryDetailsPage() {
                 <CardTitle className="text-xl">Informations complémentaires</CardTitle>
               </CardHeader>
               <CardContent>
-                <p >{delivery.details.complementary_info}</p>
+                <p>{delivery.details.complementary_info}</p>
 
                 <Separator className="my-6" />
 
@@ -369,14 +319,14 @@ export default function DeliveryDetailsPage() {
                             <div>
                               <h3 className="text-lg font-semibold">{pkg.name}</h3>
                               {pkg.fragility && (
-                                <Badge className="mt-1 bg-amber-100 text-amber-800 border-none">
+                                <Badge className="mt-1 border-none">
                                   <AlertTriangle className="w-3 h-3 mr-1" />
                                   Fragile
                                 </Badge>
                               )}
                             </div>
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                              <DollarSign className="w-3 h-3 mr-1" />
+                            <Badge variant="outline" className="bg-primary text-foreground">
+                              <EuroIcon className="w-3 h-3 mr-1" />
                               {pkg.estimated_price} €
                             </Badge>
                           </div>
@@ -399,89 +349,8 @@ export default function DeliveryDetailsPage() {
               </CardContent>
             </Card>
           </TabsContent>
-
-          <TabsContent value="steps" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">Étapes de livraison</CardTitle>
-                <CardDescription>Suivi du parcours de votre livraison</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="relative pl-8 space-y-8">
-                  <div className="absolute left-3 top-4 bottom-4 w-0.5 bg-blue-200"></div>
-
-                  {delivery.steps.map((step, index) => (
-                    <div key={step.id} className="relative">
-                      <div
-                        className={`absolute left-[-29px] top-0 w-6 h-6 rounded-full ${
-                          index === delivery.steps.length - 1 ? "bg-primary" : "bg-primary bg-opacity-30"
-                        } flex items-center justify-center`}
-                      >
-                        {index === delivery.steps.length - 1 ? (
-                          <div className="w-2 h-2 rounded-full bg-white"></div>
-                        ) : (
-                          <div className="w-2 h-2 rounded-full bg-primary"></div>
-                        )}
-                      </div>
-
-                      <Card
-                        className={`border ${index === delivery.steps.length - 1 ? "bg-secondary" : ""}`}
-                      >
-                        <CardContent className="pt-6">
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-semibold">{step.title}</h3>
-                                <Badge variant="outline" className="text-xs">
-                                  {formatDate(step.date)}
-                                </Badge>
-                              </div>
-                              <p className="text-sm mt-1">{step.description}</p>
-                            </div>
-
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-8 w-8">
-                                <AvatarImage
-                                  src={step.courier.photoUrl || "/placeholder.svg"}
-                                  alt={step.courier.name}
-                                />
-                                <AvatarFallback>{step.courier.name.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="text-sm font-medium">{step.courier.name}</p>
-                                <p className="text-xs">Livreur</p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <Separator className="my-4" />
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4" />
-                              <div>
-                                <p className="text-sm ">Départ</p>
-                                <p className="font-medium">{step.departure.city}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4 " />
-                              <div>
-                                <p className="text-sm">Arrivée</p>
-                                <p className="font-medium">{step.arrival.city}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
     </div>
-  )
+  );
 }

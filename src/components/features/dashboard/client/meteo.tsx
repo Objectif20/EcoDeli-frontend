@@ -1,25 +1,57 @@
 "use client"
 
+import { MapPin, Sun, Cloud, CloudRain, CloudSnow } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState } from "react"
 
 export default function Meteo() {
-  const weather = {
+  const [weather] = useState({
     city: "Paris",
-    temperature: 22,
-    icon: "☀️",
+    temperature: 13,
+    condition: "sunny",
+    date: new Date(),
+  })
+
+  const getWeatherIcon = (condition: string) => {
+    switch (condition) {
+      case "sunny":
+        return <Sun className="h-8 w-8 text-yellow-500" />
+      case "cloudy":
+        return <Cloud className="h-8 w-8 text-gray-400" />
+      case "rainy":
+        return <CloudRain className="h-8 w-8 text-blue-400" />
+      case "snowy":
+        return <CloudSnow className="h-8 w-8 text-blue-200" />
+      default:
+        return <Sun className="h-8 w-8 text-yellow-500" />
+    }
   }
+
+  const formattedDate = new Intl.DateTimeFormat("fr-FR", {
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(weather.date)
 
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-medium">Météo</CardTitle>
+        <CardTitle className="text-base font-medium flex items-center justify-between">
+          <span>Météo</span>
+          <div className="flex items-center text-sm font-normal text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5 mr-1" />
+            {weather.city}
+          </div>
+        </CardTitle>
       </CardHeader>
-      <CardContent className="flex items-center justify-between text-sm h-full">
+      <CardContent className="flex items-center justify-between text-sm h-full pt-0">
         <div className="flex flex-col">
-          <span className="text-3xl font-bold">{weather.temperature}°C</span>
-          <span className="text-muted-foreground">{weather.city}</span>
+          <span className="text-3xl font-bold text-primary">{weather.temperature}°C</span>
+          <span className="text-xs text-muted-foreground mt-1">{formattedDate}</span>
         </div>
-        <div className="text-4xl">{weather.icon}</div>
+        <div className="flex items-center justify-center">{getWeatherIcon(weather.condition)}</div>
       </CardContent>
     </Card>
   )

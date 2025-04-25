@@ -16,6 +16,8 @@ interface Delivery {
   departureCity: string;
   arrivalCity: string;
   announcementName: string;
+  rate: number | null;
+  comment: string | null;
 }
 
 export default function HistoryDeliveriesClientPage() {
@@ -51,7 +53,9 @@ export default function HistoryDeliveriesClientPage() {
               departureCity: "Paris",
               arrivalCity: "Lyon",
               announcementName: "Livraison de meubles",
-            },
+              rate : null,
+              comment : null,
+          },
             {
               id: "2",
               deliveryman: {
@@ -64,6 +68,8 @@ export default function HistoryDeliveriesClientPage() {
               departureCity: "Marseille",
               arrivalCity: "Nice",
               announcementName: "Livraison de colis",
+              rate : null,
+              comment : null,
             },
             // Add more simulated data as needed
           ],

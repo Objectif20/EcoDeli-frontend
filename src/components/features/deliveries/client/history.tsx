@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { z } from "zod";
+import FeedbackDialog from "../../utils/feedback-dialog";
 
 interface Delivery {
   id: string;
@@ -47,6 +48,8 @@ interface Delivery {
   departureCity: string;
   arrivalCity: string;
   announcementName: string;
+  rate: number | null;
+  comment: string | null;
 }
 
 export const schema = z.object({
@@ -61,6 +64,8 @@ export const schema = z.object({
     departureCity: z.string(),
     arrivalCity: z.string(),
     announcementName: z.string(),
+    rate: z.number() .nullable(),
+    comment: z.string() .nullable(),
   });
 
 export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
@@ -115,6 +120,20 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
       accessorKey: "announcementName",
       header: "Nom de l'annonce",
       cell: ({ row }) => row.original.announcementName,
+    },
+    {
+      id: "feedback",
+      header: "Avis",
+      cell: ({ row }) => {
+        const { rate, comment, id } = row.original
+        const hasFeedback = rate !== 0 && comment !== null && comment.trim() !== ""
+
+        return hasFeedback ? (
+          <span className="text-muted-foreground text-sm">Déjà donné</span>
+        ) : (
+          <FeedbackDialog maxNote={10} id={id} />
+        )
+      },
     },
     {
       id: "actions",

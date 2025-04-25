@@ -43,17 +43,14 @@ const OfficeRoute: React.FC = () => {
       <Routes>
         
       <Route element={<PrivateProfileRoutes requiredProfiles={["DELIVERYMAN"]} />}>
-          <Route path="planning-and-route" element={<MyRoutes />} />
           <Route path="upcoming-deliveries" element={<OngoingDeliveries />} />
           <Route path="delivery-history" element={<MyDeliveryHistoryPage />} />
           <Route path="reviews-deliveryman" element={<ReviewDeliveryanPage />} />
           <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
-          <Route path="proofs" element={<ProofsPage />} />
           <Route path="my-vehicles" element={<VehicleListPage />} />
           <Route path="add-vehicle" element={<AddVehicle />} />
           <Route path="my-invoices" element={<h1>My Invoices</h1>} />
-          <Route path="billing-settings" element={<BillingSettings />} />
-          <Route path="my-routes" element={<h1>My Routes</h1>} />
+          <Route path="my-routes" element={<MyRoutes />} />
         </Route>
         
                 <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
@@ -84,11 +81,13 @@ const OfficeRoute: React.FC = () => {
           <Route path="billing-settings" element={<BillingSettings />} />
           <Route path="/services/create" element={<CreateService />} />
           <Route path="/services/success" element={<h1>Service Created Successfully</h1>} />
-          <Route path="/proofs" element={<ProofsPage />} />
           <Route path="/services/:id" element={<ServiceDetailsPage />} />
         </Route>
 
-
+        <Route element={<PrivateProfileRoutes requiredProfiles={["PROVIDER", "DELIVERYMAN"]} />}>
+        <Route path="proofs" element={<ProofsPage />} />
+        <Route path="billing-settings" element={<BillingSettings />} />
+        </Route>
 
         <Route path="general-settings" element={<GeneralSettings />} />
         <Route path="profile" element={<ProfileSettings />} />

@@ -54,9 +54,9 @@ const SubscriptionSettings: React.FC = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">
-                  Votre abonnement actuel : <span className="text-green-500">Starter</span>
+                  Votre abonnement actuel : <span className="text-primary">Starter</span>
                 </CardTitle>
-                <CardDescription className="text-3xl font-bold text-green-500">
+                <CardDescription className="text-3xl font-bold text-primary">
                   9,99€ <span className="text-sm font-normal text-muted-foreground">/mois</span>
                 </CardDescription>
               </CardHeader>

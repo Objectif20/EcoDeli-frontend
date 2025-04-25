@@ -33,13 +33,30 @@ import MyServiceReviews from "@/pages/features/services/client/my-reviews";
 import ServiceDetailsPageClient from "@/pages/features/services/client/service-details";
 import HistoryDeliveriesClientPage from "@/pages/features/deliveries/history-client";
 import Dashboard from "@/pages/features/dashboard/dashboard";
+import OngoingDeliveries from "@/pages/features/deliveries/deliveryman/ongoing-deliveries";
+import MyRoutes from "@/pages/features/deliveries/my-routes/my-routes";
 
 const OfficeRoute: React.FC = () => {
   return (
     <>
       <IntroDisclosureDemo />
       <Routes>
-        <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
+        
+      <Route element={<PrivateProfileRoutes requiredProfiles={["DELIVERYMAN"]} />}>
+          <Route path="planning-and-route" element={<MyRoutes />} />
+          <Route path="upcoming-deliveries" element={<OngoingDeliveries />} />
+          <Route path="delivery-history" element={<MyDeliveryHistoryPage />} />
+          <Route path="reviews-deliveryman" element={<ReviewDeliveryanPage />} />
+          <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
+          <Route path="proofs" element={<ProofsPage />} />
+          <Route path="my-vehicles" element={<VehicleListPage />} />
+          <Route path="add-vehicle" element={<AddVehicle />} />
+          <Route path="my-invoices" element={<h1>My Invoices</h1>} />
+          <Route path="billing-settings" element={<BillingSettings />} />
+          <Route path="my-routes" element={<h1>My Routes</h1>} />
+        </Route>
+        
+                <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
           <Route path="deliveries" element={<DeliveriesPage />} />
           <Route path="deliveries/:id" element={<DeliveryDetailsPage />} />
           <Route path="deliveries/create" element={<CreateDeliveryPage />} />
@@ -71,19 +88,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="/services/:id" element={<ServiceDetailsPage />} />
         </Route>
 
-        <Route element={<PrivateProfileRoutes requiredProfiles={["DELIVERYMAN"]} />}>
-          <Route path="planning-and-route" element={<PlanningPage />} />
-          <Route path="upcoming-deliveries" element={<h1>Upcoming Deliveries</h1>} />
-          <Route path="delivery-history" element={<MyDeliveryHistoryPage />} />
-          <Route path="reviews-deliveryman" element={<ReviewDeliveryanPage />} />
-          <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
-          <Route path="proofs" element={<ProofsPage />} />
-          <Route path="my-vehicles" element={<VehicleListPage />} />
-          <Route path="add-vehicle" element={<AddVehicle />} />
-          <Route path="my-invoices" element={<h1>My Invoices</h1>} />
-          <Route path="billing-settings" element={<BillingSettings />} />
-          <Route path="my-routes" element={<h1>My Routes</h1>} />
-        </Route>
+
 
         <Route path="general-settings" element={<GeneralSettings />} />
         <Route path="profile" element={<ProfileSettings />} />

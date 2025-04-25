@@ -41,6 +41,7 @@ import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export interface City {
   value: string;
@@ -93,6 +94,8 @@ function DeliveriesPage() {
     }),
     []
   );
+
+  const navigate = useNavigate();
 
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [page, setPage] = useState(1);
@@ -619,55 +622,52 @@ function DeliveriesPage() {
             )}
           </MapContainer>
           {selectedDelivery && (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-background p-4 shadow-md z-10 max-w-md w-full rounded-lg">
-              <Button
-                onClick={handleResetView}
-                className="absolute ml-16 mb-16 bottom-11 left- p-2 z-10 rounded-full h-8 w-8"
-                style={{ left: "23rem" }}
-              >
-                <X />
-              </Button>
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-background p-4 shadow-md z-10 max-w-md w-full rounded-lg">
+          <Button
+            onClick={handleResetView}
+            className="absolute top-2 right-2 p-2 z-10 rounded-full h-8 w-8"
+            variant="ghost"
+            size="icon"
+          >
+            <X className="h-4 w-4" />
+          </Button>
 
-              <div className="flex items-center w-full">
-                <div className="w-36 h-24 rounded mr-4 flex-shrink-0 flex items-center justify-center">
-                  {
-                    selectedDelivery.image ? (
-                      <img
-                        src={selectedDelivery.image}
-                        alt="Delivery"
-                        className="w-full h-full object-cover rounded"
-                      />
-                    ) : (
-                      <></>
-                    )
-                  }
-
-                </div>
-                <div className="flex-1 flex flex-col justify-between">
-                  <h3 className="text-xl font-bold">
-                    {selectedDelivery.description}
-                  </h3>
-                  <p>
-                    {t('client.pages.public.deliveries.cityToCity', {
-                      departureCity: selectedDelivery.departure_city,
-                      arrivalCity: selectedDelivery.arrival_city,
-                    })}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <Badge>
-                      {selectedDelivery.estimated_total_price ?? "N/A"} €
-                    </Badge>
-                    <Badge>
-                      {selectedDelivery.weight}
-                    </Badge>
-                    <Badge>
-                      {selectedDelivery.urgent ? t('client.pages.public.deliveries.urgent') : t('client.pages.public.deliveries.nonUrgent')}
-                    </Badge>
-                  </div>
-                </div>
+          <div className="flex items-center w-full">
+            <div className="w-36 h-24 rounded mr-4 flex-shrink-0 flex items-center justify-center">
+              {selectedDelivery.image ? (
+                <img
+                  src={selectedDelivery.image || "/placeholder.svg"}
+                  alt="Delivery"
+                  className="w-full h-full object-cover rounded"
+                />
+              ) : (
+                <></>
+              )}
+            </div>
+            <div className="flex-1 flex flex-col justify-between">
+              <h3 className="text-xl font-bold">{selectedDelivery.description}</h3>
+              <p>
+                {t("client.pages.public.deliveries.cityToCity", {
+                  departureCity: selectedDelivery.departure_city,
+                  arrivalCity: selectedDelivery.arrival_city,
+                })}
+              </p>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <Badge>{selectedDelivery.estimated_total_price ?? "N/A"} €</Badge>
+                <Badge>{selectedDelivery.weight}</Badge>
+                <Badge>
+                  {selectedDelivery.urgent
+                    ? t("client.pages.public.deliveries.urgent")
+                    : t("client.pages.public.deliveries.nonUrgent")}
+                </Badge>
               </div>
             </div>
-          )}
+            <div className="ml-4 flex-shrink-0">
+              <Button onClick={() => navigate(`/deliveries/${selectedDelivery.shipment_id}`)}>Détails</Button>
+            </div>
+          </div>
+        </div>
+      )}
         </div>
       </div>
     </div>

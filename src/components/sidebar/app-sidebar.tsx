@@ -179,7 +179,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             {
               title: t("client.components.sidebar.planningAndRoute"),
               url: "/office/planning-and-route",
-              icon: Calendar,
+              icon: Truck,
             },
             {
               title: t("client.components.sidebar.deliveries"),

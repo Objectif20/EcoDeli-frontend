@@ -3,6 +3,7 @@ import NotFoundPage from "@/pages/error/404";
 import AccessibilityPage from "@/pages/public/accessibility";
 import ContactPage from "@/pages/public/contact";
 import DeliveriesPage from "@/pages/public/deliveries";
+import DeliveriesDetails from "@/pages/public/deliveries-details";
 import FAQPage from "@/pages/public/faq";
 import LandingPage from "@/pages/public/landing";
 import LegalesNotices from "@/pages/public/legales-notices";
@@ -28,6 +29,7 @@ export default function PublicRoutes() {
             </Route>
             <Route element={<PublicNavbar />}>
                 <Route path="/deliveries" element={<DeliveriesPage />} />
+                <Route path="/deliveries/:id" element={<DeliveriesDetails />} />
                 <Route path="/services" element={<ServicesPage />} />
             </Route>
             <Route path="/*" element={<NotFoundPage />} />

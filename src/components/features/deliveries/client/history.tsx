@@ -131,7 +131,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
         return hasFeedback ? (
           <span className="text-muted-foreground text-sm">Déjà donné</span>
         ) : (
-          <FeedbackDialog maxNote={10} id={id} />
+          <FeedbackDialog maxNote={5} id={id} />
         )
       },
     },

@@ -49,7 +49,6 @@ const OfficeRoute: React.FC = () => {
           <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
           <Route path="my-vehicles" element={<VehicleListPage />} />
           <Route path="add-vehicle" element={<AddVehicle />} />
-          <Route path="my-invoices" element={<h1>My Invoices</h1>} />
           <Route path="my-routes" element={<MyRoutes />} />
         </Route>
         
@@ -61,7 +60,6 @@ const OfficeRoute: React.FC = () => {
           <Route path="location" element={<DeliveriesLocationPage />} />
           <Route path="planning" element={<PlanningPage />} />
           <Route path="subscriptions" element={<SubscriptionSettings />} />
-          <Route path="billing" element={<h1>Billing</h1>} />
           <Route path="ads-history" element={<HistoryDeliveriesClientPage />} />
         </Route>
 
@@ -76,7 +74,6 @@ const OfficeRoute: React.FC = () => {
           <Route path="my-services" element={<MyServicesList />} />
           <Route path="ads-history-provider" element={<h1>Ads History Provider</h1>} />
           <Route path="reviews-provider" element={<ReviewServicesPage />} />
-          <Route path="billing-provider" element={<h1>Billing Provider</h1>} />
           <Route path="planning-provider" element={<PlanningPage />} />
           <Route path="billing-settings" element={<BillingSettings />} />
           <Route path="/services/create" element={<CreateService />} />

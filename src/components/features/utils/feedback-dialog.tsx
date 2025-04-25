@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useId, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -10,9 +10,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Textarea } from "@/components/ui/textarea"
 import { DialogClose } from "@radix-ui/react-dialog"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface FeedbackDialogProps {
   maxNote: number
@@ -22,6 +22,7 @@ interface FeedbackDialogProps {
 export default function FeedbackDialog({ maxNote, id }: FeedbackDialogProps) {
   const [note, setNote] = useState<string>("")
   const [comment, setComment] = useState("")
+  const checkboxId = useId()
 
   const handleSendFeedback = () => {
     console.log({
@@ -54,26 +55,28 @@ export default function FeedbackDialog({ maxNote, id }: FeedbackDialogProps) {
             <div className="space-y-4">
               <div>
                 <fieldset className="space-y-4">
-                  <legend className="text-foreground text-lg leading-none font-semibold"></legend>
-                  <RadioGroup
-                    className="flex gap-0 -space-x-px rounded-md shadow-xs"
-                    onValueChange={setNote}
-                    value={note}
-                  >
-                    {Array.from({ length: maxNote + 1 }, (_, i) => i).map((number) => (
-                      <label
-                        key={number}
-                        className="border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 relative flex size-9 flex-1 cursor-pointer flex-col items-center justify-center gap-3 border text-center text-sm transition-[color,box-shadow,background] outline-none first:rounded-s-md last:rounded-e-md has-focus-visible:ring-[3px] has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50 data-[state=checked]:z-10"
-                      >
-                        <RadioGroupItem
-                          id={`radio-note-${number}`}
-                          value={number.toString()}
-                          className="sr-only after:absolute after:inset-0"
-                        />
-                        {number}
-                      </label>
-                    ))}
-                  </RadioGroup>
+                  <legend className="text-foreground text-lg leading-none font-semibold">Votre note</legend>
+                  <div className="flex gap-0 -space-x-px rounded-md shadow-xs">
+                    {Array.from({ length: maxNote + 1 }, (_, i) => {
+                      const isChecked = note === i.toString()
+                      return (
+                        <label
+                          key={i}
+                          className="border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:border-primary/50 has-focus-visible:border-ring has-focus-visible:ring-ring/50 relative flex size-9 flex-1 cursor-pointer flex-col items-center justify-center gap-3 border text-center text-sm transition-[color,box-shadow,background] outline-none first:rounded-s-md last:rounded-e-md has-focus-visible:ring-[3px] has-data-disabled:cursor-not-allowed has-data-disabled:opacity-50 data-[state=checked]:z-10"
+                          data-state={isChecked ? "checked" : "unchecked"}
+                        >
+                          <Checkbox
+                            id={`${checkboxId}-${i}`}
+                            value={i.toString()}
+                            className="sr-only after:absolute after:inset-0"
+                            checked={isChecked}
+                            onCheckedChange={() => setNote(i.toString())}
+                          />
+                          {i}
+                        </label>
+                      )
+                    })}
+                  </div>
                 </fieldset>
                 <div className="text-muted-foreground mt-2 flex justify-between text-xs">
                   <p>Mauvaise</p>
@@ -93,11 +96,11 @@ export default function FeedbackDialog({ maxNote, id }: FeedbackDialogProps) {
               </div>
             </div>
             <DialogFooter>
-                <DialogClose asChild>
-                    <Button type="submit" className="w-full">
-                    Envoyer l’avis
-                    </Button>
-                </DialogClose>
+              <DialogClose asChild>
+                <Button type="submit" className="w-full">
+                  Envoyer l’avis
+                </Button>
+              </DialogClose>
             </DialogFooter>
           </form>
         </div>

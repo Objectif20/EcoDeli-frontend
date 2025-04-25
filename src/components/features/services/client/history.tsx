@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ChevronDownIcon, ColumnsIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import FeedbackDialog from "../../utils/feedback-dialog";
 
 // Schéma pour validation
 export const schema = z.object({
@@ -36,7 +37,8 @@ export const schema = z.object({
   }),
   date: z.string(),
   service_name: z.string(),
-  rate: z.number(),
+  rate: z.number().nullable(),
+  review: z.string().nullable(),
 });
 
 export const columnLink = [
@@ -79,6 +81,20 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
       cell: ({ row }) => {
         const date = new Date(row.original.date);
         return date.toLocaleDateString("fr-FR");
+      },
+    },
+    {
+      id: "feedback",
+      header: "Avis",
+      cell: ({ row }) => {
+        const { rate, review, id } = row.original
+        const hasFeedback = rate !== 0 && review !== null && review.trim() !== ""
+
+        return hasFeedback ? (
+          <span className="text-muted-foreground text-sm">Déjà donné</span>
+        ) : (
+          <FeedbackDialog maxNote={5} id={id} />
+        )
       },
     },
     {

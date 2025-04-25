@@ -12,7 +12,6 @@ import {
   FileText,
   Truck,
   Car,
-  Receipt,
   Package,
   FileArchive,
 } from "lucide-react";
@@ -88,11 +87,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 { title: t("client.components.sidebar.reviews"), url: "/office/reviews" },
                 { title: t("client.components.sidebar.location"), url: "/office/location" },
               ],
-            },
-            {
-              title: t("client.components.sidebar.billing"),
-              url: "/office/billing",
-              icon: Receipt,
             },
             {
               title: t("client.components.sidebar.planning"),

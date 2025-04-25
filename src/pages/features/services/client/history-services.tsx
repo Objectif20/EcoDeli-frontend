@@ -16,7 +16,8 @@ interface ServiceHistory {
   };
   date: string;
   service_name: string;
-  rate: number;
+  rate: number | null;
+  review:string | null;
 }
 
 export default function HistoryServices() {
@@ -51,6 +52,7 @@ export default function HistoryServices() {
               date: "2023-10-01",
               service_name: "Nettoyage",
               rate: 5,
+              review: "Excellent service !",
             },
             {
               id: "2",
@@ -63,6 +65,7 @@ export default function HistoryServices() {
               date: "2023-10-02",
               service_name: "Réparation",
               rate: 3,
+              review : null,
             },
           ],
           totalRows: 2,

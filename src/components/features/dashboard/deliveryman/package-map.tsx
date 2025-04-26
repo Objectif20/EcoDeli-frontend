@@ -2,8 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useEffect } from "react"
 import L from "leaflet"
 import "leaflet/dist/leaflet.css"
+import PackageIcon from "@/assets/illustrations/package.svg"
 
-const packageIconUrl = "https://png.pngtree.com/png-vector/20190115/ourmid/pngtree-vector-package-icon-png-image_319707.jpg"
 
 export default function PackageMap() {
   useEffect(() => {
@@ -25,14 +25,14 @@ export default function PackageMap() {
     points.forEach((point) => {
       const marker = L.marker(point as L.LatLngTuple, {
         icon: L.icon({
-          iconUrl: packageIconUrl,
+          iconUrl: PackageIcon,
           iconSize: [32, 32], 
           iconAnchor: [16, 32], 
           popupAnchor: [0, -32],
         }),
       }).addTo(map)
       
-      marker.bindPopup("Colis 1").openPopup()
+      marker.bindPopup("Colis 1")
     })
   }, [])
 

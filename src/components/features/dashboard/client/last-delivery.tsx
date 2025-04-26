@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Truck } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import PackageIcon from "@/assets/illustrations/package.svg"
 
 import { useEffect } from "react"
 import L from "leaflet"
@@ -30,18 +31,16 @@ export default function LastDelivery() {
 
   useEffect(() => {
     L.Icon.Default.mergeOptions({
-      iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
-      iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-      shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+      iconUrl: PackageIcon
     })
   }, [])
 
   if (!delivery) {
     return (
-      <Card className="rounded-xl shadow-lg border border-gray-200 bg-white">
+      <Card className="rounded-xl shadow-lg border bg-background">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl font-semibold text-gray-800">Aucune livraison en cours</CardTitle>
-          <p className="text-gray-500">Vous n'avez pas de livraison en cours.</p>
+          <CardTitle className="text-xl font-semibold text-foreground">Aucune livraison en cours</CardTitle>
+          <p className="text-foreground">Vous n'avez pas de livraison en cours.</p>
         </CardHeader>
       </Card>
     )
@@ -85,7 +84,7 @@ export default function LastDelivery() {
         <div className="p-6">
           <div className="flex flex-col space-y-6">
             <div className="flex items-center">
-              <p className="text-gray-700 font-medium">ID : </p>
+              <p className="text-foreground font-medium">ID : </p>
               <span className="text-primary font-semibold ml-2">{delivery.id}</span>
             </div>
 
@@ -94,7 +93,7 @@ export default function LastDelivery() {
                 <span className="text-xl font-semibold">{delivery.from}</span>
                 <div className="flex items-center mt-2">
                   <div className="bg-primary w-4 h-4 rounded-full"></div>
-                  <div className="text-sm text-gray-600 ml-2">
+                  <div className="text-sm text-foreground ml-2">
                     Colis transmis
                     <div className="font-semibold">{delivery.pickupDate}</div>
                   </div>
@@ -102,9 +101,9 @@ export default function LastDelivery() {
               </div>
 
               <div className="flex-1 mx-4 relative">
-                <div className="h-1 bg-gray-200 w-full absolute top-1/2 transform -translate-y-1/2"></div>
+                <div className="h-1 w-full absolute top-1/2 transform -translate-y-1/2"></div>
                 <div className="h-1 bg-primary w-1/2 absolute top-1/2 transform -translate-y-1/2"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-1 rounded-full border-2 border-primary">
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-background p-1 rounded-full border-2 border-primary">
                   <Truck className="h-4 w-4 text-primary" />
                 </div>
               </div>
@@ -112,10 +111,10 @@ export default function LastDelivery() {
               <div className="flex flex-col items-end">
                 <span className="text-xl font-semibold">{delivery.to}</span>
                 <div className="flex items-center mt-2 justify-end">
-                  <div className="text-sm text-gray-600 mr-2 text-right">
+                  <div className="text-sm text-foreground mr-2 text-right">
                     Date d'arrivé estimé pour le :<div className="font-semibold">{delivery.estimatedDeliveryDate}</div>
                   </div>
-                  <div className="bg-gray-200 w-4 h-4 rounded-full"></div>
+                  <div className=" w-4 h-4 rounded-full"></div>
                 </div>
               </div>
             </div>

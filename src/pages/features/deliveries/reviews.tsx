@@ -31,7 +31,7 @@ export default function MyReviewsDeliveryPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Livraisons", " Mes avis"],
+        segments: ["Accueil", "Livraisons", "Mes avis"],
         links: ["/office/dashboard"],
       })
     );

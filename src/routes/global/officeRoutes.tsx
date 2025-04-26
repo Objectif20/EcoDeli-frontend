@@ -36,6 +36,7 @@ import Dashboard from "@/pages/features/dashboard/dashboard";
 import OngoingDeliveries from "@/pages/features/deliveries/deliveryman/ongoing-deliveries";
 import MyRoutes from "@/pages/features/deliveries/my-routes/my-routes";
 import ServicesHistory from "@/pages/features/services/services-history";
+import NotFoundPage from "@/pages/error/404";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -95,6 +96,8 @@ const OfficeRoute: React.FC = () => {
         <Route path="messaging" element={<ChatPage />} />
         <Route path="documents" element={<DocumentsPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

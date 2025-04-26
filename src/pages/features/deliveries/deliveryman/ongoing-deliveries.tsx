@@ -7,6 +7,8 @@ import { Card, CardHeader, CardTitle } from "@/components/ui/card"
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 import DeliveryCard from "@/components/features/deliveries/delivery-card"
+import PackageIcon from "@/assets/illustrations/package.svg"
+
 
 const deliveriesData = [
   {
@@ -83,9 +85,7 @@ export default function OngoingDeliveries() {
 
     if (typeof window !== "undefined") {
       L.Icon.Default.mergeOptions({
-        iconRetinaUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
-        iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-        shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+        iconUrl: PackageIcon,
       })
     }
   }, [dispatch])
@@ -102,7 +102,7 @@ export default function OngoingDeliveries() {
           </CardHeader>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {deliveriesData.map((delivery) => (
             <DeliveryCard key={delivery.id} delivery={delivery} />
           ))}

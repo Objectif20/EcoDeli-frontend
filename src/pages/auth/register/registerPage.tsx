@@ -29,14 +29,11 @@ export default function RegisterPage() {
         if (isFinished) {
             if (isPro) {
                 if (isPrestataire) {
-                    console.log('Informations du prestataire:', prestataireInfo);
                     RegisterApi.registerPrestataire(prestataireInfo)
                 } else {
-                    console.log('Informations du commerçant:', commercantInfo);
                     RegisterApi.registerCommercant(commercantInfo)
                 }
             } else {
-                console.log('Informations du client:', clientInfo);
                 RegisterApi.registerClient(clientInfo)
             }
         }

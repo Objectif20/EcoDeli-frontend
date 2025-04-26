@@ -56,6 +56,7 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
           {delivery.status}
         </Badge>
       </CardHeader>
+
       <CardContent className="p-0">
         <div className="relative w-full h-[300px] overflow-hidden rounded-md">
           {isMounted && (
@@ -67,10 +68,10 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
             >
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <Marker position={delivery.coordinates.origin}>
-                <Popup>Départ: {delivery.from}</Popup>
+                <Popup>Départ : {delivery.from}</Popup>
               </Marker>
               <Marker position={delivery.coordinates.destination}>
-                <Popup>Arrivée: {delivery.to}</Popup>
+                <Popup>Arrivée : {delivery.to}</Popup>
               </Marker>
               <Marker position={delivery.coordinates.current}>
                 <Popup>Position actuelle</Popup>
@@ -81,12 +82,22 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
 
         <div className="p-6">
           <div className="flex flex-col space-y-6">
-            <div className="flex items-center">
-              <p className="text-gray-700 font-medium">ID : </p>
-              <span className="text-primary font-semibold ml-2">{delivery.id}</span>
+
+            <div className="relative w-full h-4">
+              <div className="h-1 bg-background w-full rounded-full"></div>
+              <div
+                className="h-1 bg-primary rounded-full absolute top-0 left-0 transition-all duration-500"
+                style={{ width: `${delivery.progress}%` }}
+              ></div>
+              <div
+                className="absolute transform -translate-y-1/2 bg-background p-1 rounded-full border-2 border-primary"
+                style={{ left: `${delivery.progress}%` }}
+              >
+                <Truck className="h-4 w-4 text-primary" />
+              </div>
             </div>
 
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col md:flex-row justify-between gap-6">
               <div className="flex flex-col items-start">
                 <span className="text-xl font-semibold">{delivery.from}</span>
                 <div className="flex items-center mt-2">
@@ -98,31 +109,18 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
                 </div>
               </div>
 
-              <div className="flex-1 mx-4 relative">
-                <div className="h-1 bg-background w-full absolute top-1/2 transform -translate-y-1/2"></div>
-                <div
-                  className="h-1 bg-primary absolute top-1/2 transform -translate-y-1/2"
-                  style={{ width: `${delivery.progress}%` }}
-                ></div>
-                <div
-                  className="absolute top-1/2 transform -translate-y-1/2 bg-background p-1 rounded-full border-2 border-primary"
-                  style={{ left: `${delivery.progress}%` }}
-                >
-                  <Truck className="h-4 w-4 text-primary" />
-                </div>
-              </div>
-
               <div className="flex flex-col items-end">
                 <span className="text-xl font-semibold">{delivery.to}</span>
                 <div className="flex items-center mt-2 justify-end">
-                  <div className="text-sm text-gray-600 mr-2 text-right">
-                    Date d'arrivée estimée pour le :
+                  <div className="text-sm text-foreground mr-2 text-right">
+                    Date d'arrivée estimée :
                     <div className="font-semibold">{delivery.estimatedDeliveryDate}</div>
                   </div>
-                  <div className="bg-gray-200 w-4 h-4 rounded-full"></div>
+                  <div className="bg-foreground w-4 h-4 rounded-full"></div>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </CardContent>

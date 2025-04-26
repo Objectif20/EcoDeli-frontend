@@ -35,6 +35,7 @@ import HistoryDeliveriesClientPage from "@/pages/features/deliveries/history-cli
 import Dashboard from "@/pages/features/dashboard/dashboard";
 import OngoingDeliveries from "@/pages/features/deliveries/deliveryman/ongoing-deliveries";
 import MyRoutes from "@/pages/features/deliveries/my-routes/my-routes";
+import ServicesHistory from "@/pages/features/services/services-history";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -72,7 +73,7 @@ const OfficeRoute: React.FC = () => {
 
         <Route element={<PrivateProfileRoutes requiredProfiles={["PROVIDER"]} />}>
           <Route path="my-services" element={<MyServicesList />} />
-          <Route path="ads-history-provider" element={<h1>Ads History Provider</h1>} />
+          <Route path="ads-history-provider" element={<ServicesHistory />} />
           <Route path="reviews-provider" element={<ReviewServicesPage />} />
           <Route path="planning-provider" element={<PlanningPage />} />
           <Route path="billing-settings" element={<BillingSettings />} />

@@ -731,6 +731,113 @@
               "deliverymanProfile": "Devenir transporteur"
             }
           }
+        },
+        "security": {
+          "title": "Sécurité chez EcoDeli",
+          "intro": "Chez EcoDeli, la sécurité de vos données et de vos échanges est notre priorité absolue.",
+          "dataProtection": {
+            "title": "Protection des données",
+            "description": "Nous mettons en œuvre des mesures de sécurité avancées pour protéger toutes les données personnelles que vous nous confiez. Toutes les informations sont stockées sur des serveurs sécurisés et sont chiffrées pour garantir leur confidentialité."
+          },
+          "userSecurity": {
+            "title": "Sécurité des utilisateurs",
+            "description": "Nous nous engageons à vérifier l'identité de nos utilisateurs et à offrir des outils de communication sûrs. Vos paiements sont sécurisés via des prestataires certifiés et fiables."
+          },
+          "learnMore": "En savoir plus sur notre politique de sécurité"
+        },
+        "ecology": {
+          "title": "Notre engagement écologique",
+          "intro": "Chez EcoDeli, nous croyons qu’il est possible de livrer des colis tout en respectant la planète.",
+          "ourImpact": {
+            "title": "Réduction de l'empreinte carbone",
+            "description": "Grâce à notre modèle de livraison collaborative, les transporteurs prennent en charge des colis déjà sur leur trajet, réduisant ainsi considérablement les émissions de CO₂ liées au transport traditionnel."
+          },
+          "ourCommitment": {
+            "title": "Notre engagement pour demain",
+            "description": "EcoDeli s'engage à promouvoir des solutions de transport responsables et à sensibiliser sa communauté à l'importance de gestes simples pour un futur plus durable."
+          },
+          "learnMore": "Découvrir nos actions écologiques"
+        },
+        "confidentiality": {
+          "title": "Confidentialité",
+          "intro": "EcoDeli est engagé dans la protection des données de ses utilisateurs. Vous pouvez retrouver ci-dessous 4 points sur la confidentialité de notre application.",
+          "points": {
+            "notForSale": {
+              "title": "1. Vous n'êtes pas à vendre",
+              "description": "Contrairement aux géants américains, vos données ne nous intéressent pas. Nous pensons sincèrement que vous devez être le seul maître de vos données."
+            },
+            "encryptedDocuments": {
+              "title": "2. Vos documents sont chiffrés",
+              "description1": "EcoDeli peut avoir besoin de certains documents pour valider votre profil (permis de conduire, assurance...) ou générer des factures pour votre activité.",
+              "description2": "Ces données sensibles ne devraient pas être à notre disposition, ni à celle de quiconque autre que vous. Ainsi, nous nous engageons à chiffrer l'ensemble de vos documents."
+            },
+            "noBankData": {
+              "title": "3. Nous ne possédons pas vos coordonnées bancaires",
+              "description1": "Pour vous prouver notre engagement, nous ne collectons aucune de vos coordonnées bancaires.",
+              "description2": "Nous laissons notre partenaire Stripe, certifié PCI-DSS, gérer l'ensemble de vos coordonnées bancaires de manière totalement sécurisée."
+            },
+            "dataInFrance": {
+              "title": "4. Cocorico, vos données stockées en France",
+              "description1": "Déjà que nous n'exploitons aucune de vos données ailleurs que pour EcoDeli, que pourrions-nous faire de plus pour vous prouver notre engagement ?",
+              "description2": "C'est très simple, l'ensemble de nos serveurs sont hébergés en France métropolitaine, assurant que les données ne seront jamais collectées par nos hébergeurs."
+            }
+          }
+        },
+        "becomeProvider": {
+          "title": "Devenir Prestataire",
+          "intro": "Rejoignez notre réseau de prestataires qualifiés et développez votre activité avec EcoDeli. Découvrez ci-dessous les étapes pour commencer votre parcours avec nous.",
+          "steps": {
+            "step1": {
+              "title": "1. Inscription et justificatifs",
+              "description1": "Pour commencer votre parcours en tant que prestataire, vous devez créer un compte sur notre plateforme et fournir les documents nécessaires pour valider votre profil professionnel.",
+              "description2": "Ces documents incluent une pièce d'identité, un justificatif d'assurance professionnelle, ainsi que tout diplôme ou certification pertinent à votre domaine d'expertise."
+            },
+            "step2": {
+              "title": "2. Analyse de votre profil",
+              "description1": "Une fois votre dossier complet soumis, un administrateur EcoDeli procédera à l'analyse détaillée de votre profil dans un délai de 48 à 72 heures ouvrées.",
+              "description2": "Cette étape est essentielle pour maintenir la qualité de notre réseau. Nous vérifions l'authenticité des documents fournis et évaluons votre adéquation avec notre plateforme."
+            },
+            "step3": {
+              "title": "3. Création de prestations",
+              "description1": "Une fois votre profil validé, vous pourrez créer et personnaliser vos offres de prestations directement depuis votre tableau de bord prestataire.",
+              "description2": "Définissez vos tarifs, vos disponibilités, la zone géographique que vous couvrez, ainsi que la description détaillée de vos services."
+            },
+            "step4": {
+              "title": "4. Accès à votre planning",
+              "description1": "Gérez efficacement votre activité grâce à notre planning intégré qui centralise toutes vos prestations et les informations de vos clients.",
+              "description2": "Notre calendrier intelligent vous permet de visualiser vos rendez-vous, d'éviter les chevauchements, et d'optimiser vos déplacements."
+            }
+          },
+          "ready": {
+            "title": "Prêt à nous rejoindre ?",
+            "button": "S'inscrire maintenant"
+          }
+        },
+        "becomeDeliveryman": {
+          "title": "Devenir Transporteur",
+          "intro": "Vous souhaitez devenir transporteur sur EcoDeli ? Voici les étapes pour commencer votre aventure avec nous.",
+          "steps": {
+            "step1": {
+              "title": "1. Créez votre compte",
+              "description": "Inscrivez-vous sur notre plateforme en créant un compte en tant que particulier."
+            },
+            "step2": {
+              "title": "2. Faites une demande Transporteur",
+              "description": "Depuis votre espace personnel, effectuez une demande pour activer votre profil transporteur."
+            },
+            "step3": {
+              "title": "3. Analyse de votre demande",
+              "description": "Un administrateur EcoDeli analysera votre demande sous 48 à 72 heures ouvrées."
+            },
+            "step4": {
+              "title": "4. Ajoutez vos véhicules et trajets",
+              "description": "Ajoutez vos véhicules, définissez vos trajets favoris et commencez à chercher les demandes de livraisons qui vous intéressent."
+            }
+          },
+          "ready": {
+            "title": "Prêt à démarrer ?",
+            "button": "Créer mon compte"
+          }
         }
       },
       "office": {

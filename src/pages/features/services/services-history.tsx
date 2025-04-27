@@ -1,3 +1,4 @@
+import { ServiceApi } from "@/api/service.api";
 import { DataTable } from "@/components/features/services/services-history";
 import { PaginationControls } from "@/components/pagination-controle";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
@@ -31,41 +32,12 @@ export default function ServicesHistory() {
     );
   }, [dispatch]);
 
-  const data = [
-    {
-      "id": "1",
-      "clientName": "Jean Dupont",
-      "clientImage": "https://via.placeholder.com/50",
-      "date": "2023-10-01",
-      "time": "10:00",
-      "serviceName": "Nettoyage de printemps",
-      "rating": 4
-    },
-    {
-      "id": "2",
-      "clientName": "Marie Martin",
-      "clientImage": "https://via.placeholder.com/50",
-      "date": "2023-10-02",
-      "time": "14:30",
-      "serviceName": "Réparation électrique",
-      "rating": 5
-    },
-    {
-      "id": "3",
-      "clientName": "Paul Durand",
-      "clientImage": null,
-      "date": "2023-10-03",
-      "time": "09:00",
-      "serviceName": "Jardinage",
-      "rating": null
-    }
-  ]
-
   useEffect(() => {
     const fetchServicesHistory = async () => {
       try {
-        setServices(data);
-        setTotalItems(5);
+        const response = await ServiceApi.getMyServicesHistory(pageIndex + 1, pageSize); 
+        setServices(response.data);
+        setTotalItems(response.totalRows);
       } catch (error) {
         console.error("Erreur lors de la récupération de l'historique des services :", error);
       }
@@ -87,7 +59,7 @@ export default function ServicesHistory() {
         onPageIndexChange={setPageIndex}
         onPageSizeChange={(size) => {
           setPageSize(size);
-          setPageIndex(0);
+          setPageIndex(0); 
         }}
       />
     </>

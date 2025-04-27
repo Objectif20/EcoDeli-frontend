@@ -33,13 +33,28 @@ import MyServiceReviews from "@/pages/features/services/client/my-reviews";
 import ServiceDetailsPageClient from "@/pages/features/services/client/service-details";
 import HistoryDeliveriesClientPage from "@/pages/features/deliveries/history-client";
 import Dashboard from "@/pages/features/dashboard/dashboard";
+import OngoingDeliveries from "@/pages/features/deliveries/deliveryman/ongoing-deliveries";
+import MyRoutes from "@/pages/features/deliveries/my-routes/my-routes";
+import ServicesHistory from "@/pages/features/services/services-history";
+import NotFoundPage from "@/pages/error/404";
 
 const OfficeRoute: React.FC = () => {
   return (
     <>
       <IntroDisclosureDemo />
       <Routes>
-        <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
+        
+      <Route element={<PrivateProfileRoutes requiredProfiles={["DELIVERYMAN"]} />}>
+          <Route path="upcoming-deliveries" element={<OngoingDeliveries />} />
+          <Route path="delivery-history" element={<MyDeliveryHistoryPage />} />
+          <Route path="reviews-deliveryman" element={<ReviewDeliveryanPage />} />
+          <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
+          <Route path="my-vehicles" element={<VehicleListPage />} />
+          <Route path="add-vehicle" element={<AddVehicle />} />
+          <Route path="my-routes" element={<MyRoutes />} />
+        </Route>
+        
+                <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
           <Route path="deliveries" element={<DeliveriesPage />} />
           <Route path="deliveries/:id" element={<DeliveryDetailsPage />} />
           <Route path="deliveries/create" element={<CreateDeliveryPage />} />
@@ -47,7 +62,6 @@ const OfficeRoute: React.FC = () => {
           <Route path="location" element={<DeliveriesLocationPage />} />
           <Route path="planning" element={<PlanningPage />} />
           <Route path="subscriptions" element={<SubscriptionSettings />} />
-          <Route path="billing" element={<h1>Billing</h1>} />
           <Route path="ads-history" element={<HistoryDeliveriesClientPage />} />
         </Route>
 
@@ -60,29 +74,18 @@ const OfficeRoute: React.FC = () => {
 
         <Route element={<PrivateProfileRoutes requiredProfiles={["PROVIDER"]} />}>
           <Route path="my-services" element={<MyServicesList />} />
-          <Route path="ads-history-provider" element={<h1>Ads History Provider</h1>} />
+          <Route path="ads-history-provider" element={<ServicesHistory />} />
           <Route path="reviews-provider" element={<ReviewServicesPage />} />
-          <Route path="billing-provider" element={<h1>Billing Provider</h1>} />
           <Route path="planning-provider" element={<PlanningPage />} />
           <Route path="billing-settings" element={<BillingSettings />} />
           <Route path="/services/create" element={<CreateService />} />
           <Route path="/services/success" element={<h1>Service Created Successfully</h1>} />
-          <Route path="/proofs" element={<ProofsPage />} />
           <Route path="/services/:id" element={<ServiceDetailsPage />} />
         </Route>
 
-        <Route element={<PrivateProfileRoutes requiredProfiles={["DELIVERYMAN"]} />}>
-          <Route path="planning-and-route" element={<PlanningPage />} />
-          <Route path="upcoming-deliveries" element={<h1>Upcoming Deliveries</h1>} />
-          <Route path="delivery-history" element={<MyDeliveryHistoryPage />} />
-          <Route path="reviews-deliveryman" element={<ReviewDeliveryanPage />} />
-          <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
-          <Route path="proofs" element={<ProofsPage />} />
-          <Route path="my-vehicles" element={<VehicleListPage />} />
-          <Route path="add-vehicle" element={<AddVehicle />} />
-          <Route path="my-invoices" element={<h1>My Invoices</h1>} />
-          <Route path="billing-settings" element={<BillingSettings />} />
-          <Route path="my-routes" element={<h1>My Routes</h1>} />
+        <Route element={<PrivateProfileRoutes requiredProfiles={["PROVIDER", "DELIVERYMAN"]} />}>
+        <Route path="proofs" element={<ProofsPage />} />
+        <Route path="billing-settings" element={<BillingSettings />} />
         </Route>
 
         <Route path="general-settings" element={<GeneralSettings />} />
@@ -93,6 +96,8 @@ const OfficeRoute: React.FC = () => {
         <Route path="messaging" element={<ChatPage />} />
         <Route path="documents" element={<DocumentsPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

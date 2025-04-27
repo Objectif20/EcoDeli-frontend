@@ -11,6 +11,7 @@ import { RegisterContext } from "./RegisterContext";
 import { Elements } from '@stripe/react-stripe-js';
 import stripePromise from '@/config/stripeConfig';
 import { RegisterApi } from "@/api/register.api";
+import RegisterSuccess from "./registerSuccess";
 
 export default function RegisterPage() {
     const [step, setStep] = useState(1);
@@ -28,14 +29,11 @@ export default function RegisterPage() {
         if (isFinished) {
             if (isPro) {
                 if (isPrestataire) {
-                    console.log('Informations du prestataire:', prestataireInfo);
                     RegisterApi.registerPrestataire(prestataireInfo)
                 } else {
-                    console.log('Informations du commerçant:', commercantInfo);
                     RegisterApi.registerCommercant(commercantInfo)
                 }
             } else {
-                console.log('Informations du client:', clientInfo);
                 RegisterApi.registerClient(clientInfo)
             }
         }
@@ -62,14 +60,7 @@ export default function RegisterPage() {
                 </Elements>
             )}
             {isFinished && (
-                <div className="flex flex-col items-center justify-center min-h-screen ">
-                    <h2 className="mb-8 text-2xl font-semibold ">
-                        Inscription terminée !
-                    </h2>
-                    <p className="">
-                        Merci de vous être inscrit. Vous pouvez maintenant vous connecter.
-                    </p>
-                </div>
+                <RegisterSuccess />
             )}
         </RegisterContext.Provider>
     );

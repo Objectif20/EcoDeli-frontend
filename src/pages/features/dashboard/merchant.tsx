@@ -3,6 +3,7 @@ import FinishedDeliveries from "@/components/features/dashboard/client/completed
 import DeliveryCarriers from "@/components/features/dashboard/client/delivery-carriers";
 import LastDelivery from "@/components/features/dashboard/client/last-delivery";
 import Meteo from "@/components/features/dashboard/client/meteo";
+import { NumberDeliveries } from "@/components/features/dashboard/client/number-deliveries";
 import { PackageStats } from "@/components/features/dashboard/client/piechart";
 
 export default function MerchantDashboard() {
@@ -32,7 +33,7 @@ export default function MerchantDashboard() {
           </div>
   
           <div className="col-span-6 lg:col-span-4 bg-pink-500 rounded-xl">
-
+            <NumberDeliveries />
 
           </div>
           <div className="col-span-6 lg:col-span-4 bg-indigo-500  rounded-xl">

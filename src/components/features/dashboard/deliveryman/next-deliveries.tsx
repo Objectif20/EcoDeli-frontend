@@ -14,7 +14,6 @@ export default function NextDelivery({
   destination = "Marseille",
   date = new Date(2025, 1, 12, 14, 30),
 }: Partial<NextDeliveryProps>) {
-  // Format the date in French
   const formattedDate = new Intl.DateTimeFormat("fr-FR", {
     day: "numeric",
     month: "long",
@@ -31,26 +30,26 @@ export default function NextDelivery({
       <CardContent className="flex flex-col">
         <div className="flex items-center justify-between w-full mt-2">
           <div className="flex flex-col items-center">
-            <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
-              <MapPin className="h-6 w-6 text-white" />
+            <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center">
+              <MapPin className="h-6 w-6 text-foreground" />
             </div>
             <span className="mt-2 font-medium">{origin}</span>
           </div>
 
           <div className="flex-1 mx-4">
-            <div className="h-0.5 bg-gray-300 w-full"></div>
+            <div className="h-0.5 bg-secondary w-full"></div>
           </div>
 
           <div className="flex flex-col items-center">
-            <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
-              <MapPin className="h-6 w-6 text-white" />
+            <div className="w-12 h-12 rounded-full bg-background flex items-center justify-center">
+              <MapPin className="h-6 w-6 text-foreground" />
             </div>
             <span className="mt-2 font-medium">{destination}</span>
           </div>
         </div>
 
         <div className="mt-6 text-center">
-          <p className="text-gray-700">Prévu le {formattedDate}</p>
+          <p className="text-foreground">Prévu le {formattedDate}</p>
         </div>
       </CardContent>
     </Card>

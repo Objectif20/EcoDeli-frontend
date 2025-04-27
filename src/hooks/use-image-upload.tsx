@@ -1,56 +1,41 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-interface UseImageUploadProps {
-  onUpload?: (url: string) => void;
-}
-
-export function useImageUpload({ onUpload }: UseImageUploadProps = {}) {
-  const previewRef = useRef<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export function useImageUpload() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleThumbnailClick = useCallback(() => {
+  const handleThumbnailClick = () => {
     fileInputRef.current?.click();
-  }, []);
+  };
 
-  const handleFileChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
-      if (file) {
-        setFileName(file.name);
-        const url = URL.createObjectURL(file);
-        setPreviewUrl(url);
-        previewRef.current = url;
-        onUpload?.(url);
-      }
-    },
-    [onUpload],
-  );
-
-  const handleRemove = useCallback(() => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+      setFileName(file.name);
+      setUploadedFile(file);
     }
+  };
+
+  const handleRemove = () => {
     setPreviewUrl(null);
     setFileName(null);
-    previewRef.current = null;
+    setUploadedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
-  }, [previewUrl]);
-
-  useEffect(() => {
-    return () => {
-      if (previewRef.current) {
-        URL.revokeObjectURL(previewRef.current);
-      }
-    };
-  }, []);
+  };
 
   return {
     previewUrl,
     fileName,
+    uploadedFile,
     fileInputRef,
     handleThumbnailClick,
     handleFileChange,

@@ -55,6 +55,16 @@ export interface Service {
     ]
   }    
 
+  export interface ServiceHistory {
+    id: string;
+    clientName: string;
+    clientImage: string | null;
+    date: string;
+    time: string;
+    serviceName: string;
+    rating: number | null;
+  }
+
 
 export class ServiceApi {
 
@@ -115,6 +125,11 @@ export class ServiceApi {
             content: content,
         });
         return response;
+    }
+
+    static async getMyServicesHistory(page: number, limit: number) : Promise<{data : ServiceHistory[], totalRows: number, totalPages: number, currentPage: number, limit: number}> {
+        const response = await axiosInstance.get(`/client/service/history?limit=${limit}&page=${page}`);
+        return response.data;
     }
 
 

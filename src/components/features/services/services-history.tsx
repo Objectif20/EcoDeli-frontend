@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import {
   ColumnDef,
@@ -14,10 +16,8 @@ import {
   ColumnsIcon,
   ChevronDownIcon,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import {
-  Button
-} from "@/components/ui/button";
+
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -32,127 +32,56 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { z } from "zod";
-import FeedbackDialog from "../../utils/feedback-dialog";
 
-interface Delivery {
-  id: string;
-  deliveryman: {
-    id: string;
-    name: string;
-    photo: string;
-  };
-  departureDate: string;
-  arrivalDate: string;
-  departureCity: string;
-  arrivalCity: string;
-  announcementName: string;
-  rate: number | null;
-  comment: string | null;
-}
+import { z } from "zod";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export const schema = z.object({
-    id: z.string(),
-    deliveryman: z.object({
-      id: z.string(),
-      name: z.string(),
-      photo: z.string(),
-    }),
-    departureDate: z.string(),
-    arrivalDate: z.string(),
-    departureCity: z.string(),
-    arrivalCity: z.string(),
-    announcementName: z.string(),
-    rate: z.number() .nullable(),
-    comment: z.string() .nullable(),
-  });
+  id: z.string(),
+  clientName: z.string(),
+  clientImage: z.string().nullable(),
+  date: z.string(),
+  time: z.string(),
+  serviceName: z.string(),
+  rating: z.number().nullable(),
+});
+
+export const columnLink = [
+  { column_id: "clientName", text: "Client" },
+  { column_id: "date", text: "Date" },
+  { column_id: "time", text: "Heure" },
+  { column_id: "serviceName", text: "Service" },
+  { column_id: "rating", text: "Note" },
+];
 
 export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
 
-    const navigate = useNavigate();
-
   return [
     {
-      id: "deliveryman",
-      accessorKey: "deliveryman.name",
-      header: "Livreur",
+      accessorKey: "clientName",
+      header: "Client",
       cell: ({ row }) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center">
           <Avatar>
-            <AvatarImage src={row.original.deliveryman.photo} />
-            <AvatarFallback>{row.original.deliveryman.name[0]}</AvatarFallback>
+            <AvatarImage src={row.original.clientImage || ""} alt={row.original.clientName} />
+            <AvatarFallback>{row.original.clientName.charAt(0)}</AvatarFallback>
           </Avatar>
-          <div>
-            <span>{row.original.deliveryman.name}</span>
-          </div>
+          <span className="ml-2">{row.original.clientName}</span>
         </div>
       ),
-      enableHiding: false,
     },
+    { accessorKey: "date", header: "Date", cell: ({ row }) => row.original.date },
+    { accessorKey: "time", header: "Heure", cell: ({ row }) => row.original.time },
+    { accessorKey: "serviceName", header: "Service", cell: ({ row }) => row.original.serviceName },
     {
-      accessorKey: "departureDate",
-      header: "Date de départ",
-      cell: ({ row }) => {
-        const date = new Date(row.original.departureDate);
-        return date.toLocaleDateString("fr-FR");
-      },
+      accessorKey: "rating",
+      header: "Note",
+      cell: ({ row }) => row.original.rating ? `${row.original.rating}/5` : "N/A",
     },
-    {
-      accessorKey: "arrivalDate",
-      header: "Date d'arrivée",
-      cell: ({ row }) => {
-        const date = new Date(row.original.arrivalDate);
-        return date.toLocaleDateString("fr-FR");
-      },
-    },
-    {
-      accessorKey: "departureCity",
-      header: "Ville de départ",
-      cell: ({ row }) => row.original.departureCity,
-    },
-    {
-      accessorKey: "arrivalCity",
-      header: "Ville d'arrivée",
-      cell: ({ row }) => row.original.arrivalCity,
-    },
-    {
-      accessorKey: "announcementName",
-      header: "Nom de l'annonce",
-      cell: ({ row }) => row.original.announcementName,
-    },
-    {
-      id: "feedback",
-      header: "Avis",
-      cell: ({ row }) => {
-        const { rate, comment, id } = row.original
-        const hasFeedback = rate !== 0 && comment !== null && comment.trim() !== ""
-
-        return hasFeedback ? (
-          <span className="text-muted-foreground text-sm">Déjà donné</span>
-        ) : (
-          <FeedbackDialog maxNote={5} id={id} />
-        )
-      },
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate(`/office/deliveries/${row.original.id}`)}
-        >
-          Voir le détail
-        </Button>
-      ),
-    },
-  ]
+  ];
 };
 
-
-export function DataTable({ data: initialData }: { data: Delivery[] }) {
+export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
@@ -165,8 +94,6 @@ export function DataTable({ data: initialData }: { data: Delivery[] }) {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
-
-
 
   const table = useReactTable({
     data,
@@ -209,18 +136,27 @@ export function DataTable({ data: initialData }: { data: Delivery[] }) {
                     typeof column.accessorFn !== "undefined" &&
                     column.getCanHide()
                 )
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                ))}
+                .map((column) => {
+                  const columnLinkItem = columnLink.find(
+                    (link) => link.column_id === column.id
+                  );
+                  const displayText = columnLinkItem
+                    ? columnLinkItem.text
+                    : column.id;
+
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {displayText}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -230,16 +166,18 @@ export function DataTable({ data: initialData }: { data: Delivery[] }) {
           <TableHeader className="sticky top-0 bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} colSpan={header.colSpan}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             ))}
           </TableHeader>

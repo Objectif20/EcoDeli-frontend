@@ -45,8 +45,11 @@ const userSlice = createSlice({
         state.user.language = action.payload;
       }
     },
+    resetUser: () => {
+      return initialState
+    },
   },
 });
 
-export const { setUser, setLoading, setError, updateLang } = userSlice.actions;
+export const { setUser, setLoading, setError, updateLang, resetUser } = userSlice.actions;
 export default userSlice.reducer;

@@ -156,7 +156,7 @@ export default function DeliveryDetailsPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Home", "Deliveries", "Delivery Details"],
+        segments: ["Accueil", "Livraisons", fakeDeliveries.details.name],
         links: ["/office/dashboard", "/office/deliveries"],
       })
     );

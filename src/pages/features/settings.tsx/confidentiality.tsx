@@ -13,6 +13,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogClose,
+  DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Drawer,
@@ -21,6 +23,8 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerClose,
+  DrawerTrigger,
+  DrawerFooter,
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,8 +33,10 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
+import { ProfileAPI } from "@/api/profile.api";
+import { logout } from "@/redux/slices/authSlice";
 
 const PrivacySettings: React.FC = () => {
   const { t } = useTranslation();
@@ -47,6 +53,7 @@ const PrivacySettings: React.FC = () => {
   const [otp, setOtp] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDisableMode, setIsDisableMode] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(
@@ -56,6 +63,7 @@ const PrivacySettings: React.FC = () => {
       }),
     );
   }, [dispatch, t]);
+
 
   const handleActivateOTP = async () => {
     if (!user?.user_id) {
@@ -128,6 +136,17 @@ const PrivacySettings: React.FC = () => {
     setIsDisableMode(false);
   };
 
+  const handleResetPassword = async () => {
+    try {
+      await ProfileAPI.updateMyPassword()
+    } catch (error) {
+      console.error("Failed to reset password:", error);
+    }
+
+    dispatch(logout());
+    navigate("/auth/login")
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <div className="mx-auto grid w-full max-w-6xl gap-2">
@@ -160,9 +179,47 @@ const PrivacySettings: React.FC = () => {
                   {t("client.pages.office.settings.confidentiality.updatePasswordDescription")}
                 </p>
               </div>
-              <Button className="px-4 py-2 rounded-md text-sm transition-colors">
-                {t("client.pages.office.settings.confidentiality.changePassword")}
-              </Button>
+              {isMobile ? (
+
+                  <Drawer>
+                  <DrawerTrigger asChild>
+                    <Button variant="destructive" >{t("client.pages.office.settings.confidentiality.changePassword")}</Button>
+                  </DrawerTrigger>
+                  <DrawerContent className="sm:max-w-[425px]">
+                    <DrawerHeader>
+                      <DrawerTitle>Réinitialiser le mot de passe</DrawerTitle>
+                      <DrawerDescription>
+                      Un email de réinitialisation de mot de passe vous sera envoyé.
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    <DrawerFooter>
+                      <Button onClick={handleResetPassword}>{t('pages.parametres.valider')}</Button>
+                      <Button variant={"ghost"}>{t('pages.parametres.annuler')}</Button>
+                    </DrawerFooter>
+                  </DrawerContent>
+                  </Drawer>
+
+              ) : (
+                <div className="absolute right-0 top-0 md:static md:ml-auto">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button variant="destructive" className="w-full md:w-auto">{t("client.pages.office.settings.confidentiality.changePassword")}</Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Réinitialiser le mot de passe</DialogTitle>
+                              <DialogDescription>
+                              Un email de réinitialisation de mot de passe vous sera envoyé.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                              <Button onClick={handleResetPassword}>{t('pages.parametres.valider')}</Button>
+                              <Button variant={"ghost"}>{t('pages.parametres.annuler')}</Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                  </div>
+              )}
             </div>
 
             <div className="space-y-4 pt-4">

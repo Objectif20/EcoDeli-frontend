@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, LinkProps } from 'react-router-dom';
 import { Menu } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -28,6 +28,9 @@ import logoSvg from '@/assets/logo.svg';
 import { cn } from '@/lib/utils';
 import { RootState } from '@/redux/store';
 import { useSelector } from 'react-redux';
+import { Sun, Moon } from 'lucide-react';
+import { useTheme } from '@/components/theme-provider';
+import GiveDelivery from '@/assets/illustrations/give-deliveries.svg';
 
 interface MenuItem {
   titleKey: string;
@@ -81,7 +84,7 @@ const Navbar = ({
         {
           titleKey: 'client.components.navbar.livraison.devenirLivreur',
           description: 'client.components.navbar.livraison.devenirLivreurDescription',
-          url: '#',
+          url: '/become-deliveryman',
         },
 
       ],
@@ -98,7 +101,7 @@ const Navbar = ({
         {
           titleKey: 'client.components.navbar.prestation.devenirPrestataire',
           description: 'client.components.navbar.prestation.devenirPrestataireDescription',
-          url: '#',
+          url: '/become-provider',
         }
       ],
     },
@@ -113,13 +116,17 @@ const Navbar = ({
   },
 }: NavbarProps) => {
   const { t } = useTranslation();
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
 
   return (
     <section className='py-4 h-16'>
       <div className='container'>
-        {/* Desktop Navbar */}
         <nav className='hidden justify-between lg:flex'>
           <div className='flex items-center gap-6'>
             <Link to={logo.url} className='flex items-center gap-2'>
@@ -137,8 +144,10 @@ const Navbar = ({
             </div>
           </div>
 
-          {/* Desktop Buttons */}
           <div className='flex gap-2'>
+          <Button variant="outline" onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun className="size-5" /> : <Moon className="size-5" />}
+          </Button>
             {user?.user_id ? (
               <Button asChild size='sm'>
                 <Link to="/office/dashboard">
@@ -158,7 +167,6 @@ const Navbar = ({
           </div>
         </nav>
 
-        {/* Mobile Navbar */}
         <div className='block lg:hidden'>
           <div className='flex items-center justify-between'>
             <Link to={logo.url} className='flex items-center gap-2'>
@@ -181,7 +189,6 @@ const Navbar = ({
                   </SheetTitle>
                 </SheetHeader>
 
-                {/* Mobile Menu Items */}
                 <div className='my-6 flex flex-col gap-4'>
                   <Accordion
                     type='single'
@@ -191,7 +198,6 @@ const Navbar = ({
                     {menu.map((item) => renderMobileMenuItem(item, t))}
                   </Accordion>
 
-                  {/* Mobile Buttons */}
                   <div className='flex flex-col gap-2 mt-4'>
                     {user?.user_id ? (
                       <Button asChild className='w-full'>
@@ -267,6 +273,8 @@ const renderMenuItem = (item: MenuItem, t: any) => {
 };
 
 const renderMenuItemWithImage = (item: MenuItem, t: any) => {
+
+
   return (
     <NavigationMenuItem key={item.titleKey} className='text-muted-foreground'>
       <NavigationMenuTrigger>{t(item.titleKey)}</NavigationMenuTrigger>
@@ -276,25 +284,18 @@ const renderMenuItemWithImage = (item: MenuItem, t: any) => {
             <NavigationMenuLink asChild>
               <Link
                 to='/'
-                className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md'
+                className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted no-underline outline-none focus:shadow-md'
               >
-                {/* Placeholder for the image */}
-                <div className='h-6 w-6'>
-                  {/* Image will go here */}
-                </div>
-                <div className='mb-2 mt-4 text-lg font-medium'>
-                  shadcn/ui
-                </div>
-                <p className='text-sm leading-tight text-muted-foreground'>
-                  Beautifully designed components that you can copy and
-                  paste into your apps. Accessible. Customizable. Open
-                  Source.
-                </p>
+                <img
+                  src={GiveDelivery}
+                  alt={t(item.titleKey)}
+                  className='h-48 w-48 rounded-md object-cover'
+                />
               </Link>
             </NavigationMenuLink>
           </li>
           {item.items?.map((subItem) => (
-            <ListItem key={subItem.titleKey} href={subItem.url} title={t(subItem.titleKey)}>
+            <ListItem key={subItem.titleKey} to={subItem.url} title={t(subItem.titleKey)}>
               {t(subItem.description)}
             </ListItem>
           ))}
@@ -342,13 +343,13 @@ const renderMobileMenuItem = (item: MenuItem, t: any) => {
 };
 
 const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
+  React.ElementRef<typeof Link>,
+  LinkProps & { title: string }
 >(({ className, title, children, ...props }, ref) => {
   return (
     <li>
       <NavigationMenuLink asChild>
-        <a
+        <Link
           ref={ref}
           className={cn(
             'block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground',
@@ -360,7 +361,7 @@ const ListItem = React.forwardRef<
           <p className='line-clamp-2 text-sm leading-snug text-muted-foreground'>
             {children}
           </p>
-        </a>
+        </Link>
       </NavigationMenuLink>
     </li>
   );

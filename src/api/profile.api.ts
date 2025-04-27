@@ -147,4 +147,9 @@ export class ProfileAPI {
         return response.data;
       }
 
+      static async updateMyPassword() {
+        const response = await axiosInstance.post("/client/profile/newPassword");
+        return response.data;
+      }
+
 }

@@ -32,6 +32,16 @@ export interface Route {
     max_dimension: number;
   }
 
+  export interface Vehicle {
+    id: string;
+    name: string;
+    matricule: string;
+    co2: number;
+    allow: boolean;
+    image: string;
+    justification_file: string;
+  }
+
 
 export class DeliverymanApi {
 
@@ -65,6 +75,17 @@ export class DeliverymanApi {
           console.error("Erreur lors de l'ajout du véhicule :", error);
           throw new Error("Impossible d'ajouter le véhicule");
         }
+      }
+    
+
+      static async getMyVehicles(page: number, limit: number): Promise<{data : Vehicle[], totalRows: number}> {
+        const response = await axiosInstance.get<{data : Vehicle[], totalRows: number}>('/client/deliveryman/my-vehicles', {
+          params: {
+            page: page,
+            limit: limit,
+          },
+        });
+        return response.data;
       }
 
 }

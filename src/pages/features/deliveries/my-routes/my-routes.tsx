@@ -1,12 +1,10 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { z } from "zod"
 import { AddRouteDialog } from "@/components/features/deliveries/deliverman/add-routes"
 
-
-
-
+const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 
 export const routeSchema = z
   .object({
@@ -19,14 +17,14 @@ export const routeSchema = z
       destination: z.tuple([z.number(), z.number()]),
     }),
     date: z.string().optional(),
-    weekday: z.string().optional(),
+    weekday: z.string().regex(/^[0-6]$/).optional(),
     tolerate_radius: z.number().min(0, "Le rayon doit être positif"),
-    comeback_today_or_tomorrow: z.union([z.literal("true"), z.literal("false"), z.literal("later")]),
+    comeback_today_or_tomorrow: z.union([z.literal("today"), z.literal("tomorrow"), z.literal("later")]),
   })
   .refine(
     (data) => {
       if (data.permanent) {
-        return !!data.weekday
+        return data.weekday !== undefined
       } else {
         return !!data.date
       }
@@ -36,68 +34,33 @@ export const routeSchema = z
       path: ["weekday"],
     },
   )
+
 export type Route = z.infer<typeof routeSchema>
 
-const initialRoutes: Route[] = [
-    {
-      id: "1",
-      from: "Paris",
-      to: "Lyon",
-      permanent: true,
-      coordinates: {
-        origin: [48.8566, 2.3522],
-        destination: [45.764, 4.8357],
-      },
-      weekday: "Jeudi",
-      tolerate_radius: 5,
-      comeback_today_or_tomorrow: "true",
-    },
-    {
-      id: "2",
-      from: "Marseille",
-      to: "Nice",
-      permanent: false,
-      coordinates: {
-        origin: [43.2965, 5.3698],
-        destination: [43.7102, 7.262],
-      },
-      date: "2025-05-15",
-      tolerate_radius: 3,
-      comeback_today_or_tomorrow: "false",
-    },
-    {
-      id: "3",
-      from: "Bordeaux",
-      to: "Toulouse",
-      permanent: false,
-      coordinates: {
-        origin: [44.8378, -0.5792],
-        destination: [43.6047, 1.4442],
-      },
-      date: "2025-03-10",
-      tolerate_radius: 4,
-      comeback_today_or_tomorrow: "true",
-    },
-    {
-      id: "4",
-      from: "Lille",
-      to: "Paris",
-      permanent: false,
-      coordinates: {
-        origin: [50.6292, 3.0573],
-        destination: [48.8566, 2.3522],
-      },
-      date: "2025-01-01",
-      tolerate_radius: 2,
-      comeback_today_or_tomorrow: "false",
-    },
-  ]
-
 export default function MyRoutes() {
-  const [routes, setRoutes] = useState<Route[]>(initialRoutes)
+  const [routes, setRoutes] = useState<Route[]>([])
 
-  const addRoute = (newRoute: Route) => {
-    setRoutes([...routes, newRoute])
+  useEffect(() => {
+    const fetchRoutes = async () => {
+      try {
+        const data = await DeliverymanApi.getDeliverymanRoutes()
+        setRoutes(data)
+      } catch (error) {
+        console.error("Erreur lors de la récupération des trajets:", error)
+      }
+    }
+
+    fetchRoutes()
+  }, [])
+
+
+  const addRoute = async () => {
+    try {
+      const data = await DeliverymanApi.getDeliverymanRoutes()
+      setRoutes(data)
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du trajet:", error)
+    }
   }
 
   return (
@@ -117,7 +80,6 @@ export default function MyRoutes() {
   )
 }
 
-
 "use client"
 
 import { useMemo } from "react"
@@ -128,6 +90,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { DeliverymanApi } from "@/api/deliveryman.api"
 
 interface RoutesListProps {
   routes: Route[]
@@ -189,6 +152,8 @@ interface RouteAccordionItemProps {
 }
 
 function RouteAccordionItem({ route, disabled = false }: RouteAccordionItemProps) {
+  const weekdayName = route.weekday !== undefined ? daysOfWeek[parseInt(route.weekday, 10)] : ""
+
   return (
     <AccordionItem value={route.id} className={`border rounded-lg ${disabled ? "opacity-60" : ""}`} disabled={disabled}>
       <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50 rounded-t-lg">
@@ -249,7 +214,7 @@ function RouteAccordionItem({ route, disabled = false }: RouteAccordionItemProps
                 <div className="flex items-center text-sm">
                   <Calendar className="h-4 w-4 mr-2 text-primary" />
                   <span className="font-medium">Jour:</span>
-                  <span className="ml-2">{route.weekday}</span>
+                  <span className="ml-2">{weekdayName}</span>
                 </div>
               ) : route.date ? (
                 <div className="flex items-center text-sm">
@@ -269,7 +234,7 @@ function RouteAccordionItem({ route, disabled = false }: RouteAccordionItemProps
               <div className="flex items-center text-sm">
                 <CornerDownRight className="h-4 w-4 mr-2 text-primary" />
                 <span className="font-medium">Retour:</span>
-                <span className="ml-2">{route.comeback_today_or_tomorrow ? "Le même jour" : "Le lendemain"}</span>
+                <span className="ml-2">{route.comeback_today_or_tomorrow === "today" ? "Le même jour" : "Le lendemain"}</span>
               </div>
 
               <div className="flex items-center text-sm">

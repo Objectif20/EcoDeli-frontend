@@ -16,14 +16,17 @@ import { useImageUpload } from "@/hooks/use-image-upload"
 import React from "react"
 import { useDispatch } from "react-redux"
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
+import { DeliverymanApi, vehicleCategory } from "@/api/deliveryman.api"
+import { useNavigate } from "react-router-dom"
 
 const FormSchema = z.object({
   document: z.instanceof(File, { message: "Le document est requis" }),
   documentDescription: z.string().min(1, { message: "La description est requise" }),
+  model : z.string().min(1, { message: "Le modèle est requis" }),
   category: z.string().min(1, { message: "La catégorie est requise" }),
   matricule: z.string().min(1, { message: "Le matricule est requis" }),
   electric: z.boolean(),
-  co2Consumption: z.number().min(0, { message: "La consommation de CO2 doit être un nombre non négatif" }),
+  co2Consumption: z.string().min(1, { message: "La consommation de CO2 doit être un nombre non négatif" }),
 })
 
 export default function AddVehicle() {
@@ -35,7 +38,8 @@ export default function AddVehicle() {
       category: "",
       matricule: "",
       electric: false,
-      co2Consumption: 0,
+      co2Consumption: "0",
+      model: "",
     },
   })
 
@@ -45,15 +49,16 @@ export default function AddVehicle() {
 
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(
+      setBreadcrumb({
+        segments: ["Accueil", "Véhicules", "Ajouter un Véhicule"],
+        links: ["/office/dashboard", "/office/my-vehicles"],
+      })
+    );
+  }, [dispatch]);
 
-    useEffect(() => {
-      dispatch(
-        setBreadcrumb({
-          segments: ["Accueil", "Véhicules", "Ajouter un Véhicule"],
-          links: ["/office/dashboard", "/office/my-vehicles"],
-        })
-      );
-    }, [dispatch]);
+  const [categories, setCategories] = useState<vehicleCategory[]>([]);
 
   const [isDragging, setIsDragging] = useState(false)
 
@@ -73,6 +78,19 @@ export default function AddVehicle() {
     e.stopPropagation()
     setIsDragging(false)
   }
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const fetchedCategories = await DeliverymanApi.getVehicleCategories();
+        setCategories(fetchedCategories);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des catégories :", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleDrop = useCallback(
     (e: React.DragEvent<HTMLDivElement>) => {
@@ -96,9 +114,32 @@ export default function AddVehicle() {
     [handleFileChange],
   )
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("Formulaire soumis :", data)
-  }
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    try {
+      const formData = new FormData();
+  
+      if (previewUrl) {
+        const imageFile = new File([previewUrl], "vehicle_image", { type: "image/jpeg" });
+        formData.append("image", imageFile);
+        console.log("image", imageFile)
+      }
+
+      if (data.document) formData.append("document", data.document)
+        console.log('Document file:', data.document);
+      formData.append("model", data.matricule)
+      formData.append("documentDescription", data.documentDescription);
+      formData.append("category", data.category);
+      formData.append("registrationNumber", data.matricule);
+      formData.append("electric", String(data.electric));
+      formData.append("co2Consumption", String(data.co2Consumption));
+  
+      await DeliverymanApi.addVehicle(formData);
+      const navigate = useNavigate();
+      navigate("/office/my-vehicles");
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du véhicule :", error);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -192,9 +233,11 @@ export default function AddVehicle() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="car">Voiture</SelectItem>
-                  <SelectItem value="truck">Camion</SelectItem>
-                  <SelectItem value="bike">Moto</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.category_id} value={category.category_id.toString()}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -210,6 +253,20 @@ export default function AddVehicle() {
               <FormLabel>Matricule</FormLabel>
               <FormControl>
                 <Input placeholder="Entrez le matricule" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="model"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Matricule</FormLabel>
+              <FormControl>
+                <Input placeholder="Entrez le modèle" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

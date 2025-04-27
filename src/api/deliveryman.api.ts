@@ -25,6 +25,13 @@ export interface Route {
     comeback_today_or_tomorrow: "today" | "tomorrow" | "later";
   }
 
+  export interface vehicleCategory {
+    category_id: string;
+    name: string;
+    max_weight: number;
+    max_dimension: number;
+  }
+
 
 export class DeliverymanApi {
 
@@ -37,5 +44,27 @@ export class DeliverymanApi {
         const response = await axiosInstance.post<Route>('/client/deliveryman/trips', route);
         return response.data;
     }
+
+    static async getVehicleCategories() : Promise<vehicleCategory[]> {
+        const response = await axiosInstance.get<vehicleCategory[]>('/client/deliveryman/vehicle-categories');
+        return response.data;
+    }
+
+    static async addVehicle(
+        formData: FormData,
+      ): Promise<void> {
+        try {    
+            console.log("FormData:", formData);
+          await axiosInstance.post("/client/deliveryman/vehicle", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+    
+        } catch (error) {
+          console.error("Erreur lors de l'ajout du véhicule :", error);
+          throw new Error("Impossible d'ajouter le véhicule");
+        }
+      }
 
 }

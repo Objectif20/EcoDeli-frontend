@@ -730,6 +730,12 @@
               "home": "Accueil",
               "deliverymanProfile": "Devenir transporteur"
             }
+          },
+          "success": {
+            "title": "Félicitations",
+            "alt": "Illustration",
+            "message": "Vous avez bien été enregistré. Vous pouvez maintenant vous connecter à votre compte.",
+            "button": "Me connecter"
           }
         },
         "security": {
@@ -838,6 +844,46 @@
             "title": "Prêt à démarrer ?",
             "button": "Créer mon compte"
           }
+        },
+        "auth": {
+          "forgotPassword": {
+            "title": "Mot de passe oublié",
+            "description": "Entrez votre adresse email pour réinitialiser votre mot de passe.",
+            "emailLabel": "Email",
+            "emailPlaceholder": "Entrez votre email",
+            "error": "Erreur lors de l'envoi de l'email",
+            "successMessage": "Un email de réinitialisation a été envoyé.",
+            "sending": "Envoi en cours...",
+            "send": "Envoyer",
+            "logoAlt": "Logo",
+            "illustrationAlt": "Illustration"
+          },
+          "newPassword": {
+            "title": "Nouveau mot de passe",
+            "description": "Veuillez entrer votre nouveau mot de passe.",
+            "newPasswordLabel": "Nouveau mot de passe",
+            "newPasswordPlaceholder": "Entrez votre nouveau mot de passe",
+            "confirmPasswordLabel": "Confirmez le mot de passe",
+            "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
+            "passwordMismatch": "Les mots de passe ne correspondent pas.",
+            "passwordValidationError": "Le mot de passe doit contenir au moins 12 caractères, une majuscule, un chiffre et un caractère spécial.",
+            "error": "Erreur lors de la modification du mot de passe",
+            "changing": "Changement en cours...",
+            "change": "Changer le mot de passe",
+            "2FATitle": "Validation 2FA",
+            "2FADescription": "Veuillez entrer le code 2FA envoyé à votre adresse email.",
+            "otpLabel": "Code 2FA",
+            "error2FA": "Erreur lors de la validation 2FA: {{error}}",
+            "validating": "Validation en cours...",
+            "validate": "Valider",
+            "logoAlt": "Logo",
+            "illustrationAlt": "Illustration"
+          },
+          "newPasswordSend": {
+            "title": "Un email vous a été envoyé",
+            "alt": "Illustration",
+            "message": "Veuillez vérifier votre boîte de réception pour réinitialiser votre mot de passe."
+          }
         }
       },
       "office": {
@@ -847,6 +893,20 @@
           "error": "Erreur lors du téléchargement du PDF :",
           "noDocumentSelected": "Aucun document sélectionné",
           "selectDocument": "Veuillez sélectionner un document pour l'afficher."
+        },
+        "myProofs": {
+          "title": "Liste des Documents",
+          "addProof": "Ajouter un justificatif",
+          "allDocuments": "Accéder à tous mes documents",
+          "dialog": {
+            "title": "Ajouter un justificatif",
+            "description": "Veuillez sélectionner un fichier, donner un nom et une description.",
+            "documentName": "Nom du document",
+            "documentDescription": "Description",
+            "submit": "Envoyer",
+            "download": "Télécharger le document"
+          },
+          "uploadedOn": "Uploadé le"
         },
         "chat": {
           "home": "Accueil",
@@ -923,6 +983,292 @@
             "here": "ici",
             "accessPrivacyPolicy": "Accéder à la",
             "privacyPolicy": "politique de confidentialité de EcoDeli"
+          },
+          "billing": {
+            "title": "Facturations",
+            "breadcrumbHome": "Accueil",
+            "breadcrumbSettings": "Paramètres",
+            "breadcrumbBilling": "Facturations",
+            "generalSettings": "Paramètres généraux",
+            "profile": "Profil",
+            "privacy": "Confidentialité",
+            "contactDetails": "Coordonnées",
+            "subscriptions": "Abonnements",
+            "billing": "Facturations",
+            "reports": "Signalements",
+            "yourBalance": "Votre solde",
+            "currentBalance": "Solde actuel",
+            "requestTransfer": "Demander un virement immédiat",
+            "connectedStripeAccount": "Vous êtes bien connecté avec un compte Stripe",
+            "updateBankDetails": "Mettre à jour vos coordonnées bancaires",
+            "updateStripeAccount": "Mettre à jour mon compte pour virement",
+            "ibanLabel": "IBAN",
+            "saveIban": "Enregistrer mon IBAN",
+            "stripeAccountCreated": "Votre compte Stripe a été créé avec succès."
+          },
+                    "contactDetails": {
+            "title": "Coordonnées",
+            "breadcrumbHome": "Accueil",
+            "breadcrumbSettings": "Paramètres",
+            "breadcrumbContactDetails": "Coordonnées",
+            "generalSettings": "Paramètres généraux",
+            "profile": "Profil",
+            "privacy": "Confidentialité",
+            "contactDetails": "Coordonnées",
+            "subscriptions": "Abonnements",
+            "billing": "Facturations",
+            "reports": "Signalements",
+            "contactInfo": "Informations de contact",
+            "manageContact": "Gérez vos coordonnées et disponibilités.",
+            "mySchedule": "Mon planning",
+            "addDay": "Ajouter un jour",
+            "selectDay": "Sélectionnez un jour",
+            "day": "Jours",
+            "days": {
+              "0": "Lundi",
+              "1": "Mardi",
+              "2": "Mercredi",
+              "3": "Jeudi",
+              "4": "Vendredi",
+              "5": "Samedi",
+              "6": "Dimanche"
+            },
+            "periods": {
+              "morning": "Matin",
+              "afternoon": "Après-midi",
+              "evening": "Soir"
+            },
+            "allDaysSelected": "Tous les jours de la semaine sont déjà sélectionnés.",
+            "availabilityUpdated": "Disponibilités mises à jour !",
+            "save": "Enregistrer"
+          },
+          "reports": {
+            "title": "Signalements",
+            "breadcrumbHome": "Accueil",
+            "breadcrumbSettings": "Paramètres",
+            "breadcrumbReports": "Signalements",
+            "generalSettings": "Paramètres généraux",
+            "profile": "Profil",
+            "privacy": "Confidentialité",
+            "contactDetails": "Coordonnées",
+            "subscriptions": "Abonnements",
+            "billing": "Facturations",
+            "reports": "Signalements",
+            "reportsTitle": "Signalements",
+            "reportsDescription": "Faites un signalement",
+            "placeholder": "Faites un rapport",
+            "sendReport": "Envoyer le signalement",
+            "success": "Signalement envoyé avec succès !"
+          },
+          "subscriptions": {
+            "title": "Abonnements",
+            "breadcrumbHome": "Accueil",
+            "breadcrumbSettings": "Paramètres",
+            "breadcrumbSubscriptions": "Abonnements",
+            "generalSettings": "Paramètres généraux",
+            "profile": "Profil",
+            "privacy": "Confidentialité",
+            "contactDetails": "Coordonnées",
+            "subscriptions": "Abonnements",
+            "billing": "Facturations",
+            "reports": "Signalements",
+            "yourSubscription": "Votre abonnement",
+            "currentSubscription": "Votre abonnement actuel",
+            "discountOnShipping": "Réduction à l'envoi de colis",
+            "priorityShipping": "Envoi prioritaire des 5%",
+            "permanentDiscount": "Réduction permanente de",
+            "whatToDo": "Que souhaitez-vous faire ?",
+            "discoverPlans": "Découvrir les autres formules d'abonnements",
+            "changePlan": "Changer de formule",
+            "cancelSubscription": "Stopper votre abonnement"
+          }
+        },
+        "planning": {
+          "EventCalendar": {
+            "today": "Aujourd'hui",
+            "previous": "Précédent",
+            "next": "Suivant",
+            "month": "Mois",
+            "week": "Semaine",
+            "day": "Jour",
+            "agenda": "Agenda"
+          }
+        },
+        "delivery": {
+          "deliveryDetails": {
+            "accueil" : "Accueil",
+            "deliveryTitle" : "Livraisons",
+            "deliveryName": "Package Delivery",
+            "reference": "Référence N°{id}",
+            "scheduledDelivery": "Livraison prévue le {date}",
+            "departure": "Départ",
+            "collectionDate": "Collecte le {date}",
+            "arrival": "Arrivée",
+            "progress": "Progression",
+            "totalPrice": "Prix total",
+            "initialPrice": "Prix initial: {price} €",
+            "viewInvoice": "Voir la facture",
+            "trackDelivery": "Suivre la livraison",
+            "overview": "Aperçu",
+            "packages": "Colis ({count})",
+            "steps": "Étapes ({count})",
+            "additionalInfo": "Informations complémentaires",
+            "lastUpdate": "Dernière mise à jour",
+            "packageOverview": "Aperçu des colis",
+            "packageDetails": "Détails des colis",
+            "packageCount": "{count} colis pour cette livraison",
+            "deliverySteps": "Étapes de livraison",
+            "trackingDelivery": "Suivi du parcours de votre livraison",
+            "weight": "Poids",
+            "volume": "Volume",
+            "fragile": "Fragile",
+            "deliveryDate": "{date} • {name}",
+            "deliverer": "Livreur"
+          },
+          "deliveryHistory": {
+            "title": "Historique des livraisons",
+            "breadcrumb": {
+              "home": "Accueil",
+              "deliveries": "Livraisons",
+              "deliveryHistory": "Historique des livraisons"
+            },
+            "table": {
+              "deliveryman": "Livreur",
+              "departureDate": "Date de départ",
+              "arrivalDate": "Date d'arrivée",
+              "departureCity": "Ville de départ",
+              "arrivalCity": "Ville d'arrivée",
+              "announcementName": "Nom de l'annonce",
+              "feedback": "Avis",
+              "actions": "Actions",
+              "viewDetails": "Voir le détail",
+              "alreadyGiven": "Déjà donné",
+              "columns": "Colonnes"
+            }
+          },
+          "deliveriesLocation": {
+            "breadcrumb": {
+              "home": "Accueil",
+              "deliveries": "Livraisons",
+              "location": "Localisation"
+            },
+            "accessDetails": "Accéder aux détails",
+            "deliveryman": "Livreur",
+            "email": "Email"
+          },
+          "reviews": {
+            "breadcrumb": {
+              "home": "Accueil",
+              "deliveries": "Livraisons",
+              "myReviews": "Mes avis"
+            },
+            "title": "Mes avis",
+            "table": {
+              "columns": "Colonnes",
+              "deliveryman": "Livreur",
+              "email": "Email",
+              "message": "Message",
+              "service": "Service",
+              "rate": "Note",
+              "date": "Date",
+              "noResults": "Aucun résultat."
+            }
+          },
+          "vehicles": {
+            "addVehicle": {
+              "breadcrumb": {
+                "home": "Accueil",
+                "vehicles": "Véhicules",
+                "addVehicle": "Ajouter un Véhicule"
+              },
+              "title": "Ajouter un Véhicule",
+              "form": {
+                "uploadImage": {
+                  "clickToSelect": "Cliquez pour sélectionner",
+                  "dragDrop": "ou glissez-déposez une image"
+                },
+                "document": "Document",
+                "documentDescription": "Description du Document",
+                "category": "Catégorie",
+                "selectCategory": "Sélectionnez une catégorie",
+                "matricule": "Matricule",
+                "model": "Modèle",
+                "electric": "Électrique",
+                "electricDescription": "Cochez si le véhicule est électrique.",
+                "co2Consumption": "Consommation de CO2",
+                "submit": "Soumettre",
+                "errors": {
+                  "documentRequired": "Le document est requis",
+                  "descriptionRequired": "La description est requise",
+                  "modelRequired": "Le modèle est requis",
+                  "categoryRequired": "La catégorie est requise",
+                  "matriculeRequired": "Le matricule est requis",
+                  "co2ConsumptionRequired": "La consommation de CO2 doit être renseignée"
+                }
+              }
+            },
+            "myVehicles": {
+              "breadcrumb": {
+                "home": "Accueil",
+                "vehicles": "Véhicules"
+              },
+              "title": "Liste des Véhicules",
+              "addVehicleButton": "Ajouter un nouveau véhicule",
+              "pagination": {
+                "totalItems": "ligne au total.",
+                "totalItemsPlural": "lignes au total.",
+                "rowsPerPage": "Ligne par page",
+                "pageInfo": "Page {currentPage} sur {totalPages}",
+                "firstPage": "Première page",
+                "previousPage": "Page précédente",
+                "nextPage": "Page suivante",
+                "lastPage": "Dernière page"
+              },
+              "table": {
+                "columns": "Colonnes",
+                "name": "Nom",
+                "matricule": "Matricule",
+                "co2": "CO2",
+                "allow": "Autorisé",
+                "actions": "Actions",
+                "details": "Détails",
+                "close": "Fermer",
+                "downloadJustification": "Télécharger le justificatif"
+              }
+            }
+          },
+          "myRoute": {
+            "route_management": "Gestion des Trajets",
+            "add_route": "Ajouter un trajet",
+            "error_fetching_routes": "Erreur lors de la récupération des trajets:",
+            "error_adding_route": "Erreur lors de l'ajout du trajet:",
+            "active_and_permanent_routes": "Trajets actifs et permanents",
+            "no_active_or_permanent_routes": "Aucun trajet actif ou permanent",
+            "past_routes": "Trajets passés",
+            "departure": "Départ:",
+            "arrival": "Arrivée:",
+            "coordinates": "Coordonnées:",
+            "day": "Jour:",
+            "date": "Date:",
+            "tolerance_radius": "Rayon de tolérance:",
+            "return": "Retour:",
+            "same_day": "Le même jour",
+            "next_day": "Le lendemain",
+            "type": "Type:",
+            "permanent": "Permanent",
+            "one_time": "Ponctuel",
+            "monday": "Lundi",
+            "tuesday": "Mardi",
+            "wednesday": "Mercredi",
+            "thursday": "Jeudi",
+            "friday": "Vendredi",
+            "saturday": "Samedi",
+            "sunday": "Dimanche",
+            "departure_required": "Le lieu de départ est requis",
+            "arrival_required": "Le lieu d'arrivée est requis",
+            "positive_radius": "Le rayon doit être positif",
+            "weekday_or_date_required": "Un jour de la semaine est requis pour les trajets permanents, une date pour les trajets ponctuels"
+          
           }
         }
       }

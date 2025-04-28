@@ -3,6 +3,7 @@ import { PaginationControls } from "@/components/pagination-controle";
 import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { DataTable } from "@/components/features/deliveries/reviews";
+import { useTranslation } from 'react-i18next';
 
 interface Review {
   id: string;
@@ -22,6 +23,7 @@ interface Review {
 }
 
 export default function MyReviewsDeliveryPage() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -31,11 +33,15 @@ export default function MyReviewsDeliveryPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Livraisons", "Mes avis"],
+        segments: [
+          t('client.pages.office.delivery.reviews.breadcrumb.home'),
+          t('client.pages.office.delivery.reviews.breadcrumb.deliveries'),
+          t('client.pages.office.delivery.reviews.breadcrumb.myReviews')
+        ],
         links: ["/office/dashboard"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -91,7 +97,7 @@ export default function MyReviewsDeliveryPage() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold mb-4">Mes avis</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t('client.pages.office.delivery.reviews.title')}</h1>
       <DataTable
         key={`${pageIndex}-${pageSize}`}
         data={reviews}

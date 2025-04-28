@@ -7,9 +7,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import { useTranslation } from 'react-i18next';
 
 const ReportSettings: React.FC = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
 
   const [description, setDescription] = useState<string>("");
@@ -21,10 +23,10 @@ const ReportSettings: React.FC = () => {
 
   useEffect(() => {
     dispatch(setBreadcrumb({
-      segments: ["Accueil", "Paramètres", "Signalements"],
+      segments: [t('client.pages.office.settings.reports.breadcrumbHome'), t('client.pages.office.settings.reports.breadcrumbSettings'), t('client.pages.office.settings.reports.breadcrumbReports')],
       links: ['/office/dashboard'],
     }));
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   const handleSubmit = () => {
     console.log("Contenu du signalement :", description);
@@ -33,7 +35,7 @@ const ReportSettings: React.FC = () => {
           .then(() => {
             console.log("Signalement envoyé avec succès !");
             setDescription("");
-            toast.success("Signalement envoyé avec succès !");
+            toast.success(t('client.pages.office.settings.reports.success'));
           })
     } catch (error) {
       console.error("Erreur lors de l'envoi du signalement :", error);
@@ -43,39 +45,39 @@ const ReportSettings: React.FC = () => {
   return (
     <div className="flex flex-col gap-8">
       <div className="mx-auto grid w-full max-w-6xl gap-2">
-        <h1 className="text-3xl font-semibold">Signalements</h1>
+        <h1 className="text-3xl font-semibold">{t('client.pages.office.settings.reports.title')}</h1>
       </div>
       <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
         <nav className="grid gap-4 text-sm text-muted-foreground">
-          <Link to="/office/general-settings">Paramètres généraux</Link>
-          <Link to="/office/profile">Profil</Link>
-          <Link to="/office/privacy">Confidentialité</Link>
-          <Link to="/office/contact-details">Coordonnées</Link>
+          <Link to="/office/general-settings">{t('client.pages.office.settings.reports.generalSettings')}</Link>
+          <Link to="/office/profile">{t('client.pages.office.settings.reports.profile')}</Link>
+          <Link to="/office/privacy">{t('client.pages.office.settings.reports.privacy')}</Link>
+          <Link to="/office/contact-details">{t('client.pages.office.settings.reports.contactDetails')}</Link>
           {(isMerchant || isClient) && (
-            <Link to="/office/subscriptions">Abonnements</Link>
+            <Link to="/office/subscriptions">{t('client.pages.office.settings.reports.subscriptions')}</Link>
           )}
           {(isProvider || isDeliveryman) && (
-            <Link to="/office/billing-settings">Facturations</Link>
+            <Link to="/office/billing-settings">{t('client.pages.office.settings.reports.billing')}</Link>
           )}
-          <Link to="/office/reports" className="font-semibold text-primary active-link">Signalements</Link>
+          <Link to="/office/reports" className="font-semibold text-primary active-link">{t('client.pages.office.settings.reports.reports')}</Link>
         </nav>
         <div className="grid gap-6">
             <div>
-            <h3 className="text-lg font-medium">Signalements</h3>
-            <p className="text-sm text-muted-foreground">Faites un signalement</p>
+            <h3 className="text-lg font-medium">{t('client.pages.office.settings.reports.reportsTitle')}</h3>
+            <p className="text-sm text-muted-foreground">{t('client.pages.office.settings.reports.reportsDescription')}</p>
           </div>
-          <MinimalTiptapEditorTextOnly 
+          <MinimalTiptapEditorTextOnly
               value={description}
               onChange={(value) => setDescription(value?.toString() || "")}
               className="w-full"
               editorContentClassName="p-5"
               output="html"
-              placeholder="Faites un rapport"
+              placeholder={t('client.pages.office.settings.reports.placeholder')}
               autofocus
               editable={true}
               editorClassName="focus:outline-none"
           />
-          <Button onClick={handleSubmit}>Envoyer le signalement</Button>
+          <Button onClick={handleSubmit}>{t('client.pages.office.settings.reports.sendReport')}</Button>
         </div>
       </div>
     </div>

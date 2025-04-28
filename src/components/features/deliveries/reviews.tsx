@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   ColumnDef,
@@ -35,6 +33,7 @@ import {
 } from "@/components/ui/table";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useTranslation } from 'react-i18next';
 
 // Schéma Zod pour la nouvelle structure des données
 export const schema = z.object({
@@ -61,57 +60,58 @@ export const columnLink = [
   { column_id: "date", text: "Date" },
 ];
 
-export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
-return [
+export const columns = (t: any): ColumnDef<z.infer<typeof schema>>[] => {
+  return [
     {
-        id: "deliveryman",
-        accessorKey: "delivery.deliveryman.name",
-        header: "Livreur",
-        cell: ({ row }) => (
-            <div className="flex items-center gap-2">
-                <Avatar>
-                    <AvatarImage src={row.original.delivery.deliveryman.photo} />
-                    <AvatarFallback>{row.original.delivery.deliveryman.name[0]}</AvatarFallback>
-                </Avatar>
-                <div>
-                    <span>{row.original.delivery.deliveryman.name}</span>
-                </div>
-            </div>
-        ),
-        enableHiding: false,
+      id: "deliveryman",
+      accessorKey: "delivery.deliveryman.name",
+      header: t('client.pages.office.delivery.reviews.table.deliveryman'),
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Avatar>
+            <AvatarImage src={row.original.delivery.deliveryman.photo} />
+            <AvatarFallback>{row.original.delivery.deliveryman.name[0]}</AvatarFallback>
+          </Avatar>
+          <div>
+            <span>{row.original.delivery.deliveryman.name}</span>
+          </div>
+        </div>
+      ),
+      enableHiding: false,
     },
     {
-        accessorKey: "email",
-        header: "Email",
-        cell: ({ row }) => (
-            <span>{row.original.delivery.deliveryman.email}</span>
-        ),
+      accessorKey: "email",
+      header: t('client.pages.office.delivery.reviews.table.email'),
+      cell: ({ row }) => (
+        <span>{row.original.delivery.deliveryman.email}</span>
+      ),
     },
     {
-        accessorKey: "content",
-        header: "Message",
-        cell: ({ row }) => (
-            <span>
-                {row.original.content.length > 30
-                    ? `${row.original.content.substring(0, 30)}...`
-                    : row.original.content}
-            </span>
-        ),
+      accessorKey: "content",
+      header: t('client.pages.office.delivery.reviews.table.message'),
+      cell: ({ row }) => (
+        <span>
+          {row.original.content.length > 30
+            ? `${row.original.content.substring(0, 30)}...`
+            : row.original.content}
+        </span>
+      ),
     },
-    { accessorKey: "services_name", header: "Service", cell: ({ row }) => row.original.services_name },
-    { accessorKey: "rate", header: "Note", cell: ({ row }) => row.original.rate },
+    { accessorKey: "services_name", header: t('client.pages.office.delivery.reviews.table.service'), cell: ({ row }) => row.original.services_name },
+    { accessorKey: "rate", header: t('client.pages.office.delivery.reviews.table.rate'), cell: ({ row }) => row.original.rate },
     {
-        accessorKey: "date",
-        header: "Date",
-        cell: ({ row }) => {
-            const date = new Date(row.original.date);
-            return date.toLocaleDateString("fr-FR");
-        },
+      accessorKey: "date",
+      header: t('client.pages.office.delivery.reviews.table.date'),
+      cell: ({ row }) => {
+        const date = new Date(row.original.date);
+        return date.toLocaleDateString("fr-FR");
+      },
     },
-];
+  ];
 };
 
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
+  const { t } = useTranslation();
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
@@ -127,7 +127,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
 
   const table = useReactTable({
     data,
-    columns: columns(),
+    columns: columns(t),
     state: {
       sorting,
       columnVisibility,
@@ -153,8 +153,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">Colonnes</span>
-                <span className="lg:hidden">Colonnes</span>
+                <span className="hidden lg:inline">{t('client.pages.office.delivery.reviews.table.columns')}</span>
+                <span className="lg:hidden">{t('client.pages.office.delivery.reviews.table.columns')}</span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -234,7 +234,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t('client.pages.office.delivery.reviews.table.noResults')}
                 </TableCell>
               </TableRow>
             )}

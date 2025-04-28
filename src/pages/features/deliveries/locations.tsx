@@ -6,11 +6,12 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar"
+} from "@/components/ui/avatar";
 import { useDispatch } from 'react-redux';
 import { setBreadcrumb } from '@/redux/slices/breadcrumbSlice';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Deliveries {
   id: string;
@@ -28,17 +29,22 @@ interface Deliveries {
 }
 
 const DeliveriesLocationPage = () => {
+  const { t } = useTranslation();
   const [, setSelectedDelivery] = useState<Deliveries | null>(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-    useEffect(() => {
-      dispatch(setBreadcrumb({
-        segments: ["Accueil", "Livraisons", "Localisation"],
-        links: ['/office/dashboard'],
-      }));
-    }, [dispatch]);
+  useEffect(() => {
+    dispatch(setBreadcrumb({
+      segments: [
+        t('client.pages.office.delivery.deliveriesLocation.breadcrumb.home'),
+        t('client.pages.office.delivery.deliveriesLocation.breadcrumb.deliveries'),
+        t('client.pages.office.delivery.deliveriesLocation.breadcrumb.location')
+      ],
+      links: ['/office/dashboard'],
+    }));
+  }, [dispatch, t]);
 
   const deliveries: Deliveries[] = [
     {
@@ -83,7 +89,6 @@ const DeliveriesLocationPage = () => {
   });
 
   return (
-
     <div className="w-full h-full z-0">
       <MapContainer bounds={franceBounds} className="w-full h-full z-0" attributionControl={true}>
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
@@ -97,28 +102,28 @@ const DeliveriesLocationPage = () => {
             }}
           >
             <Popup>
-                <strong className="block mb-2">{delivery.potential_address}</strong>
-                {delivery.deliveryman && (
-                  <div className="flex items-center">
-                      <Avatar className='mr-2 mb-8'>
-                        <AvatarImage src={delivery.deliveryman.photo} alt={delivery.deliveryman.name} />
-                        <AvatarFallback>{delivery.deliveryman.name}</AvatarFallback>
-                      </Avatar>
-                    <div>
-                      <strong>Livreur:</strong> {delivery.deliveryman.name}
-                      <br />
-                      <strong>Email:</strong> {delivery.deliveryman.email}
-                      <Button variant="link" onClick={() => navigate(`/office/deliveries/${delivery.id}`)}>Accéder aux détails</Button>
-
-                    </div>
+              <strong className="block mb-2">{delivery.potential_address}</strong>
+              {delivery.deliveryman && (
+                <div className="flex items-center">
+                  <Avatar className='mr-2 mb-8'>
+                    <AvatarImage src={delivery.deliveryman.photo} alt={delivery.deliveryman.name} />
+                    <AvatarFallback>{delivery.deliveryman.name}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <strong>{t('client.pages.office.delivery.deliveriesLocation.deliveryman')}:</strong> {delivery.deliveryman.name}
+                    <br />
+                    <strong>{t('client.pages.office.delivery.deliveriesLocation.email')}:</strong> {delivery.deliveryman.email}
+                    <Button variant="link" onClick={() => navigate(`/office/deliveries/${delivery.id}`)}>
+                      {t('client.pages.office.delivery.deliveriesLocation.accessDetails')}
+                    </Button>
                   </div>
-                )}
+                </div>
+              )}
             </Popup>
           </Marker>
         ))}
       </MapContainer>
     </div>
-
   );
 };
 

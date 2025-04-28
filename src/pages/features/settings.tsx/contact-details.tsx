@@ -4,9 +4,11 @@ import { Link } from "react-router-dom";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { RootState } from "@/redux/store";
 import AvailabilitySettings from "@/components/features/settings/availibity-settings";
+import { useTranslation } from 'react-i18next';
 
 const ContactDetailsSettings: React.FC = () => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
 
   const isProvider = user?.profile?.includes("PROVIDER");
@@ -17,47 +19,47 @@ const ContactDetailsSettings: React.FC = () => {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Paramètres", "Coordonnées"],
+        segments: [t('client.pages.office.settings.contactDetails.breadcrumbHome'), t('client.pages.office.settings.contactDetails.breadcrumbSettings'), t('client.pages.office.settings.contactDetails.breadcrumbContactDetails')],
         links: ["/office/dashboard"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   return (
     <div className="flex flex-col gap-8">
       {/* Header */}
       <div className="mx-auto grid w-full max-w-6xl gap-2">
-        <h1 className="text-3xl font-semibold">Coordonnées</h1>
+        <h1 className="text-3xl font-semibold">{t('client.pages.office.settings.contactDetails.title')}</h1>
       </div>
 
       {/* Layout */}
       <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
         {/* Sidebar */}
         <nav className="grid gap-4 text-sm text-muted-foreground">
-          <Link to="/office/general-settings">Paramètres généraux</Link>
-          <Link to="/office/profile">Profil</Link>
-          <Link to="/office/privacy">Confidentialité</Link>
+          <Link to="/office/general-settings">{t('client.pages.office.settings.contactDetails.generalSettings')}</Link>
+          <Link to="/office/profile">{t('client.pages.office.settings.contactDetails.profile')}</Link>
+          <Link to="/office/privacy">{t('client.pages.office.settings.contactDetails.privacy')}</Link>
           <Link
             to="/office/contact-details"
             className="font-semibold text-primary active-link"
           >
-            Coordonnées
+            {t('client.pages.office.settings.contactDetails.contactDetails')}
           </Link>
           {(isMerchant || isClient) && (
-            <Link to="/office/subscriptions">Abonnements</Link>
+            <Link to="/office/subscriptions">{t('client.pages.office.settings.contactDetails.subscriptions')}</Link>
           )}
           {(isProvider || isDeliveryman) && (
-            <Link to="/office/billing-settings">Facturations</Link>
+            <Link to="/office/billing-settings">{t('client.pages.office.settings.contactDetails.billing')}</Link>
           )}
-          <Link to="/office/reports">Signalements</Link>
+          <Link to="/office/reports">{t('client.pages.office.settings.contactDetails.reports')}</Link>
         </nav>
 
         {/* Main Content */}
         <div className="grid gap-6">
           <div className="space-y-1">
-            <h2 className="text-xl font-medium">Informations de contact</h2>
+            <h2 className="text-xl font-medium">{t('client.pages.office.settings.contactDetails.contactInfo')}</h2>
             <p className="text-sm text-muted-foreground">
-              Gérez vos coordonnées et disponibilités.
+              {t('client.pages.office.settings.contactDetails.manageContact')}
             </p>
           </div>
 

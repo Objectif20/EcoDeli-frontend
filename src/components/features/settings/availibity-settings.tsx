@@ -16,6 +16,7 @@ import {
 import { Availability, ProfileAPI } from "@/api/profile.api";
 import { TimePickerInput } from "@/components/ui/time-picker-input";
 import { toast } from "sonner";
+import { useTranslation } from 'react-i18next';
 
 const dayLabels = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
@@ -30,6 +31,7 @@ const timeStringToDate = (time: string): Date => {
 };
 
 const AvailabilitySettings: React.FC = () => {
+  const { t } = useTranslation();
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
 
   useEffect(() => {
@@ -82,7 +84,7 @@ const AvailabilitySettings: React.FC = () => {
       };
       setAvailabilities([...availabilities, newAvailability]);
     } else {
-      toast.success("Tous les jours de la semaine sont déjà sélectionnés.");
+      toast.success(t('client.pages.office.settings.contactDetails.allDaysSelected'));
     }
   };
 
@@ -95,7 +97,7 @@ const AvailabilitySettings: React.FC = () => {
   const handleSave = async () => {
     try {
       await ProfileAPI.updateMyAvailability(availabilities);
-      toast.success("Disponibilités mises à jour !");
+      toast.success(t('client.pages.office.settings.contactDetails.availabilityUpdated'));
     } catch (error) {
       console.error("Erreur lors de la mise à jour des disponibilités", error);
     }
@@ -104,9 +106,9 @@ const AvailabilitySettings: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold">Mon planning</h2>
+        <h2 className="text-2xl font-semibold">{t('client.pages.office.settings.contactDetails.mySchedule')}</h2>
         <Button onClick={handleAddDay}>
-          <Plus className="mr-2 h-4 w-4" /> Ajouter un jour
+          <Plus className="mr-2 h-4 w-4" /> {t('client.pages.office.settings.contactDetails.addDay')}
         </Button>
       </div>
 
@@ -115,12 +117,12 @@ const AvailabilitySettings: React.FC = () => {
           <CardHeader className="flex flex-row items-center justify-between">
             <Select value={String(a.day_of_week)} onValueChange={(value) => handleDayChange(index, Number(value))}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sélectionnez un jour" />
+                <SelectValue placeholder={t('client.pages.office.settings.contactDetails.selectDay')} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectLabel>Jours</SelectLabel>
-                  {dayLabels.map((label, dayIndex) => (
+                  <SelectLabel>{t('client.pages.office.settings.contactDetails.day')}</SelectLabel>
+                  {dayLabels.map((_, dayIndex) => (
                     <SelectItem
                       key={dayIndex}
                       value={String(dayIndex)}
@@ -130,7 +132,7 @@ const AvailabilitySettings: React.FC = () => {
                         )
                       }
                     >
-                      {label}
+                      {t(`client.pages.office.settings.contactDetails.days.${dayIndex}`)}
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -145,11 +147,7 @@ const AvailabilitySettings: React.FC = () => {
               <div key={period} className="grid grid-cols-[120px_1fr_1fr] items-center gap-4">
                 <div className="flex items-center gap-2">
                   <span className="capitalize">
-                    {period === "morning"
-                      ? "Matin"
-                      : period === "afternoon"
-                      ? "Après-midi"
-                      : "Soir"}
+                    {t(`client.pages.office.settings.contactDetails.periods.${period}`)}
                   </span>
                 </div>
                 <div className="flex items-end gap-2">
@@ -200,7 +198,7 @@ const AvailabilitySettings: React.FC = () => {
 
       {availabilities.length > 0 && (
         <div className="text-right">
-          <Button onClick={handleSave}>Enregistrer</Button>
+          <Button onClick={handleSave}>{t('client.pages.office.settings.contactDetails.save')}</Button>
         </div>
       )}
     </div>

@@ -36,6 +36,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { z } from "zod";
 import FeedbackDialog from "../../utils/feedback-dialog";
 import { useTranslation } from 'react-i18next';
+import { useState } from "react";
 
 interface Delivery {
   id: string;
@@ -126,14 +127,16 @@ export const columns = (t: any): ColumnDef<z.infer<typeof schema>>[] => {
       header: t('client.pages.office.delivery.deliveryHistory.table.feedback'),
       cell: ({ row }) => {
         const { rate, comment, id } = row.original;
-        const hasFeedback = rate !== 0 && comment !== null && comment.trim() !== "";
+        const [hasFeedback, setHasFeedback] = useState(
+                 rate !== 0 && comment !== null && comment.trim() !== ""
+               );
 
         return hasFeedback ? (
           <span className="text-muted-foreground text-sm">
             {t('client.pages.office.delivery.deliveryHistory.table.alreadyGiven')}
           </span>
         ) : (
-          <FeedbackDialog maxNote={5} id={id} />
+          <FeedbackDialog maxNote={5} id={id} onFeedbackSent={() => setHasFeedback(true)} serviceName="delivery" />
         );
       },
     },

@@ -5,24 +5,11 @@ import { PaginationControls } from "@/components/pagination-controle";
 import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { DataTable } from "@/components/features/services/client/history";
-
-interface ServiceHistory {
-  id: string;
-  price: number;
-  provider: {
-    id: string;
-    name: string;
-    photo: string;
-  };
-  date: string;
-  service_name: string;
-  rate: number | null;
-  review:string | null;
-}
+import { ServiceApi, ServiceHistoryClient } from "@/api/service.api";
 
 export default function HistoryServices() {
   const dispatch = useDispatch();
-  const [services, setServices] = useState<ServiceHistory[]>([]);
+  const [services, setServices] = useState<ServiceHistoryClient[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
@@ -39,38 +26,7 @@ export default function HistoryServices() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = {
-          data: [
-            {
-              id: "1",
-              price: 75,
-              provider: {
-                id: "p1",
-                name: "Alice Durand",
-                photo: "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
-              },
-              date: "2023-10-01",
-              service_name: "Nettoyage",
-              rate: 5,
-              review: "Excellent service !",
-            },
-            {
-              id: "2",
-              price: 120,
-              provider: {
-                id: "p2",
-                name: "Paul Dupuis",
-                photo: "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
-              },
-              date: "2023-10-02",
-              service_name: "Réparation",
-              rate: 3,
-              review : null,
-            },
-          ],
-          totalRows: 2,
-        };
-
+        const response = await ServiceApi.getMyServiceHitoryAsClient(pageIndex + 1, pageSize);
         setServices(response.data);
         setTotalItems(response.totalRows);
       } catch (error) {

@@ -25,10 +25,12 @@ import { Button } from "@/components/ui/button";
 import { ChevronDownIcon, ColumnsIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import FeedbackDialog from "../../utils/feedback-dialog";
+import { useState } from "react";
 
 // Schéma pour validation
 export const schema = z.object({
   id: z.string(),
+  id_service: z.string(),
   price: z.number(),
   provider: z.object({
     id: z.string(),
@@ -88,13 +90,20 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
       header: "Avis",
       cell: ({ row }) => {
         const { rate, review, id } = row.original
-        const hasFeedback = rate !== 0 && review !== null && review.trim() !== ""
-
+        const [hasFeedback, setHasFeedback] = useState(
+          rate !== 0 && review !== null && review.trim() !== ""
+        );
+    
         return hasFeedback ? (
           <span className="text-muted-foreground text-sm">Déjà donné</span>
         ) : (
-          <FeedbackDialog maxNote={5} id={id} />
-        )
+          <FeedbackDialog
+            maxNote={5}
+            id={id}
+            onFeedbackSent={() => setHasFeedback(true)}
+            serviceName="service"
+          />
+        );
       },
     },
     {
@@ -104,7 +113,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
         <Button
           size="sm"
           variant="outline"
-          onClick={() => navigate(`/office/service/${row.original.id}`)}
+          onClick={() => navigate(`/office/service/${row.original.id_service}`)}
         >
           Voir
         </Button>

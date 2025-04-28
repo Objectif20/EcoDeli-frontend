@@ -81,6 +81,20 @@ export interface Service {
     review:string | null;
   }
 
+  export interface Review {
+    id: string;
+    content: string;
+    provider: {
+      id: string;
+      name: string;
+      photo: string;
+    };
+    date: string;
+    service_name: string;
+    rate: number;
+  }
+  
+
 
 export class ServiceApi {
 
@@ -159,6 +173,12 @@ export class ServiceApi {
             content: review,
         });
         return response;
+    }
+
+
+    static async getMyServiceReviewsAsClient(page: number, limit: number) : Promise<{data : Review[], totalRows: number, totalPages: number, currentPage: number, limit: number}> {
+        const response = await axiosInstance.get(`/client/service/myReviews?limit=${limit}&page=${page}`);
+        return response.data;
     }
 
 }

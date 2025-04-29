@@ -42,6 +42,70 @@ export interface DeliveriesFilter {
     deliveryType?: string;
 }
 
+// Interface pour le détail d'une annonce de livraison
+
+export interface DeliveryDetails {
+    id: string;
+    name: string;
+    description: string;
+    complementary_info: string;
+    departure: CityLocation;
+    arrival: CityLocation;
+    departure_date: string;
+    arrival_date: string;
+    status: string;
+    initial_price: number;
+    price_with_step: PriceStep[];
+    invoice: Invoice[];
+  }
+  
+  export interface CityLocation {
+    city: string;
+    coordinates: [number, number];
+  }
+  
+  export interface PriceStep {
+    step: string;
+    price: number;
+  }
+  
+  export interface Invoice {
+    name: string;
+    url_invoice: string;
+  }
+  
+  export interface Package {
+    id: string;
+    picture: string[];
+    name: string;
+    fragility: boolean;
+    estimated_price: number;
+    weight: number;
+    volume: number;
+  }
+  
+  export interface Step {
+    id: number;
+    title: string;
+    description: string;
+    date: string;
+    departure: CityLocation;
+    arrival: CityLocation;
+    courier: Courier;
+  }
+  
+  export interface Courier {
+    name: string;
+    photoUrl: string;
+  }
+  
+  export interface Shipment {
+    details: DeliveryDetails;
+    package: Package[];
+    steps: Step[];
+  }
+
+
 export class DeliveriesAPI {
 
     static async getDeliveries(apiFilter : DeliveriesFilter) : Promise<Delivery[]> {
@@ -67,6 +131,18 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error creating shipment:", error);
             throw new Error("Failed to create shipment");
+        }
+    }
+
+
+    static async getShipmentDetailsById(shipment_id : string) : Promise<Shipment> {
+
+        try {
+            const response = await axiosInstance.get<Shipment>(`/client/shipments/${shipment_id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching shipment details:", error);
+            throw new Error("Failed to fetch shipment details");
         }
     }
 

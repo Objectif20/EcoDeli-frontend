@@ -1,138 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Clock, MapPin, AlertTriangle, EuroIcon } from "lucide-react";
+import { Clock, MapPin, AlertTriangle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-
-const fakeDeliveries = {
-  details: {
-    id: "1",
-    name: "Package Delivery",
-    description: "Fragile package delivery",
-    complementary_info: "Package to be delivered on time",
-    departure: {
-      city: "Paris",
-      coordinates: [48.8566, 2.3522],
-    },
-    arrival: {
-      city: "Marseille",
-      coordinates: [43.2965, 5.3698],
-    },
-    departure_date: "2023-10-01",
-    arrival_date: "2023-10-03",
-    status: "In Progress",
-    initial_price: 50,
-    price_with_step: [
-      {
-        step: "Step 1",
-        price: 20,
-      },
-      {
-        step: "Step 2",
-        price: 15,
-      },
-      {
-        step: "Step 3",
-        price: 25,
-      },
-    ],
-    invoice: [
-      {
-        name: "Package 1",
-        url_invoice: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
-      },
-    ],
-  },
-  package: [
-    {
-      id: "1",
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-      name: "Package 1",
-      fragility: true,
-      estimated_price: 20,
-      weight: 2,
-      volume: 1,
-    },
-    {
-      id: "2",
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-      name: "Package 2",
-      fragility: false,
-      estimated_price: 15,
-      weight: 1,
-      volume: 0.5,
-    },
-    {
-      id: "3",
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-      name: "Package 3",
-      fragility: true,
-      estimated_price: 25,
-      weight: 3,
-      volume: 1.5,
-    },
-  ],
-  steps: [
-    {
-      id: 1,
-      title: "Step 1",
-      description: "Departure from the main warehouse.",
-      date: "2023-10-01",
-      departure: {
-        city: "Paris",
-        coordinates: [48.8566, 2.3522],
-      },
-      arrival: {
-        city: "Lyon",
-        coordinates: [45.764, 4.8357],
-      },
-      courier: {
-        name: "Jean Dupont",
-        photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
-      },
-    },
-    {
-      id: 2,
-      title: "Step 2",
-      description: "Transfer to the distribution center.",
-      date: "2023-10-02",
-      departure: {
-        city: "Lyon",
-        coordinates: [45.764, 4.8357],
-      },
-      arrival: {
-        city: "Marseille",
-        coordinates: [43.2965, 5.3698],
-      },
-      courier: {
-        name: "Marie Martin",
-        photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
-      },
-    },
-  ],
-};
+import { DeliveriesAPI, Shipment } from "@/api/deliveries.api";
+import { useParams } from "react-router-dom";
 
 export default function DeliveryDetailsPage() {
   const [_, setActiveTab] = useState("overview");
+  const [delivery, setDelivery] = useState<Shipment>();
 
-  const delivery = fakeDeliveries;
+  const {id } = useParams();
+
+  if (!id) {
+    return <div>Erreur: ID de livraison manquant</div>;
+  }
+
+  useEffect(() => {
+    const fetchShipment = async () => {
+      try {
+        const data = await DeliveriesAPI.getShipmentDetailsById(id);
+        setDelivery(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchShipment();
+  }, [id]);
+
+  if (!delivery) {
+    return <div>Chargement...</div>;
+  }
 
   const lastStep = delivery.steps[delivery.steps.length - 1];
 
-  const totalPrice = delivery.details.price_with_step.reduce((sum, step) => sum + step.price, 0);
-
-  const progress = (delivery.steps.length / 3) * 100;
-
-  const formatDate = (dateString : string) => {
+  const formatDate = (dateString: string) => {
     return format(new Date(dateString), "d MMMM yyyy", { locale: fr });
   };
+
+  const proposedPrice = delivery.details.initial_price;
+
+  const progress = (delivery.steps.length / 3) * 100;
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -144,9 +60,6 @@ export default function DeliveryDetailsPage() {
                 <CardTitle className="text-2xl md:text-3xl font-bold">{delivery.details.name}</CardTitle>
                 <CardDescription className="text-primary-foreground mt-1">Référence N°{delivery.details.id}</CardDescription>
               </div>
-              <Badge variant="outline" className="bg-white/20 text-foreground border-none px-3 py-1">
-                {delivery.details.status}
-              </Badge>
             </div>
           </CardHeader>
 
@@ -169,8 +82,10 @@ export default function DeliveryDetailsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">Départ</p>
-                      <h3 className="text-lg font-semibold">{lastStep.departure.city}</h3>
-                      <p className="text-sm text-foreground">Collecte le {formatDate(lastStep.date)}</p>
+                      <h3 className="text-lg font-semibold">{lastStep?.departure?.city}</h3>
+                      <p className="text-sm text-foreground">
+                        Collecte le {formatDate(lastStep?.date)}
+                      </p>
                     </div>
                   </div>
 
@@ -200,13 +115,15 @@ export default function DeliveryDetailsPage() {
 
                 <div className="bg-background p-4 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Prix total</span>
-                    <span className="text-xl font-bold">{totalPrice} €</span>
+                    <span className="font-medium">Prix proposé</span>
+                    <span className="text-xl font-bold">{proposedPrice} €</span>
                   </div>
-                  <p className="text-sm text-foreground">Prix initial: {delivery.details.initial_price} €</p>
                 </div>
 
-                <Button className="w-full bg-green-500 text-white hover:bg-green-600">
+                <Button
+                  className="w-full bg-green-500 text-white hover:bg-green-600"
+                  onClick={() => console.log("Prendre la livraison", id)}
+                >
                   Prendre la livraison
                 </Button>
               </div>
@@ -238,16 +155,16 @@ export default function DeliveryDetailsPage() {
                         <div className="flex items-start gap-4">
                           <Avatar className="h-10 w-10 border-2 border-primary">
                             <AvatarImage
-                              src={lastStep.courier.photoUrl || "/placeholder.svg"}
-                              alt={lastStep.courier.name}
+                              src={lastStep?.courier?.photoUrl || "/placeholder.svg"}
+                              alt={lastStep?.courier?.name || "Livreur"}
                             />
-                            <AvatarFallback>{lastStep.courier.name.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>{lastStep?.courier?.name?.charAt(0) || "?"}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">{lastStep.title}</p>
-                            <p className="text-sm text-foreground">{lastStep.description}</p>
+                            <p className="font-medium">{lastStep?.title}</p>
+                            <p className="text-sm text-foreground">{lastStep?.description}</p>
                             <p className="text-sm text-foreground mt-1">
-                              {formatDate(lastStep.date)} • {lastStep.courier.name}
+                              {formatDate(lastStep?.date)} • {lastStep?.courier?.name}
                             </p>
                           </div>
                         </div>
@@ -283,9 +200,6 @@ export default function DeliveryDetailsPage() {
                                 </Badge>
                               )}
                             </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold">{pkg.estimated_price} €</p>
                           </div>
                         </div>
                       ))}
@@ -325,10 +239,6 @@ export default function DeliveryDetailsPage() {
                                 </Badge>
                               )}
                             </div>
-                            <Badge variant="outline" className="bg-primary text-foreground">
-                              <EuroIcon className="w-3 h-3 mr-1" />
-                              {pkg.estimated_price} €
-                            </Badge>
                           </div>
 
                           <div className="grid grid-cols-2 gap-4 mt-4">

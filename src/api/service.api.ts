@@ -66,6 +66,36 @@ export interface Service {
   }
 
 
+  export interface ServiceHistoryClient {
+    id: string;
+    id_service: string;
+    price: number;
+    provider: {
+      id: string;
+      name: string;
+      photo: string;
+    };
+    date: string;
+    service_name: string;
+    rate: number | null;
+    review:string | null;
+  }
+
+  export interface Review {
+    id: string;
+    content: string;
+    provider: {
+      id: string;
+      name: string;
+      photo: string;
+    };
+    date: string;
+    service_name: string;
+    rate: number;
+  }
+  
+
+
 export class ServiceApi {
 
     static async getServices(
@@ -132,5 +162,23 @@ export class ServiceApi {
         return response.data;
     }
 
+    static async getMyServiceHitoryAsClient(page: number, limit: number) : Promise<{data : ServiceHistoryClient[], totalRows: number, totalPages: number, currentPage: number, limit: number}> {
+        const response = await axiosInstance.get(`/client/service/history/client?limit=${limit}&page=${page}`);
+        return response.data;
+    }
+
+    static async addServiceReview(appointment_id: string, rate: number, review: string) {
+        const response = await axiosInstance.post(`/client/service/${appointment_id}/comments`, {
+          rating: rate,
+            content: review,
+        });
+        return response;
+    }
+
+
+    static async getMyServiceReviewsAsClient(page: number, limit: number) : Promise<{data : Review[], totalRows: number, totalPages: number, currentPage: number, limit: number}> {
+        const response = await axiosInstance.get(`/client/service/myReviews?limit=${limit}&page=${page}`);
+        return response.data;
+    }
 
 }

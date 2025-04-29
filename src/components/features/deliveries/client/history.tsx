@@ -35,6 +35,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { z } from "zod";
 import FeedbackDialog from "../../utils/feedback-dialog";
+import { useTranslation } from 'react-i18next';
+import { useState } from "react";
 
 interface Delivery {
   id: string;
@@ -53,30 +55,29 @@ interface Delivery {
 }
 
 export const schema = z.object({
+  id: z.string(),
+  deliveryman: z.object({
     id: z.string(),
-    deliveryman: z.object({
-      id: z.string(),
-      name: z.string(),
-      photo: z.string(),
-    }),
-    departureDate: z.string(),
-    arrivalDate: z.string(),
-    departureCity: z.string(),
-    arrivalCity: z.string(),
-    announcementName: z.string(),
-    rate: z.number() .nullable(),
-    comment: z.string() .nullable(),
-  });
+    name: z.string(),
+    photo: z.string(),
+  }),
+  departureDate: z.string(),
+  arrivalDate: z.string(),
+  departureCity: z.string(),
+  arrivalCity: z.string(),
+  announcementName: z.string(),
+  rate: z.number().nullable(),
+  comment: z.string().nullable(),
+});
 
-export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
-
-    const navigate = useNavigate();
+export const columns = (t: any): ColumnDef<z.infer<typeof schema>>[] => {
+  const navigate = useNavigate();
 
   return [
     {
       id: "deliveryman",
       accessorKey: "deliveryman.name",
-      header: "Livreur",
+      header: t('client.pages.office.delivery.deliveryHistory.table.deliveryman'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Avatar>
@@ -92,7 +93,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       accessorKey: "departureDate",
-      header: "Date de départ",
+      header: t('client.pages.office.delivery.deliveryHistory.table.departureDate'),
       cell: ({ row }) => {
         const date = new Date(row.original.departureDate);
         return date.toLocaleDateString("fr-FR");
@@ -100,7 +101,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       accessorKey: "arrivalDate",
-      header: "Date d'arrivée",
+      header: t('client.pages.office.delivery.deliveryHistory.table.arrivalDate'),
       cell: ({ row }) => {
         const date = new Date(row.original.arrivalDate);
         return date.toLocaleDateString("fr-FR");
@@ -108,51 +109,55 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       accessorKey: "departureCity",
-      header: "Ville de départ",
+      header: t('client.pages.office.delivery.deliveryHistory.table.departureCity'),
       cell: ({ row }) => row.original.departureCity,
     },
     {
       accessorKey: "arrivalCity",
-      header: "Ville d'arrivée",
+      header: t('client.pages.office.delivery.deliveryHistory.table.arrivalCity'),
       cell: ({ row }) => row.original.arrivalCity,
     },
     {
       accessorKey: "announcementName",
-      header: "Nom de l'annonce",
+      header: t('client.pages.office.delivery.deliveryHistory.table.announcementName'),
       cell: ({ row }) => row.original.announcementName,
     },
     {
       id: "feedback",
-      header: "Avis",
+      header: t('client.pages.office.delivery.deliveryHistory.table.feedback'),
       cell: ({ row }) => {
-        const { rate, comment, id } = row.original
-        const hasFeedback = rate !== 0 && comment !== null && comment.trim() !== ""
+        const { rate, comment, id } = row.original;
+        const [hasFeedback, setHasFeedback] = useState(
+                 rate !== 0 && comment !== null && comment.trim() !== ""
+               );
 
         return hasFeedback ? (
-          <span className="text-muted-foreground text-sm">Déjà donné</span>
+          <span className="text-muted-foreground text-sm">
+            {t('client.pages.office.delivery.deliveryHistory.table.alreadyGiven')}
+          </span>
         ) : (
-          <FeedbackDialog maxNote={5} id={id} />
-        )
+          <FeedbackDialog maxNote={5} id={id} onFeedbackSent={() => setHasFeedback(true)} serviceName="delivery" />
+        );
       },
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t('client.pages.office.delivery.deliveryHistory.table.actions'),
       cell: ({ row }) => (
         <Button
           variant="outline"
           size="sm"
           onClick={() => navigate(`/office/deliveries/${row.original.id}`)}
         >
-          Voir le détail
+          {t('client.pages.office.delivery.deliveryHistory.table.viewDetails')}
         </Button>
       ),
     },
-  ]
+  ];
 };
 
-
 export function DataTable({ data: initialData }: { data: Delivery[] }) {
+  const { t } = useTranslation();
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
@@ -166,11 +171,9 @@ export function DataTable({ data: initialData }: { data: Delivery[] }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
-
-
   const table = useReactTable({
     data,
-    columns: columns(),
+    columns: columns(t),
     state: {
       sorting,
       columnVisibility,
@@ -196,8 +199,12 @@ export function DataTable({ data: initialData }: { data: Delivery[] }) {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">Colonnes</span>
-                <span className="lg:hidden">Colonnes</span>
+                <span className="hidden lg:inline">
+                  {t('client.pages.office.delivery.deliveryHistory.table.columns')}
+                </span>
+                <span className="lg:hidden">
+                  {t('client.pages.office.delivery.deliveryHistory.table.columns')}
+                </span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>

@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react"
-import { RiCalendarCheckLine } from "@remixicon/react"
+import React, { useEffect, useMemo, useState } from "react";
+import { RiCalendarCheckLine } from "@remixicon/react";
 import {
   addDays,
   addMonths,
@@ -10,49 +10,47 @@ import {
   startOfWeek,
   subMonths,
   subWeeks,
-
-} from "date-fns"
-import { fr } from 'date-fns/locale'
+} from "date-fns";
+import { fr } from 'date-fns/locale';
 import {
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-
-} from "lucide-react"
-
+} from "lucide-react";
 import {
   addHoursToDate,
   AgendaDaysToShow,
   AgendaView,
   CalendarEvent,
   CalendarView,
-  DayView,   
+  DayView,
   EventDialog,
   EventGap,
   EventHeight,
   MonthView,
   WeekCellsHeight,
   WeekView,
-} from "@/components/event-calendar"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+} from "@/components/event-calendar";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { ScrollArea } from "../ui/scroll-area"
+} from "@/components/ui/dropdown-menu";
+import { ScrollArea } from "../ui/scroll-area";
+import { useTranslation } from 'react-i18next';
 
 export interface EventCalendarProps {
-  events?: CalendarEvent[]
-  onEventAdd?: (event: CalendarEvent) => void
-  onEventUpdate?: (event: CalendarEvent) => void
-  onEventDelete?: (eventId: string) => void
-  className?: string
-  initialView?: CalendarView
-  initialDate?: Date
+  events?: CalendarEvent[];
+  onEventAdd?: (event: CalendarEvent) => void;
+  onEventUpdate?: (event: CalendarEvent) => void;
+  onEventDelete?: (eventId: string) => void;
+  className?: string;
+  initialView?: CalendarView;
+  initialDate?: Date;
 }
 
 export function EventCalendar({
@@ -61,14 +59,15 @@ export function EventCalendar({
   initialView = "month",
   initialDate = new Date(),
 }: EventCalendarProps) {
-  const [currentDate, setCurrentDate] = useState(initialDate)
-  const [view, setView] = useState<CalendarView>(initialView)
-  const [isEventDialogOpen, setIsEventDialogOpen] = useState(false)
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null)
+  const { t } = useTranslation();
+  const [currentDate, setCurrentDate] = useState(initialDate);
+  const [view, setView] = useState<CalendarView>(initialView);
+  const [isEventDialogOpen, setIsEventDialogOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
 
   useEffect(() => {
-    setCurrentDate(initialDate)
-  }, [initialDate])
+    setCurrentDate(initialDate);
+  }, [initialDate]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -78,93 +77,91 @@ export function EventCalendar({
         e.target instanceof HTMLTextAreaElement ||
         (e.target instanceof HTMLElement && e.target.isContentEditable)
       ) {
-        return
+        return;
       }
 
       switch (e.key.toLowerCase()) {
         case "m":
-          setView("month")
-          break
+          setView("month");
+          break;
         case "w":
-          setView("week")
-          break
+          setView("week");
+          break;
         case "d":
-          setView("day")
-          break
+          setView("day");
+          break;
         case "a":
-          setView("agenda")
-          break
+          setView("agenda");
+          break;
       }
-    }
+    };
 
-
-
-    window.addEventListener("keydown", handleKeyDown)
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown)
-    }
-  }, [isEventDialogOpen])
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isEventDialogOpen]);
 
   const handlePrevious = () => {
     if (view === "month") {
-      setCurrentDate(subMonths(currentDate, 1))
+      setCurrentDate(subMonths(currentDate, 1));
     } else if (view === "week") {
-      setCurrentDate(subWeeks(currentDate, 1))
+      setCurrentDate(subWeeks(currentDate, 1));
     } else if (view === "day") {
-      setCurrentDate(addDays(currentDate, -1))
+      setCurrentDate(addDays(currentDate, -1));
     } else if (view === "agenda") {
-      setCurrentDate(addDays(currentDate, -AgendaDaysToShow))
+      setCurrentDate(addDays(currentDate, -AgendaDaysToShow));
     }
-  }
+  };
 
   const handleNext = () => {
     if (view === "month") {
-      setCurrentDate(addMonths(currentDate, 1))
+      setCurrentDate(addMonths(currentDate, 1));
     } else if (view === "week") {
-      setCurrentDate(addWeeks(currentDate, 1))
+      setCurrentDate(addWeeks(currentDate, 1));
     } else if (view === "day") {
-      setCurrentDate(addDays(currentDate, 1))
+      setCurrentDate(addDays(currentDate, 1));
     } else if (view === "agenda") {
-      setCurrentDate(addDays(currentDate, AgendaDaysToShow))
+      setCurrentDate(addDays(currentDate, AgendaDaysToShow));
     }
-  }
+  };
 
   const handleToday = () => {
-    setCurrentDate(new Date())
-  }
+    setCurrentDate(new Date());
+  };
 
   const handleEventSelect = (event: CalendarEvent) => {
-    setSelectedEvent(event)
-    setIsEventDialogOpen(true)
-  }
+    setSelectedEvent(event);
+    setIsEventDialogOpen(true);
+  };
 
   const getCleanView = (view : string) => {
     switch (view) {
       case "month":
-        return "Mois";
+        return t('client.pages.office.planning.EventCalendar.month');
       case "week":
-        return "Semaine";
+        return t('client.pages.office.planning.EventCalendar.week');
       case "day":
-        return "Jour";
+        return t('client.pages.office.planning.EventCalendar.day');
       case "agenda":
-        return "Agenda";
+        return t('client.pages.office.planning.EventCalendar.agenda');
       default:
         return "";
     }
   };
 
   const handleEventCreate = (startTime: Date) => {
-    const minutes = startTime.getMinutes()
-    const remainder = minutes % 15
+    const minutes = startTime.getMinutes();
+    const remainder = minutes % 15;
     if (remainder !== 0) {
       if (remainder < 7.5) {
-        startTime.setMinutes(minutes - remainder)
+        startTime.setMinutes(minutes - remainder);
       } else {
-        startTime.setMinutes(minutes + (15 - remainder))
+        startTime.setMinutes(minutes + (15 - remainder));
       }
-      startTime.setSeconds(0)
-      startTime.setMilliseconds(0)
+      startTime.setSeconds(0);
+      startTime.setMilliseconds(0);
     }
 
     const newEvent: CalendarEvent = {
@@ -173,15 +170,15 @@ export function EventCalendar({
       start: startTime,
       end: addHoursToDate(startTime, 1),
       allDay: false,
-    }
-    setSelectedEvent(newEvent)
-    setIsEventDialogOpen(true)
-  }
+    };
+    setSelectedEvent(newEvent);
+    setIsEventDialogOpen(true);
+  };
 
   const capitalizeFirstLetter = (string : string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
-  
+
   const viewTitle = useMemo(() => {
     if (view === "month") {
       return capitalizeFirstLetter(format(currentDate, "MMMM yyyy", { locale: fr }));
@@ -198,7 +195,7 @@ export function EventCalendar({
     } else if (view === "agenda") {
       const start = currentDate;
       const end = addDays(currentDate, AgendaDaysToShow - 1);
-  
+
       if (isSameMonth(start, end)) {
         return capitalizeFirstLetter(format(start, "MMMM yyyy", { locale: fr }));
       } else {
@@ -224,13 +221,13 @@ export function EventCalendar({
         <div className="flex items-center gap-1 sm:gap-4">
           <Button variant="outline" className="aspect-square max-[479px]:p-0" onClick={handleToday}>
             <RiCalendarCheckLine className="min-[480px]:hidden" size={16} aria-hidden="true" />
-            <span className="max-[479px]:sr-only">Aujourd'hui</span>
+            <span className="max-[479px]:sr-only">{t('client.pages.office.planning.EventCalendar.today')}</span>
           </Button>
           <div className="flex sm:hidden items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={handlePrevious} aria-label="Précédent">
+            <Button variant="ghost" size="icon" onClick={handlePrevious} aria-label={t('client.pages.office.planning.EventCalendar.previous')}>
               <ChevronLeftIcon size={16} aria-hidden="true" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={handleNext} aria-label="Suivant">
+            <Button variant="ghost" size="icon" onClick={handleNext} aria-label={t('client.pages.office.planning.EventCalendar.next')}>
               <ChevronRightIcon size={16} aria-hidden="true" />
             </Button>
           </div>
@@ -253,16 +250,16 @@ export function EventCalendar({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-32">
               <DropdownMenuItem onClick={() => setView("month")}>
-                Mois <DropdownMenuShortcut>M</DropdownMenuShortcut>
+                {t('client.pages.office.planning.EventCalendar.month')} <DropdownMenuShortcut>M</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setView("week")}>
-                Semaine <DropdownMenuShortcut>W</DropdownMenuShortcut>
+                {t('client.pages.office.planning.EventCalendar.week')} <DropdownMenuShortcut>W</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setView("day")}>
-                Jour <DropdownMenuShortcut>D</DropdownMenuShortcut>
+                {t('client.pages.office.planning.EventCalendar.day')} <DropdownMenuShortcut>D</DropdownMenuShortcut>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setView("agenda")}>
-                Agenda <DropdownMenuShortcut>A</DropdownMenuShortcut>
+                {t('client.pages.office.planning.EventCalendar.agenda')} <DropdownMenuShortcut>A</DropdownMenuShortcut>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -306,10 +303,10 @@ export function EventCalendar({
         event={selectedEvent}
         isOpen={isEventDialogOpen}
         onClose={() => {
-          setIsEventDialogOpen(false)
-          setSelectedEvent(null)
+          setIsEventDialogOpen(false);
+          setSelectedEvent(null);
         }}
       />
     </div>
-  )
+  );
 }

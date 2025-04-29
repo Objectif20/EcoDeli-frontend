@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { PaginationControls } from "@/components/pagination-controle";
 import { DataTable } from "@/components/features/deliveries/client/history";
+import { useTranslation } from 'react-i18next';
 
 interface Delivery {
   id: string;
@@ -21,6 +22,7 @@ interface Delivery {
 }
 
 export default function HistoryDeliveriesClientPage() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [deliveries, setDeliveries] = useState<Delivery[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -30,11 +32,15 @@ export default function HistoryDeliveriesClientPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Livraisons", "Historique des livraisons"],
+        segments: [
+          t('client.pages.office.delivery.deliveryHistory.breadcrumb.home'),
+          t('client.pages.office.delivery.deliveryHistory.breadcrumb.deliveries'),
+          t('client.pages.office.delivery.deliveryHistory.breadcrumb.deliveryHistory')
+        ],
         links: ["/office/dashboard"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     const fetchDeliveries = async () => {
@@ -53,9 +59,9 @@ export default function HistoryDeliveriesClientPage() {
               departureCity: "Paris",
               arrivalCity: "Lyon",
               announcementName: "Livraison de meubles",
-              rate : null,
-              comment : null,
-          },
+              rate: null,
+              comment: null,
+            },
             {
               id: "2",
               deliveryman: {
@@ -68,8 +74,8 @@ export default function HistoryDeliveriesClientPage() {
               departureCity: "Marseille",
               arrivalCity: "Nice",
               announcementName: "Livraison de colis",
-              rate : null,
-              comment : null,
+              rate: null,
+              comment: null,
             },
             // Add more simulated data as needed
           ],
@@ -88,7 +94,9 @@ export default function HistoryDeliveriesClientPage() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold mb-4">Historique des livraisons</h1>
+      <h1 className="text-2xl font-semibold mb-4">
+        {t('client.pages.office.delivery.deliveryHistory.title')}
+      </h1>
       <DataTable
         key={`${pageIndex}-${pageSize}`}
         data={deliveries}

@@ -10,6 +10,7 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { DeliverymanApi, vehicleCategory } from "@/api/deliveryman.api";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import { cn } from "@/lib/utils";
+import { useTranslation } from 'react-i18next';
 
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -21,16 +22,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { ImagePlus, Upload, Trash2 } from "lucide-react";
 
 const FormSchema = z.object({
-  document: z.instanceof(File, { message: "Le document est requis" }),
-  documentDescription: z.string().min(1, { message: "La description est requise" }),
-  model: z.string().min(1, { message: "Le modèle est requis" }),
-  category: z.string().min(1, { message: "La catégorie est requise" }),
-  matricule: z.string().min(1, { message: "Le matricule est requis" }),
+  document: z.instanceof(File, { message: "client.pages.office.delivery.vehicles.addVehicle.form.errors.documentRequired" }),
+  documentDescription: z.string().min(1, { message: "client.pages.office.delivery.vehicles.addVehicle.form.errors.descriptionRequired" }),
+  model: z.string().min(1, { message: "client.pages.office.delivery.vehicles.addVehicle.form.errors.modelRequired" }),
+  category: z.string().min(1, { message: "client.pages.office.delivery.vehicles.addVehicle.form.errors.categoryRequired" }),
+  matricule: z.string().min(1, { message: "client.pages.office.delivery.vehicles.addVehicle.form.errors.matriculeRequired" }),
   electric: z.boolean(),
-  co2Consumption: z.string().min(1, { message: "La consommation de CO2 doit être renseignée" }),
+  co2Consumption: z.string().min(1, { message: "client.pages.office.delivery.vehicles.addVehicle.form.errors.co2ConsumptionRequired" }),
 });
 
 export default function AddVehicle() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -54,10 +56,14 @@ export default function AddVehicle() {
 
   useEffect(() => {
     dispatch(setBreadcrumb({
-      segments: ["Accueil", "Véhicules", "Ajouter un Véhicule"],
+      segments: [
+        t('client.pages.office.delivery.vehicles.addVehicle.breadcrumb.home'),
+        t('client.pages.office.delivery.vehicles.addVehicle.breadcrumb.vehicles'),
+        t('client.pages.office.delivery.vehicles.addVehicle.breadcrumb.addVehicle')
+      ],
       links: ["/office/dashboard", "/office/my-vehicles"],
     }));
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -132,7 +138,7 @@ export default function AddVehicle() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="w-full max-w-2xl mx-auto space-y-6 p-6 rounded-lg border bg-card text-card-foreground shadow-sm"
       >
-        <h2 className="text-2xl font-bold mb-4">Ajouter un Véhicule</h2>
+        <h2 className="text-2xl font-bold mb-4">{t('client.pages.office.delivery.vehicles.addVehicle.title')}</h2>
 
         {/* Zone upload image */}
         <div
@@ -152,8 +158,8 @@ export default function AddVehicle() {
                 <ImagePlus className="h-6 w-6 text-muted-foreground" />
               </div>
               <div className="text-center">
-                <p className="text-sm font-medium">Cliquez pour sélectionner</p>
-                <p className="text-xs text-muted-foreground">ou glissez-déposez une image</p>
+                <p className="text-sm font-medium">{t('client.pages.office.delivery.vehicles.addVehicle.form.uploadImage.clickToSelect')}</p>
+                <p className="text-xs text-muted-foreground">{t('client.pages.office.delivery.vehicles.addVehicle.form.uploadImage.dragDrop')}</p>
               </div>
             </>
           ) : (
@@ -180,7 +186,7 @@ export default function AddVehicle() {
           name="document"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Document</FormLabel>
+              <FormLabel>{t('client.pages.office.delivery.vehicles.addVehicle.form.document')}</FormLabel>
               <FormControl>
                 <Input type="file" onChange={(e) => field.onChange(e.target.files?.[0] || null)} />
               </FormControl>
@@ -194,9 +200,9 @@ export default function AddVehicle() {
           name="documentDescription"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description du Document</FormLabel>
+              <FormLabel>{t('client.pages.office.delivery.vehicles.addVehicle.form.documentDescription')}</FormLabel>
               <FormControl>
-                <Textarea placeholder="Entrez la description du document" {...field} />
+                <Textarea placeholder={t('client.pages.office.delivery.vehicles.addVehicle.form.documentDescription')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -208,11 +214,11 @@ export default function AddVehicle() {
           name="category"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Catégorie</FormLabel>
+              <FormLabel>{t('client.pages.office.delivery.vehicles.addVehicle.form.category')}</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Sélectionnez une catégorie" />
+                    <SelectValue placeholder={t('client.pages.office.delivery.vehicles.addVehicle.form.selectCategory')} />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -233,9 +239,9 @@ export default function AddVehicle() {
           name="matricule"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Matricule</FormLabel>
+              <FormLabel>{t('client.pages.office.delivery.vehicles.addVehicle.form.matricule')}</FormLabel>
               <FormControl>
-                <Input placeholder="Entrez le matricule" {...field} />
+                <Input placeholder={t('client.pages.office.delivery.vehicles.addVehicle.form.matricule')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -247,9 +253,9 @@ export default function AddVehicle() {
           name="model"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Modèle</FormLabel>
+              <FormLabel>{t('client.pages.office.delivery.vehicles.addVehicle.form.model')}</FormLabel>
               <FormControl>
-                <Input placeholder="Entrez le modèle" {...field} />
+                <Input placeholder={t('client.pages.office.delivery.vehicles.addVehicle.form.model')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -265,8 +271,8 @@ export default function AddVehicle() {
                 <Checkbox checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
               <div className="space-y-1">
-                <FormLabel>Électrique</FormLabel>
-                <p className="text-sm text-muted-foreground">Cochez si le véhicule est électrique.</p>
+                <FormLabel>{t('client.pages.office.delivery.vehicles.addVehicle.form.electric')}</FormLabel>
+                <p className="text-sm text-muted-foreground">{t('client.pages.office.delivery.vehicles.addVehicle.form.electricDescription')}</p>
               </div>
             </FormItem>
           )}
@@ -277,7 +283,7 @@ export default function AddVehicle() {
           name="co2Consumption"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Consommation de CO2</FormLabel>
+              <FormLabel>{t('client.pages.office.delivery.vehicles.addVehicle.form.co2Consumption')}</FormLabel>
               <FormControl>
                 <Input type="number" placeholder="Ex: 120" {...field} />
               </FormControl>
@@ -287,7 +293,7 @@ export default function AddVehicle() {
         />
 
         <Button type="submit" className="w-full">
-          Soumettre
+          {t('client.pages.office.delivery.vehicles.addVehicle.form.submit')}
         </Button>
       </form>
     </Form>

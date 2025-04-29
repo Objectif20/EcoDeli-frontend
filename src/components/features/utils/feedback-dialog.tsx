@@ -13,23 +13,30 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { DialogClose } from "@radix-ui/react-dialog"
 import { Checkbox } from "@/components/ui/checkbox"
+import { ServiceApi } from "@/api/service.api"
 
 interface FeedbackDialogProps {
   maxNote: number
   id: string
+  onFeedbackSent: () => void
+  serviceName?: string
 }
 
-export default function FeedbackDialog({ maxNote, id }: FeedbackDialogProps) {
-  const [note, setNote] = useState<string>("")
+export default function FeedbackDialog({ maxNote, id, onFeedbackSent, serviceName }: FeedbackDialogProps) {  const [note, setNote] = useState<string>("")
   const [comment, setComment] = useState("")
   const checkboxId = useId()
 
-  const handleSendFeedback = () => {
-    console.log({
-      note,
-      comment,
-      id
-    })
+  const handleSendFeedback = async () => {
+    try {
+      if (serviceName === "delivery") {
+        console.log("Envoi de l'avis pour la livraison")
+      } else if (serviceName === "service") {
+        await ServiceApi.addServiceReview(id, Number(note), comment)
+      }
+      onFeedbackSent();
+    } catch (error) {
+      console.error("Erreur lors de l'envoi de l'avis :", error)
+    }
   }
 
   return (

@@ -6,8 +6,10 @@ import { DataTable } from "@/components/features/deliveries/vehicles/vehicles";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { DeliverymanApi, Vehicle } from "@/api/deliveryman.api";
+import { useTranslation } from 'react-i18next';
 
 export default function VehicleListPage() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -19,19 +21,22 @@ export default function VehicleListPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Véhicules"],
+        segments: [
+          t('client.pages.office.delivery.vehicles.myVehicles.breadcrumb.home'),
+          t('client.pages.office.delivery.vehicles.myVehicles.breadcrumb.vehicles')
+        ],
         links: ["/office/dashboard"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     const fetchVehicles = async () => {
       try {
         const response = await DeliverymanApi.getMyVehicles(pageIndex + 1, pageSize);
 
-        setVehicles(response.data); 
-        setTotalItems(response.totalRows); 
+        setVehicles(response.data);
+        setTotalItems(response.totalRows);
       } catch (error) {
         console.error("Erreur lors de la récupération des véhicules", error);
       }
@@ -42,10 +47,12 @@ export default function VehicleListPage() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold mb-4">Liste des Véhicules</h1>
-      <Button onClick={() => navigate("/office/add-vehicle")}>Ajouter un nouveau véhicule</Button>
+      <h1 className="text-2xl font-semibold mb-4">{t('client.pages.office.delivery.vehicles.myVehicles.title')}</h1>
+      <Button onClick={() => navigate("/office/add-vehicle")}>
+        {t('client.pages.office.delivery.vehicles.myVehicles.addVehicleButton')}
+      </Button>
 
-        <DataTable key={`${pageIndex}-${pageSize}`} data={vehicles} />
+      <DataTable key={`${pageIndex}-${pageSize}`} data={vehicles} />
 
       <PaginationControls
         pageIndex={pageIndex}

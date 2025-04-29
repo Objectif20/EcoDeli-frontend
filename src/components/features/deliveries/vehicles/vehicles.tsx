@@ -36,6 +36,7 @@ import {
 
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 export const schema = z.object({
   id: z.string(),
@@ -54,7 +55,7 @@ export const columnLink = [
   { column_id: "allow", text: "Autorisé" },
 ];
 
-export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
+export const columns = (t: any): ColumnDef<z.infer<typeof schema>>[] => {
   const [, setSelectedVehicle] = useState<any>(null);
 
   const handleClose = () => {
@@ -64,26 +65,27 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
   return [
     {
       accessorKey: "name",
-      header: "Nom",
+      header: t('client.pages.office.delivery.vehicles.myVehicles.table.name'),
       cell: ({ row }) => <span>{row.original.name}</span>,
     },
     {
       accessorKey: "matricule",
-      header: "Matricule",
+      header: t('client.pages.office.delivery.vehicles.myVehicles.table.matricule'),
       cell: ({ row }) => <span>{row.original.matricule}</span>,
     },
     {
       accessorKey: "co2",
-      header: "CO2",
+      header: t('client.pages.office.delivery.vehicles.myVehicles.table.co2'),
       cell: ({ row }) => <span>{row.original.co2}</span>,
     },
     {
       accessorKey: "allow",
-      header: "Autorisé",
+      header: t('client.pages.office.delivery.vehicles.myVehicles.table.allow'),
       cell: ({ row }) => <span>{row.original.allow ? "Oui" : "Non"}</span>,
     },
     {
       id: "actions",
+      header: t('client.pages.office.delivery.vehicles.myVehicles.table.actions'),
       cell: ({ row }) => (
         <Dialog>
           <DialogTrigger asChild>
@@ -91,7 +93,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
               variant="link"
               className="w-fit px-0 text-left text-foreground"
             >
-              Détails
+              {t('client.pages.office.delivery.vehicles.myVehicles.table.details')}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
@@ -101,20 +103,22 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
                 {row.original?.name}
               </DialogTitle>
               <DialogDescription className="text-sm text-gray-500">
-                Matricule: {row.original?.matricule}
+                {t('client.pages.office.delivery.vehicles.myVehicles.table.matricule')}: {row.original?.matricule}
               </DialogDescription>
             </DialogHeader>
-            <p className="text-sm text-center text-gray-600">CO2: {row.original?.co2}</p>
-            <p className="text-sm text-center text-gray-600">Autorisé: {row.original?.allow ? "Oui" : "Non"}</p>
+            <p className="text-sm text-center text-gray-600">{t('client.pages.office.delivery.vehicles.myVehicles.table.co2')}: {row.original?.co2}</p>
+            <p className="text-sm text-center text-gray-600">{t('client.pages.office.delivery.vehicles.myVehicles.table.allow')}: {row.original?.allow ? "Oui" : "Non"}</p>
             <div className="mt-4">
               <a href={row.original?.justification_file} download>
-                <Button className="w-full">Télécharger le justificatif</Button>
+                <Button className="w-full">
+                  {t('client.pages.office.delivery.vehicles.myVehicles.table.downloadJustification')}
+                </Button>
               </a>
             </div>
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="button" onClick={handleClose}>
-                  Fermer
+                  {t('client.pages.office.delivery.vehicles.myVehicles.table.close')}
                 </Button>
               </DialogClose>
             </DialogFooter>
@@ -126,6 +130,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
 };
 
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
+  const { t } = useTranslation();
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
@@ -141,7 +146,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
 
   const table = useReactTable({
     data,
-    columns: columns(),
+    columns: columns(t),
     state: {
       sorting,
       columnVisibility,
@@ -167,8 +172,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">Colonnes</span>
-                <span className="lg:hidden">Colonnes</span>
+                <span className="hidden lg:inline">{t('client.pages.office.delivery.vehicles.myVehicles.table.columns')}</span>
+                <span className="lg:hidden">{t('client.pages.office.delivery.vehicles.myVehicles.table.columns')}</span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -248,7 +253,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t('client.pages.office.delivery.reviews.table.noResults')}
                 </TableCell>
               </TableRow>
             )}

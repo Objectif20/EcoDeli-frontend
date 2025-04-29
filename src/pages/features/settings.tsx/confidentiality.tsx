@@ -1,353 +1,169 @@
-"use client"
-
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
-import { enableA2F, validateA2F, disableA2F } from "@/api/auth.api";
-import { useMediaQuery } from 'react-responsive';
-import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogClose,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerClose,
-  DrawerTrigger,
-  DrawerFooter,
-} from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { Link, useNavigate } from "react-router-dom";
-import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
-import { ProfileAPI } from "@/api/profile.api";
-import { logout } from "@/redux/slices/authSlice";
+  Elements,
+  useStripe,
+  useElements,
+  IbanElement,
+} from "@stripe/react-stripe-js";
 
-const PrivacySettings: React.FC = () => {
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
+import { RootState } from "@/redux/store";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SubscriptionDataTable } from "@/components/features/settings/subscriptions/data-tables";
+import stripePromise from "@/config/stripeConfig";
+import { Button } from "@/components/ui/button";
+import { ProfileAPI } from "@/api/profile.api";
+import { toast } from "sonner";
+import { useTranslation } from 'react-i18next';
+
+const BankForm = ({ hasBankDetails }: { hasBankDetails: boolean }) => {
+  const stripe = useStripe();
+  const elements = useElements();
   const { t } = useTranslation();
-  const dispatch = useDispatch<AppDispatch>();
+
+  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    const ibanElement = elements.getElement(IbanElement);
+    if (!ibanElement) return;
+
+    try {
+      let stripeAccountId: string | null = null;
+
+      if (!hasBankDetails) {
+        const accountTokenResponse = await stripe.createToken("account", {
+          business_type: "individual",
+          individual: {
+            first_name: user?.first_name,
+            last_name: user?.last_name,
+            email: user?.email,
+          },
+          tos_shown_and_accepted: true,
+        });
+
+        if (accountTokenResponse.error || !accountTokenResponse.token) {
+          console.error("Erreur token Stripe :", accountTokenResponse.error?.message);
+          return;
+        }
+
+        const result = await ProfileAPI.createStripeAccount(accountTokenResponse.token.id);
+        stripeAccountId = result.StripeAccountId;
+        console.log("🆕 Compte Stripe créé :", stripeAccountId);
+        toast.success(t('client.pages.office.settings.billing.stripeAccountCreated'));
+      }
+
+    } catch (err) {
+      console.error("❌ Erreur globale :", err);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="mb-4">
+        <label className="block text-sm font-medium">{t('client.pages.office.settings.billing.ibanLabel')}</label>
+        <div className="mt-1 border rounded-md px-3 py-2">
+          <IbanElement options={{ supportedCountries: ["SEPA"] }} className="w-full" />
+        </div>
+      </div>
+      <Button type="submit">
+        {t('client.pages.office.settings.billing.saveIban')}
+      </Button>
+    </form>
+  );
+};
+
+const BillingSettings: React.FC = () => {
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
 
   const isProvider = user?.profile.includes("PROVIDER");
   const isClient = user?.profile.includes("CLIENT");
   const isMerchant = user?.profile.includes("MERCHANT");
   const isDeliveryman = user?.profile.includes("DELIVERYMAN");
-  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
-  const [qrCode, setQrCode] = useState<string | null>(null);
-  const [otp, setOtp] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDisableMode, setIsDisableMode] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const hasBankDetails = true;
+  const balance = user?.balance || 2;
 
   useEffect(() => {
-    dispatch(
-      setBreadcrumb({
-        segments: [t("client.pages.office.settings.confidentiality.home"), t("client.pages.office.settings.confidentiality.settings"), t("client.pages.office.settings.confidentiality.privacy")],
-        links: ["/office/dashboard"],
-      }),
-    );
+    dispatch(setBreadcrumb({
+      segments: [t('client.pages.office.settings.billing.breadcrumbHome'), t('client.pages.office.settings.billing.breadcrumbSettings'), t('client.pages.office.settings.billing.breadcrumbBilling')],
+      links: ["/office/dashboard"],
+    }));
   }, [dispatch, t]);
 
-
-  const handleActivateOTP = async () => {
-    if (!user?.user_id) {
-      console.error("User ID is not available");
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const data = await enableA2F(user.user_id);
-      setQrCode(data.qrCode);
-      setIsDisableMode(false);
-    } catch (error) {
-      console.error("Failed to enable A2F:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleValidateOTP = async () => {
-    if (!user?.user_id) {
-      console.error("User ID is not available");
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      await validateA2F(user.user_id, otp);
-      setQrCode(null);
-      setOtp("");
-      setIsDisableMode(false);
-    } catch (error) {
-      console.error("Failed to validate A2F:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDisableOTP = async () => {
-    if (!user?.user_id) {
-      console.error("User ID is not available");
-      return;
-    }
-
-    setIsDisableMode(true);
-    setQrCode("dummy_value");
-  };
-
-  const handleConfirmDisableOTP = async () => {
-    if (!user?.user_id) {
-      console.error("User ID is not available");
-      return;
-    }
-    try {
-      setIsLoading(true);
-      await disableA2F(user.user_id, otp);
-      setQrCode(null);
-      setOtp("");
-      setIsDisableMode(true);
-    } catch (error) {
-      console.error("Failed to disable A2F:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleClose = () => {
-    setQrCode(null);
-    setOtp("");
-    setIsDisableMode(false);
-  };
-
-  const handleResetPassword = async () => {
-    try {
-      await ProfileAPI.updateMyPassword()
-    } catch (error) {
-      console.error("Failed to reset password:", error);
-    }
-
-    dispatch(logout());
-    navigate("/auth/login")
-  }
-
   return (
-    <div className="flex flex-col gap-8">
-      <div className="mx-auto grid w-full max-w-6xl gap-2">
-        <h1 className="text-3xl font-semibold">{t("client.pages.office.settings.confidentiality.privacy")}</h1>
-      </div>
-      <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-        <nav className="grid gap-4 text-sm text-muted-foreground">
-          <Link to="/office/general-settings">{t("client.pages.office.settings.confidentiality.generalSettings")}</Link>
-          <Link to="/office/profile">{t("client.pages.office.settings.confidentiality.profile")}</Link>
-          <Link to="/office/privacy" className="font-semibold text-primary active-link">
-            {t("client.pages.office.settings.confidentiality.privacy")}
-          </Link>
-          <Link to="/office/contact-details">{t("client.pages.office.settings.confidentiality.contactDetails")}</Link>
-          {(isMerchant || isClient) && <Link to="/office/subscriptions">{t("client.pages.office.settings.confidentiality.subscriptions")}</Link>}
-          {(isProvider || isDeliveryman) && <Link to="/office/billing-settings">{t("client.pages.office.settings.confidentiality.billing")}</Link>}
-          <Link to="/office/reports">{t("client.pages.office.settings.confidentiality.reports")}</Link>
-        </nav>
-        <div className="grid gap-6">
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-xl font-semibold mb-1">{t("client.pages.office.settings.confidentiality.privacy")}</h2>
-              <p className="text-sm text-muted-foreground">{t("client.pages.office.settings.confidentiality.modifyPrivacy")}</p>
-              <div className="h-px bg-border my-6"></div>
+    <Elements stripe={stripePromise}>
+      <div className="flex flex-col gap-8">
+        <div className="mx-auto grid w-full max-w-6xl gap-2">
+          <h1 className="text-3xl font-semibold">{t('client.pages.office.settings.billing.title')}</h1>
+        </div>
+        <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
+          <nav className="grid gap-4 text-sm text-muted-foreground">
+            <Link to="/office/general-settings">{t('client.pages.office.settings.billing.generalSettings')}</Link>
+            <Link to="/office/profile">{t('client.pages.office.settings.billing.profile')}</Link>
+            <Link to="/office/privacy">{t('client.pages.office.settings.billing.privacy')}</Link>
+            <Link to="/office/contact-details">{t('client.pages.office.settings.billing.contactDetails')}</Link>
+            {(isMerchant || isClient) && (
+              <Link to="/office/subscriptions">{t('client.pages.office.settings.billing.subscriptions')}</Link>
+            )}
+            {(isProvider || isDeliveryman) && (
+              <Link to="/office/billing-settings" className="font-semibold text-primary active-link">{t('client.pages.office.settings.billing.billing')}</Link>
+            )}
+            <Link to="/office/reports">{t('client.pages.office.settings.billing.reports')}</Link>
+          </nav>
+          <div className="grid gap-6">
+            <h1 className="text-2xl font-semibold">{t('client.pages.office.settings.billing.yourBalance')}</h1>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl">
+                    {t('client.pages.office.settings.billing.currentBalance')} <span>{balance}€</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {balance > 0 && hasBankDetails && (
+                    <Button>
+                      {t('client.pages.office.settings.billing.requestTransfer')}
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-xl">
+                    {hasBankDetails
+                      ? t('client.pages.office.settings.billing.connectedStripeAccount')
+                      : t('client.pages.office.settings.billing.updateBankDetails')}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {hasBankDetails ? (
+                    <Button>
+                      {t('client.pages.office.settings.billing.updateStripeAccount')}
+                    </Button>
+                  ) : (
+                    <BankForm hasBankDetails={hasBankDetails} />
+                  )}
+                </CardContent>
+              </Card>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-base font-medium">{t("client.pages.office.settings.confidentiality.updatePassword")}</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {t("client.pages.office.settings.confidentiality.updatePasswordDescription")}
-                </p>
-              </div>
-              {isMobile ? (
-
-                  <Drawer>
-                  <DrawerTrigger asChild>
-                    <Button variant="destructive" >{t("client.pages.office.settings.confidentiality.changePassword")}</Button>
-                  </DrawerTrigger>
-                  <DrawerContent className="sm:max-w-[425px]">
-                    <DrawerHeader>
-                      <DrawerTitle>Réinitialiser le mot de passe</DrawerTitle>
-                      <DrawerDescription>
-                      Un email de réinitialisation de mot de passe vous sera envoyé.
-                      </DrawerDescription>
-                    </DrawerHeader>
-                    <DrawerFooter>
-                      <Button onClick={handleResetPassword}>{t('pages.parametres.valider')}</Button>
-                      <Button variant={"ghost"}>{t('pages.parametres.annuler')}</Button>
-                    </DrawerFooter>
-                  </DrawerContent>
-                  </Drawer>
-
-              ) : (
-                <div className="absolute right-0 top-0 md:static md:ml-auto">
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button variant="destructive" className="w-full md:w-auto">{t("client.pages.office.settings.confidentiality.changePassword")}</Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle>Réinitialiser le mot de passe</DialogTitle>
-                              <DialogDescription>
-                              Un email de réinitialisation de mot de passe vous sera envoyé.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                              <Button onClick={handleResetPassword}>{t('pages.parametres.valider')}</Button>
-                              <Button variant={"ghost"}>{t('pages.parametres.annuler')}</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-                  </div>
-              )}
-            </div>
-
-            <div className="space-y-4 pt-4">
-              <div>
-                <h3 className="text-base font-medium">{t("client.pages.office.settings.confidentiality.downloadData")}</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {t("client.pages.office.settings.confidentiality.downloadDataDescription")}
-                </p>
-              </div>
-              <Button className="px-4 py-2 rounded-md text-sm transition-colors">
-                {t("client.pages.office.settings.confidentiality.downloadDocument")}
-              </Button>
-            </div>
-
-            <div className="space-y-4 pt-4">
-              <div>
-                <h3 className="text-base font-medium">{t("client.pages.office.settings.confidentiality.enable2FA")}</h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {t("client.pages.office.settings.confidentiality.enable2FADescription")}
-                </p>
-              </div>
-              <Button className="px-4 py-2 rounded-md text-sm transition-colors" onClick={user?.otp ? handleDisableOTP : handleActivateOTP} disabled={isLoading}>
-                {user?.otp ? t("client.pages.office.settings.confidentiality.disable2FA") : t("client.pages.office.settings.confidentiality.activate2FA")}
-              </Button>
-            </div>
-
-            <div className="pt-2">
-              <p className="text-sm">
-                {t("client.pages.office.settings.confidentiality.whatIs2FA")}
-                <a href="#" className="text-primary hover:underline">
-                  {t("client.pages.office.settings.confidentiality.here")}
-                </a>
-              </p>
-            </div>
-
-            <div className="pt-6">
-              <p className="text-sm">
-                {t("client.pages.office.settings.confidentiality.accessPrivacyPolicy")}
-                <a href="#" className="text-primary hover:underline">
-                  {t("client.pages.office.settings.confidentiality.privacyPolicy")}
-                </a>
-              </p>
+            <div className="mt-6">
+              <SubscriptionDataTable />
             </div>
           </div>
         </div>
       </div>
-
-      {qrCode && (
-        <>
-          {!isMobile ? (
-            <Dialog open={!!qrCode} onOpenChange={(open) => { if (!open) handleClose(); }}>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle>{isDisableMode ? t('client.pages.office.settings.confidentiality.disable2FA') : t('client.pages.office.settings.confidentiality.activate2FA')}</DialogTitle>
-                  <DialogDescription>
-                    {isDisableMode
-                      ? t('client.pages.office.settings.confidentiality.enterOtp')
-                      : t('client.pages.office.settings.confidentiality.scanQrCode')}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="flex flex-col items-center space-y-4">
-                  {!isDisableMode && <img src={qrCode} alt={t('client.pages.office.settings.confidentiality.imageAlt')} className="mb-4" />}
-                  <InputOTP maxLength={6} value={otp} onChange={(newValue: string) => setOtp(newValue)}>
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                    </InputOTPGroup>
-                    <InputOTPSeparator />
-                    <InputOTPGroup>
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                </div>
-                <Button onClick={isDisableMode ? handleConfirmDisableOTP : handleValidateOTP} disabled={isLoading}>
-                  {isLoading ? t('client.pages.office.settings.confidentiality.loading') : t('client.pages.office.settings.confidentiality.validate')}
-                </Button>
-                <DialogClose asChild>
-                  <Button variant="outline" onClick={handleClose}>
-                    {t('client.pages.office.settings.confidentiality.cancel')}
-                  </Button>
-                </DialogClose>
-              </DialogContent>
-            </Dialog>
-          ) : (
-            <Drawer open={!!qrCode} onClose={handleClose}>
-              <DrawerContent className="sm:max-w-[425px]">
-                <DrawerHeader>
-                  <DrawerTitle>{isDisableMode ? t('client.pages.office.settings.confidentiality.disable2FA') : t('client.pages.office.settings.confidentiality.activate2FA')}</DrawerTitle>
-                  <DrawerDescription>
-                    {isDisableMode
-                      ? t('client.pages.office.settings.confidentiality.enterOtp')
-                      : t('client.pages.office.settings.confidentiality.scanQrCode')}
-                  </DrawerDescription>
-                </DrawerHeader>
-                <div className="flex flex-col items-center space-y-4 mb-4">
-                  {!isDisableMode && <img src={qrCode} alt={t('client.pages.office.settings.confidentiality.imageAlt')} className="mb-4" />}
-                  <InputOTP maxLength={6} value={otp} onChange={(newValue: string) => setOtp(newValue)}>
-                    <InputOTPGroup>
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                    </InputOTPGroup>
-                    <InputOTPSeparator />
-                    <InputOTPGroup>
-                      <InputOTPSlot index={3} />
-                      <InputOTPSlot index={4} />
-                      <InputOTPSlot index={5} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                </div>
-                <Button onClick={isDisableMode ? handleConfirmDisableOTP : handleValidateOTP} disabled={isLoading}>
-                  {isLoading ? t('client.pages.office.settings.confidentiality.loading') : t('client.pages.office.settings.confidentiality.validate')}
-                </Button>
-                <DrawerClose asChild>
-                  <Button variant="outline" onClick={handleClose}>
-                    {t('client.pages.office.settings.confidentiality.cancel')}
-                  </Button>
-                </DrawerClose>
-              </DrawerContent>
-            </Drawer>
-          )}
-        </>
-      )}
-    </div>
+    </Elements>
   );
 };
 
-export default PrivacySettings;
+export default BillingSettings;

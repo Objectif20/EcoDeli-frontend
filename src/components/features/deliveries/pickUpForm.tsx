@@ -1,7 +1,6 @@
 import { useFormContext } from "react-hook-form";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import type { PickUpFormValues } from "./types";
 
 export const PickupFormComponent = ({  }: { onFormSubmit: (data: PickUpFormValues) => void }) => {
@@ -55,29 +54,6 @@ export const PickupFormComponent = ({  }: { onFormSubmit: (data: PickUpFormValue
           )}
         />
       </div>
-
-      <FormField
-        control={control}
-        name="pickupMethod"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Moyen de récupération des colis</FormLabel>
-            <FormControl>
-              <Select onValueChange={field.onChange} value={field.value}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choisissez un moyen de récupération des colis" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="vehicule">Au pied du véhicule (0€)</SelectItem>
-                  <SelectItem value="manutention1">Manutention 1 personne (29€)</SelectItem>
-                  <SelectItem value="manutention2">Manutention 2 personnes (59€)</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
     </div>
   );
 };

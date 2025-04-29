@@ -20,9 +20,6 @@ export const pickupSchema = z.object({
   city: z.string().min(1, "Ville requise"),
   lat: z.string().optional(),
   lon: z.string().optional(),  
-  pickupMethod: z.enum(["vehicule", "manutention1", "manutention2"]).refine((val) => !!val, {
-    message: "Sélection requise",
-  }),
 });
 
 export const pickupEndSchema = z.object({
@@ -31,13 +28,13 @@ export const pickupEndSchema = z.object({
   city: z.string().min(1, "Ville requise"),
   lat: z.string().optional(),
   lon: z.string().optional(),
-  pickupMethod: z.enum(["vehicule", "manutention1", "manutention2"]).refine((val) => !!val, {
-    message: "Sélection requise",
-  }),
 });
 
 export const priceChoiceSchema = z.object({
   price : z.string().min(0, "Prix requis"),
+  deadline_date : z.string().min(0, "Date requise"),
+  isPriorityShipping: z.boolean().default(false),
+  shipmentName : z.string().min(0, "Nom de l'expédition requis"),
 })
 
 export type PackagesFormValues = z.infer<typeof packagesSchema>;

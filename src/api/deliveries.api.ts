@@ -56,4 +56,18 @@ export class DeliveriesAPI {
             }
     }
 
+    static async createShipment(data: FormData): Promise<any> {
+        try {
+            const response = await axiosInstance.post("/client/shipments", data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error creating shipment:", error);
+            throw new Error("Failed to create shipment");
+        }
+    }
+
 }

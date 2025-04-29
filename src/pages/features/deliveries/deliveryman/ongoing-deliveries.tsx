@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
-import { useEffect } from "react"
-import { useDispatch } from "react-redux"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
-import "leaflet/dist/leaflet.css"
-import L from "leaflet"
-import DeliveryCard from "@/components/features/deliveries/delivery-card"
-import PackageIcon from "@/assets/illustrations/package.svg"
-
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import DeliveryCard from "@/components/features/deliveries/delivery-card";
+import PackageIcon from "@/assets/illustrations/package.svg";
+import { useTranslation } from 'react-i18next';
 
 const deliveriesData = [
   {
@@ -67,38 +67,40 @@ const deliveriesData = [
     },
     progress: 65,
   },
-]
-
-
-
+];
 
 export default function OngoingDeliveries() {
-  const dispatch = useDispatch()
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Mes livraisons en cours"],
+        segments: ["Accueil", t('client.pages.office.deliveryman.ongoingDeliveries.title')],
         links: ["/office/dashboard"],
-      }),
-    )
+      })
+    );
 
     if (typeof window !== "undefined") {
       L.Icon.Default.mergeOptions({
         iconUrl: PackageIcon,
-      })
+      });
     }
-  }, [dispatch])
+  }, [dispatch, t]);
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Mes livraisons en cours</h1>
+      <h1 className="text-2xl font-bold">{t('client.pages.office.deliveryman.ongoingDeliveries.title')}</h1>
 
       {deliveriesData.length === 0 ? (
         <Card className="rounded-xl shadow-lg border bg-background">
           <CardHeader className="text-center">
-            <CardTitle className="text-xl font-semibold text-foreground">Aucune livraison en cours</CardTitle>
-            <p className="text-muted">Vous n'avez pas de livraison en cours.</p>
+            <CardTitle className="text-xl font-semibold text-foreground">
+              {t('client.pages.office.deliveryman.ongoingDeliveries.noDeliveries')}
+            </CardTitle>
+            <p className="text-muted">
+              {t('client.pages.office.deliveryman.ongoingDeliveries.noDeliveriesDescription')}
+            </p>
           </CardHeader>
         </Card>
       ) : (
@@ -109,5 +111,5 @@ export default function OngoingDeliveries() {
         </div>
       )}
     </div>
-  )
+  );
 }

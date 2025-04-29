@@ -3,6 +3,7 @@ import { PaginationControls } from "@/components/pagination-controle";
 import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { DataTable } from "@/components/features/deliveries/deliverman/reviews-deliveryman";
+import { useTranslation } from 'react-i18next';
 
 interface Review {
   id: string;
@@ -20,6 +21,7 @@ interface Review {
 }
 
 export default function ReviewDeliveryanPage() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -38,7 +40,6 @@ export default function ReviewDeliveryanPage() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        // Simulate fetching data from an API
         const response = {
           data: [
             {
@@ -61,7 +62,6 @@ export default function ReviewDeliveryanPage() {
               delivery_name: "Livraison standard",
               rate: 3,
             },
-            // Add more simulated data as needed
           ],
           totalRows: 2,
         };
@@ -78,7 +78,9 @@ export default function ReviewDeliveryanPage() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold mb-4">Les avis sur EcoDeli</h1>
+      <h1 className="text-2xl font-semibold mb-4">
+        {t('client.pages.office.delivery.deliveryman.reviews.title')}
+      </h1>
       <DataTable key={`${pageIndex}-${pageSize}`} data={reviews} />
       <PaginationControls
         pageIndex={pageIndex}

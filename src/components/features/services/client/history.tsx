@@ -26,8 +26,9 @@ import { ChevronDownIcon, ColumnsIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import FeedbackDialog from "../../utils/feedback-dialog";
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 
-// Schéma pour validation
+// Schema for validation
 export const schema = z.object({
   id: z.string(),
   id_service: z.string(),
@@ -43,22 +44,20 @@ export const schema = z.object({
   review: z.string().nullable(),
 });
 
-export const columnLink = [
-  { column_id: "provider.name", text: "Prestataire" },
-  { column_id: "service_name", text: "Service" },
-  { column_id: "rate", text: "Note" },
-  { column_id: "price", text: "Prix (€)" },
-  { column_id: "date", text: "Date" },
+export const columnLink = (t: (key: string) => string) => [
+  { column_id: "provider.name", text: t('client.pages.office.services.client.history.table.columnLinks.provider') },
+  { column_id: "service_name", text: t('client.pages.office.services.client.history.table.columnLinks.service_name') },
+  { column_id: "rate", text: t('client.pages.office.services.client.history.table.columnLinks.rate') },
+  { column_id: "price", text: t('client.pages.office.services.client.history.table.columnLinks.price') },
+  { column_id: "date", text: t('client.pages.office.services.client.history.table.columnLinks.date') },
 ];
 
-export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
-  const navigate = useNavigate();
-
+export const columns = (t: (key: string) => string, navigate: any): ColumnDef<z.infer<typeof schema>>[] => {
   return [
     {
       id: "provider",
       accessorKey: "provider.name",
-      header: "Prestataire",
+      header: t('client.pages.office.services.client.history.table.columns.provider'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Avatar>
@@ -70,16 +69,16 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
       ),
       enableHiding: false,
     },
-    { accessorKey: "service_name", header: "Service" },
-    { accessorKey: "rate", header: "Note" },
+    { accessorKey: "service_name", header: t('client.pages.office.services.client.history.table.columns.service_name') },
+    { accessorKey: "rate", header: t('client.pages.office.services.client.history.table.columns.rate') },
     {
       accessorKey: "price",
-      header: "Prix (€)",
+      header: t('client.pages.office.services.client.history.table.columns.price'),
       cell: ({ row }) => `${row.original.price.toFixed(2)} €`,
     },
     {
       accessorKey: "date",
-      header: "Date",
+      header: t('client.pages.office.services.client.history.table.columns.date'),
       cell: ({ row }) => {
         const date = new Date(row.original.date);
         return date.toLocaleDateString("fr-FR");
@@ -87,15 +86,17 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       id: "feedback",
-      header: "Avis",
+      header: t('client.pages.office.services.client.history.table.columns.feedback'),
       cell: ({ row }) => {
         const { rate, review, id } = row.original
         const [hasFeedback, setHasFeedback] = useState(
           rate !== 0 && review !== null && review.trim() !== ""
         );
-    
+
         return hasFeedback ? (
-          <span className="text-muted-foreground text-sm">Déjà donné</span>
+          <span className="text-muted-foreground text-sm">
+            {t('client.pages.office.services.client.history.table.columns.alreadyGiven')}
+          </span>
         ) : (
           <FeedbackDialog
             maxNote={5}
@@ -108,14 +109,14 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       id: "actions",
-      header: "Action",
+      header: t('client.pages.office.services.client.history.table.columns.actions'),
       cell: ({ row }) => (
         <Button
           size="sm"
           variant="outline"
           onClick={() => navigate(`/office/service/${row.original.id_service}`)}
         >
-          Voir
+          {t('client.pages.office.services.client.history.table.columns.view')}
         </Button>
       ),
     },
@@ -123,6 +124,8 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
 };
 
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
@@ -138,7 +141,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
 
   const table = useReactTable({
     data,
-    columns: columns(),
+    columns: columns(t, navigate),
     state: {
       sorting,
       columnVisibility,
@@ -164,8 +167,12 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">Colonnes</span>
-                <span className="lg:hidden">Colonnes</span>
+                <span className="hidden lg:inline">
+                  {t('client.pages.office.services.client.history.dropdown.columns')}
+                </span>
+                <span className="lg:hidden">
+                  {t('client.pages.office.services.client.history.dropdown.columns')}
+                </span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -178,7 +185,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                     column.getCanHide()
                 )
                 .map((column) => {
-                  const columnLinkItem = columnLink.find(
+                  const columnLinkItem = columnLink(t).find(
                     (link) => link.column_id === column.id
                   );
                   const displayText = columnLinkItem
@@ -242,10 +249,10 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={columns(t, navigate).length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t('client.pages.office.services.client.history.table.noResults')}
                 </TableCell>
               </TableRow>
             )}

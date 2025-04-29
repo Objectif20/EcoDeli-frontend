@@ -42,6 +42,7 @@
       "prenomTailleMax": "Le prénom doit contenir au maximum 255 caractères",
       "champEmail": "Email",
       "placeholderEmail": "Entrez votre email",
+      "forgotPassword" : "Mot de passe oublié ?",
       "emailFormat": "L'email doit être au format valide",
       "chargement": "Chargement...",
       "sauvegarder": "Sauvegarder",
@@ -1269,6 +1270,165 @@
             "positive_radius": "Le rayon doit être positif",
             "weekday_or_date_required": "Un jour de la semaine est requis pour les trajets permanents, une date pour les trajets ponctuels"
           
+          },
+          "deliveryman": {
+            "deliveryDetails": {
+              "title": "Livraison - Vue Transporteur",
+              "tabs": {
+                "route": "Trajet",
+                "packages": "Colis"
+              },
+              "deliveryInfo": {
+                "title": "Infos Livraison",
+                "departure": "Départ",
+                "arrival": "Arrivée",
+                "departureDate": "Date de départ",
+                "arrivalDate": "Date d'arrivée",
+                "status": "Statut"
+              },
+              "packageDetails": {
+                "price": "Prix",
+                "weight": "Poids",
+                "volume": "Volume",
+                "fragile": "Fragile",
+                "yes": "Oui",
+                "no": "Non"
+              },
+              "breadcrumb": {
+                "home": "Accueil",
+                "deliveries": "Mes livraisons",
+                "deliverymanView": "Vue transporteur"
+              },
+              "months": {
+                "0": "janvier",
+                "1": "février",
+                "2": "mars",
+                "3": "avril",
+                "4": "mai",
+                "5": "juin",
+                "6": "juillet",
+                "7": "août",
+                "8": "septembre",
+                "9": "octobre",
+                "10": "novembre",
+                "11": "décembre"
+              }
+            },
+            "history": {
+            "title": "Historique des livraisons",
+            "breadcrumb": {
+              "home": "Accueil",
+              "deliveries": "Livraisons",
+              "history": "Historique des livraisons"
+            },
+            "table": {
+              "columns": "Colonnes",
+              "client": "Client",
+              "departure_city": "Ville de départ",
+              "arrival_city": "Ville d'arrivée",
+              "price": "Prix",
+              "status": "Statut",
+              "actions": "Actions",
+              "details": "Détails",
+              "no_results": "Aucun résultat.",
+              "column_links": {
+                "departure_city": "Ville de départ",
+                "arrival_city": "Ville d'arrivée",
+                "price": "Prix",
+                "status": "Statut"
+              }
+            }
+            },
+            "reviews": {
+              "author": "Auteur",
+              "message": "Message",
+              "delivery": "Livraison",
+              "rate": "Note",
+              "date": "Date",
+              "details": "Détails",
+              "viewDelivery": "Voir la livraison",
+              "replyPlaceholder": "Répondre à cet avis...",
+              "send": "Envoyer",
+              "close": "Fermer",
+              "columns": "Colonnes",
+              "noResults": "No results.",
+              "title": "Les avis sur EcoDeli",
+              "deliveryName" : "Nom de la livraison"
+            }
+          }          
+        },
+        "deliveryman": {
+          "addRoute": {
+            "title": "Ajouter un nouveau trajet",
+            "description": "Remplissez les informations pour créer un nouveau trajet.",
+            "from": "Départ",
+            "fromPlaceholder": "Ville de départ",
+            "to": "Arrivée",
+            "toPlaceholder": "Ville d'arrivée",
+            "permanent": "Trajet permanent",
+            "permanentDescription": "Cochez cette case si ce trajet est récurrent (ex: tous les lundis).",
+            "weekday": "Jour de la semaine",
+            "selectWeekday": "Sélectionnez un jour",
+            "date": "Date du trajet",
+            "chooseDate": "Choisissez une date",
+            "tolerateRadius": "Rayon de tolérance (km)",
+            "tolerateRadiusDescription": "Distance maximale acceptable par rapport au point de départ/arrivée.",
+            "return": "Retour",
+            "returnToday": "Retour le même jour",
+            "returnTomorrow": "Retour le lendemain",
+            "returnLater": "Retour plus tard",
+            "addRoute": "Ajouter le trajet",
+            "fromRequired": "Le lieu de départ est requis",
+            "toRequired": "Le lieu d'arrivée est requis",
+            "radiusPositive": "Le rayon doit être positif",
+            "weekdayOrDateRequired": "Un jour de la semaine est requis pour les trajets permanents, une date pour les trajets ponctuels"
+          },
+          "ongoingDeliveries": {
+            "title": "Mes livraisons en cours",
+            "noDeliveries": "Aucune livraison en cours",
+            "noDeliveriesDescription": "Vous n'avez pas de livraison en cours.",
+            "deliveryId": "Livraison {{id}}",
+            "departure": "Départ :",
+            "arrival": "Arrivée :",
+            "currentPosition": "Position actuelle",
+            "packageTransmitted": "Colis transmis",
+            "estimatedArrivalDate": "Date d'arrivée estimée :"
+          }
+        },
+        "services": {
+          "client": {
+            "history": {
+              "breadcrumb": {
+                "home": "Accueil",
+                "services": "Prestations",
+                "history": "Historique"
+              },
+              "table": {
+                "title": "Historique des services",
+                "columns": {
+                  "provider": "Prestataire",
+                  "service_name": "Service",
+                  "rate": "Note",
+                  "price": "Prix (€)",
+                  "date": "Date",
+                  "feedback": "Avis",
+                  "actions": "Action",
+                  "alreadyGiven": "Déjà donné",
+                  "view": "Voir"
+                },
+                "columnLinks": {
+                  "provider": "Prestataire",
+                  "service_name": "Service",
+                  "rate": "Note",
+                  "price": "Prix (€)",
+                  "date": "Date"
+                },
+                "noResults": "Aucun résultat."
+              },
+              "dropdown": {
+                "columns": "Colonnes"
+              }
+            }
           }
         }
       }
@@ -1364,7 +1524,18 @@
         "next": "Suivant",
         "done": "Terminé",
         "featureTour": "Visite guidée des fonctionnalités"
+      },
+      "pagination" : {
+        "totalRowsWithoutS": "{{count}} ligne au total.",
+        "totalRowsWithS": "{{count}} lignes au total.",
+        "rowsPerPage": "Ligne par page",
+        "pageCount": "Page {{current}} sur {{total}}",
+        "firstPage": "Première page",
+        "previousPage": "Page précédente",
+        "nextPage": "Page suivante",
+        "lastPage": "Dernière page"
       }
+
     }
   }
 }

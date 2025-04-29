@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
-
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Tabs,
@@ -75,37 +75,46 @@ const delivery = {
 };
 
 export default function DeliveryTransporterView() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Mes livraisons", "Vue transporteur"],
+        segments: [
+          t("client.pages.office.delivery.deliveryman.deliveryDetails.breadcrumb.home"),
+          t("client.pages.office.delivery.deliveryman.deliveryDetails.breadcrumb.deliveries"),
+          t("client.pages.office.delivery.deliveryman.deliveryDetails.breadcrumb.deliverymanView"),
+        ],
         links: ["/office/dashboard", "/office/deliveries"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
-  const formatDate = (dateString: string) => {
-    const options = { year: "numeric", month: "long", day: "numeric" } as const;
-    return new Date(dateString).toLocaleDateString(undefined, options);
+  const formatDate = (dateString : string) => {
+    const date = new Date(dateString);
+    const monthNames = t("client.pages.office.delivery.deliveryman.deliveryDetails.months", { returnObjects: true }) as string[];
+    const month = monthNames[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
   };
 
   return (
     <div className="h-full">
       <h1 className="text-center text-2xl font-semibold mb-4">
-        Livraison - Vue Transporteur
+        {t("client.pages.office.delivery.deliveryman.deliveryDetails.title")}
       </h1>
 
       <Tabs defaultValue="map" className="w-full">
         <TabsList className="flex justify-center h-auto rounded-none border-border bg-transparent p-0">
           <TabsTrigger value="map" className="relative flex-col rounded-none px-4 py-2 text-xs after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary">
-            <Map size={16}  className="mb-1.5 opacity-60"/>
-            Trajet
+            <Map size={16} className="mb-1.5 opacity-60" />
+            {t("client.pages.office.delivery.deliveryman.deliveryDetails.tabs.route")}
           </TabsTrigger>
           <TabsTrigger value="packages" className="relative flex-col rounded-none px-4 py-2 text-xs after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary">
             <Package size={16} className="mb-1.5 opacity-60" />
-            Colis
+            {t("client.pages.office.delivery.deliveryman.deliveryDetails.tabs.packages")}
           </TabsTrigger>
         </TabsList>
 
@@ -142,26 +151,28 @@ export default function DeliveryTransporterView() {
             </div>
 
             <div className="space-y-2 p-4 border rounded-xl shadow-sm bg-white">
-              <h2 className="font-semibold text-lg">Infos Livraison</h2>
+              <h2 className="font-semibold text-lg">
+                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.title")}
+              </h2>
               <p className="text-sm flex items-center gap-2">
                 <Landmark size={16} />
-                Départ : <span className="font-medium">{delivery.departure.city}</span>
+                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.departure")} : <span className="font-medium">{delivery.departure.city}</span>
               </p>
               <p className="text-sm flex items-center gap-2">
                 <Landmark size={16} />
-                Arrivée : <span className="font-medium">{delivery.arrival.city}</span>
+                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.arrival")} : <span className="font-medium">{delivery.arrival.city}</span>
               </p>
               <p className="text-sm flex items-center gap-2">
                 <Calendar size={16} />
-                Date de départ : <span className="font-medium">{formatDate(delivery.departure_date)}</span>
+                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.departureDate")} : <span className="font-medium">{formatDate(delivery.departure_date)}</span>
               </p>
               <p className="text-sm flex items-center gap-2">
                 <Calendar size={16} />
-                Date d'arrivée : <span className="font-medium">{formatDate(delivery.arrival_date)}</span>
+                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.arrivalDate")} : <span className="font-medium">{formatDate(delivery.arrival_date)}</span>
               </p>
               <p className="text-sm flex items-center gap-2">
                 <BadgeCheck size={16} />
-                Statut : <span className="font-medium">{delivery.status}</span>
+                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.status")} : <span className="font-medium">{delivery.status}</span>
               </p>
             </div>
           </div>
@@ -184,33 +195,33 @@ export default function DeliveryTransporterView() {
                   <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <Euro size={16} />
-                      <span>Prix</span>
+                      {t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.price")}
                       <span className="ml-auto font-medium text-foreground">
                         {item.estimated_price} €
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Weight size={16} />
-                      <span>Poids</span>
+                      {t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.weight")}
                       <span className="ml-auto font-medium text-foreground">
                         {item.weight} kg
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span>Volume</span>
+                      {t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.volume")}
                       <span className="ml-auto font-medium text-foreground">
                         {item.volume} m³
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <AlertCircle size={16} />
-                      <span>Fragile</span>
+                      {t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.fragile")}
                       <span
                         className={`ml-auto font-medium ${
                           item.fragility ? "text-red-500" : "text-green-600"
                         }`}
                       >
-                        {item.fragility ? "Oui" : "Non"}
+                        {item.fragility ? t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.yes") : t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.no")}
                       </span>
                     </div>
                   </div>

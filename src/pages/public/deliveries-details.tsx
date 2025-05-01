@@ -8,12 +8,21 @@ import { MapPin, AlertTriangle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
 import { DeliveriesAPI, Shipment } from "@/api/deliveries.api";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { toast } from "sonner";
 
 export default function DeliveryDetailsPage() {
   const [_, setActiveTab] = useState("overview");
@@ -47,13 +56,29 @@ export default function DeliveryDetailsPage() {
 
   const lastStep = delivery.steps[delivery.steps.length - 1];
 
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "d MMMM yyyy", { locale: fr });
-  };
-
   const proposedPrice = delivery.details.initial_price;
 
   const progress = (delivery.steps.length / 3) * 100;
+
+  const bookShipment = async () => {
+    try {
+      await DeliveriesAPI.bookShipment(id);
+      toast.success("Réservation réussie !");
+    } catch (error) { 
+      console.error("Erreur lors de la réservation :", error);
+    }
+  };
+
+  const bookPartialShipment = async () => {
+    try {
+      const response = await DeliveriesAPI.bookShipment(id);
+      const navigate = useNavigate();
+      navigate('/office/messaging')
+      console.log("Réponse de la réservation partielle :", response);
+    } catch (error) {
+      console.error("Erreur lors de la réservation partielle :", error);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -118,12 +143,60 @@ export default function DeliveryDetailsPage() {
                   </div>
                 </div>
                 {isDeliveryman && (
-                  <Button
-                    className="w-full"
-                    onClick={() => console.log("Prendre la livraison", id)}
-                  >
-                    Prendre la livraison
-                  </Button>
+                  <div className="space-y-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="w-full">
+                          Prendre la livraison
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Prise en charge complète</DialogTitle>
+                          <DialogDescription>
+                            Souhaitez-vous prendre en charge toute la livraison ?
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                          <Button onClick={() => bookShipment()}>
+                            Oui
+                          </Button>
+                          </DialogClose>
+                          <DialogClose asChild>
+                          <Button variant="outline">Non</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="w-full">
+                          Prendre en charge une partie de la livraison
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Livraison partielle</DialogTitle>
+                          <DialogDescription>
+                            Souhaitez-vous prendre en charge une partie de la livraison ?<br />
+                            Pour ce faire, vous devez contacter l'expéditeur par message afin de discuter des conditions.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                        <DialogClose asChild>
+                          <Button onClick={() => bookPartialShipment()}>
+                            Oui
+                          </Button>
+                          </DialogClose>
+                          <DialogClose asChild>
+                          <Button variant="outline">Non</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                 )}
               </div>
             </div>
@@ -162,9 +235,6 @@ export default function DeliveryDetailsPage() {
                           <div>
                             <p className="font-medium">{lastStep?.title}</p>
                             <p className="text-sm text-foreground">{lastStep?.description}</p>
-                            <p className="text-sm text-foreground mt-1">
-                              {formatDate(lastStep?.date)} • {lastStep?.courier?.name}
-                            </p>
                           </div>
                         </div>
                       </CardContent>

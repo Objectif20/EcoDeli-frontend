@@ -48,7 +48,6 @@ export const schema = z.object({
       email: z.string(),
     }),
   }),
-  date: z.string(),
   services_name: z.string(),
   rate: z.number(),
 });
@@ -57,7 +56,6 @@ export const columnLink = [
   { column_id: "delivery.deliveryman.name", text: "Livreur" },
   { column_id: "services_name", text: "Service" },
   { column_id: "rate", text: "Note" },
-  { column_id: "date", text: "Date" },
 ];
 
 export const columns = (t: any): ColumnDef<z.infer<typeof schema>>[] => {
@@ -99,14 +97,6 @@ export const columns = (t: any): ColumnDef<z.infer<typeof schema>>[] => {
     },
     { accessorKey: "services_name", header: t('client.pages.office.delivery.reviews.table.service'), cell: ({ row }) => row.original.services_name },
     { accessorKey: "rate", header: t('client.pages.office.delivery.reviews.table.rate'), cell: ({ row }) => row.original.rate },
-    {
-      accessorKey: "date",
-      header: t('client.pages.office.delivery.reviews.table.date'),
-      cell: ({ row }) => {
-        const date = new Date(row.original.date);
-        return date.toLocaleDateString("fr-FR");
-      },
-    },
   ];
 };
 

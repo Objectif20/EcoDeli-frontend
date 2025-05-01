@@ -17,6 +17,7 @@ import {
   ChevronDownIcon,
 } from "lucide-react";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +38,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 
-// Schéma Zod pour la nouvelle structure des données
 export const schema = z.object({
   id: z.string(),
   departure_city: z.string(),
@@ -50,22 +50,12 @@ export const schema = z.object({
   status: z.string(),
 });
 
-export const columnLink = [
-  { column_id: "departure_city", text: "Ville de départ" },
-  { column_id: "arrival_city", text: "Ville d'arrivée" },
-  { column_id: "price", text: "Prix" },
-  { column_id: "status", text: "Statut" },
-];
-
-export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
-    const navigate = useNavigate();
-
-
+export const columns = (t: any, navigate: any): ColumnDef<z.infer<typeof schema>>[] => {
   return [
     {
       id: "client",
       accessorKey: "client.name",
-      header: "Client",
+      header: t("client.pages.office.delivery.deliveryman.history.table.client"),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Avatar>
@@ -81,30 +71,30 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       accessorKey: "departure_city",
-      header: "Ville de départ",
+      header: t("client.pages.office.delivery.deliveryman.history.table.departure_city"),
       cell: ({ row }) => <span>{row.original.departure_city}</span>,
     },
     {
       accessorKey: "arrival_city",
-      header: "Ville d'arrivée",
+      header: t("client.pages.office.delivery.deliveryman.history.table.arrival_city"),
       cell: ({ row }) => <span>{row.original.arrival_city}</span>,
     },
     {
       accessorKey: "price",
-      header: "Prix",
+      header: t("client.pages.office.delivery.deliveryman.history.table.price"),
       cell: ({ row }) => <span>{row.original.price} €</span>,
     },
     {
       accessorKey: "status",
-      header: "Statut",
+      header: t("client.pages.office.delivery.deliveryman.history.table.status"),
       cell: ({ row }) => <span>{row.original.status}</span>,
     },
     {
       id: "actions",
-      header: "Actions",
+      header: t("client.pages.office.delivery.deliveryman.history.table.actions"),
       cell: ({ row }) => (
         <Button onClick={() => navigate(`/office/deliveries/public/${row.original.id}`)}>
-            Détails
+          {t("client.pages.office.delivery.deliveryman.history.table.details")}
         </Button>
       ),
     },
@@ -112,6 +102,8 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
 };
 
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
@@ -127,7 +119,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
 
   const table = useReactTable({
     data,
-    columns: columns(),
+    columns: columns(t, navigate),
     state: {
       sorting,
       columnVisibility,
@@ -145,6 +137,13 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
     getSortedRowModel: getSortedRowModel(),
   });
 
+  const columnLink = [
+    { column_id: "departure_city", text: t("client.pages.office.delivery.deliveryman.history.table.column_links.departure_city") },
+    { column_id: "arrival_city", text: t("client.pages.office.delivery.deliveryman.history.table.column_links.arrival_city") },
+    { column_id: "price", text: t("client.pages.office.delivery.deliveryman.history.table.column_links.price") },
+    { column_id: "status", text: t("client.pages.office.delivery.deliveryman.history.table.column_links.status") },
+  ];
+
   return (
     <>
       <div className="flex items-center justify-between px-4 lg:px-6">
@@ -153,8 +152,12 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">Colonnes</span>
-                <span className="lg:hidden">Colonnes</span>
+                <span className="hidden lg:inline">
+                  {t("client.pages.office.delivery.deliveryman.history.table.columns")}
+                </span>
+                <span className="lg:hidden">
+                  {t("client.pages.office.delivery.deliveryman.history.table.columns")}
+                </span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -231,10 +234,10 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={columns(t, navigate).length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t("client.pages.office.delivery.deliveryman.history.table.no_results")}
                 </TableCell>
               </TableRow>
             )}

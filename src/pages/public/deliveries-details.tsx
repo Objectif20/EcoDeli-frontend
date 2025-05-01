@@ -1,137 +1,84 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Clock, MapPin, AlertTriangle, EuroIcon } from "lucide-react";
+import { MapPin, AlertTriangle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-
-const fakeDeliveries = {
-  details: {
-    id: "1",
-    name: "Package Delivery",
-    description: "Fragile package delivery",
-    complementary_info: "Package to be delivered on time",
-    departure: {
-      city: "Paris",
-      coordinates: [48.8566, 2.3522],
-    },
-    arrival: {
-      city: "Marseille",
-      coordinates: [43.2965, 5.3698],
-    },
-    departure_date: "2023-10-01",
-    arrival_date: "2023-10-03",
-    status: "In Progress",
-    initial_price: 50,
-    price_with_step: [
-      {
-        step: "Step 1",
-        price: 20,
-      },
-      {
-        step: "Step 2",
-        price: 15,
-      },
-      {
-        step: "Step 3",
-        price: 25,
-      },
-    ],
-    invoice: [
-      {
-        name: "Package 1",
-        url_invoice: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
-      },
-    ],
-  },
-  package: [
-    {
-      id: "1",
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-      name: "Package 1",
-      fragility: true,
-      estimated_price: 20,
-      weight: 2,
-      volume: 1,
-    },
-    {
-      id: "2",
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-      name: "Package 2",
-      fragility: false,
-      estimated_price: 15,
-      weight: 1,
-      volume: 0.5,
-    },
-    {
-      id: "3",
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-      name: "Package 3",
-      fragility: true,
-      estimated_price: 25,
-      weight: 3,
-      volume: 1.5,
-    },
-  ],
-  steps: [
-    {
-      id: 1,
-      title: "Step 1",
-      description: "Departure from the main warehouse.",
-      date: "2023-10-01",
-      departure: {
-        city: "Paris",
-        coordinates: [48.8566, 2.3522],
-      },
-      arrival: {
-        city: "Lyon",
-        coordinates: [45.764, 4.8357],
-      },
-      courier: {
-        name: "Jean Dupont",
-        photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
-      },
-    },
-    {
-      id: 2,
-      title: "Step 2",
-      description: "Transfer to the distribution center.",
-      date: "2023-10-02",
-      departure: {
-        city: "Lyon",
-        coordinates: [45.764, 4.8357],
-      },
-      arrival: {
-        city: "Marseille",
-        coordinates: [43.2965, 5.3698],
-      },
-      courier: {
-        name: "Marie Martin",
-        photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
-      },
-    },
-  ],
-};
+import { DeliveriesAPI, Shipment } from "@/api/deliveries.api";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { toast } from "sonner";
 
 export default function DeliveryDetailsPage() {
   const [_, setActiveTab] = useState("overview");
+  const [delivery, setDelivery] = useState<Shipment>();
 
-  const delivery = fakeDeliveries;
+  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
+  const isDeliveryman = user?.profile.includes('DELIVERYMAN');
+  const navigate = useNavigate();
+
+  const {id } = useParams();
+
+  if (!id) {
+    return <div>Erreur: ID de livraison manquant</div>;
+  }
+
+  useEffect(() => {
+    const fetchShipment = async () => {
+      try {
+        const data = await DeliveriesAPI.getShipmentDetailsById(id);
+        setDelivery(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchShipment();
+  }, [id]);
+
+  if (!delivery) {
+    return <div>Chargement...</div>;
+  }
+
 
   const lastStep = delivery.steps[delivery.steps.length - 1];
 
-  const totalPrice = delivery.details.price_with_step.reduce((sum, step) => sum + step.price, 0);
+  const proposedPrice = delivery.details.initial_price;
 
   const progress = (delivery.steps.length / 3) * 100;
 
-  const formatDate = (dateString : string) => {
-    return format(new Date(dateString), "d MMMM yyyy", { locale: fr });
+  const bookShipment = async () => {
+    try {
+      await DeliveriesAPI.bookShipment(id);
+      toast.success("Réservation réussie !");
+    } catch (error) { 
+      console.error("Erreur lors de la réservation :", error);
+    }
+  };
+
+  const bookPartialShipment = async () => {
+    try {
+      const response = await DeliveriesAPI.askToNegotiate(id);
+      navigate('/office/messaging')
+      console.log("Réponse de la réservation partielle :", response);
+    } catch (error) {
+      console.error("Erreur lors de la réservation partielle :", error);
+    }
   };
 
   return (
@@ -141,12 +88,9 @@ export default function DeliveryDetailsPage() {
           <CardHeader className="bg-primary text-foreground rounded-t-lg">
             <div className="flex justify-between items-start">
               <div>
-                <CardTitle className="text-2xl md:text-3xl font-bold">{delivery.details.name}</CardTitle>
+                <CardTitle className="text-2xl md:text-3xl font-bold">{delivery.details.description}</CardTitle>
                 <CardDescription className="text-primary-foreground mt-1">Référence N°{delivery.details.id}</CardDescription>
               </div>
-              <Badge variant="outline" className="bg-white/20 text-foreground border-none px-3 py-1">
-                {delivery.details.status}
-              </Badge>
             </div>
           </CardHeader>
 
@@ -154,10 +98,7 @@ export default function DeliveryDetailsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-6">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-secondary px-3 py-1">
-                    <Clock className="w-4 h-4 mr-1" />
-                    Livraison prévue le {formatDate(delivery.details.arrival_date)}
-                  </Badge>
+
                 </div>
 
                 <div className="relative pl-8 space-y-6">
@@ -169,8 +110,8 @@ export default function DeliveryDetailsPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">Départ</p>
-                      <h3 className="text-lg font-semibold">{lastStep.departure.city}</h3>
-                      <p className="text-sm text-foreground">Collecte le {formatDate(lastStep.date)}</p>
+                      <h3 className="text-lg font-semibold">{lastStep?.departure?.city}</h3>
+
                     </div>
                   </div>
 
@@ -181,9 +122,7 @@ export default function DeliveryDetailsPage() {
                     <div>
                       <p className="text-sm font-medium text-foreground">Arrivée</p>
                       <h3 className="text-lg font-semibold">{delivery.details.arrival.city}</h3>
-                      <p className="text-sm text-foreground">
-                        Livraison prévue le {formatDate(delivery.details.arrival_date)}
-                      </p>
+
                     </div>
                   </div>
                 </div>
@@ -200,15 +139,66 @@ export default function DeliveryDetailsPage() {
 
                 <div className="bg-background p-4 rounded-lg">
                   <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Prix total</span>
-                    <span className="text-xl font-bold">{totalPrice} €</span>
+                    <span className="font-medium">Prix proposé</span>
+                    <span className="text-xl font-bold">{proposedPrice} €</span>
                   </div>
-                  <p className="text-sm text-foreground">Prix initial: {delivery.details.initial_price} €</p>
                 </div>
+                {isDeliveryman && (
+                  <div className="space-y-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="w-full">
+                          Prendre la livraison
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Prise en charge complète</DialogTitle>
+                          <DialogDescription>
+                            Souhaitez-vous prendre en charge toute la livraison ?
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                          <Button onClick={() => bookShipment()}>
+                            Oui
+                          </Button>
+                          </DialogClose>
+                          <DialogClose asChild>
+                          <Button variant="outline">Non</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
 
-                <Button className="w-full bg-green-500 text-white hover:bg-green-600">
-                  Prendre la livraison
-                </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="w-full">
+                          Prendre en charge une partie de la livraison
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Livraison partielle</DialogTitle>
+                          <DialogDescription>
+                            Souhaitez-vous prendre en charge une partie de la livraison ?<br />
+                            Pour ce faire, vous devez contacter l'expéditeur par message afin de discuter des conditions.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                        <DialogClose asChild>
+                          <Button onClick={() => bookPartialShipment()}>
+                            Oui
+                          </Button>
+                          </DialogClose>
+                          <DialogClose asChild>
+                          <Button variant="outline">Non</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>
@@ -238,17 +228,14 @@ export default function DeliveryDetailsPage() {
                         <div className="flex items-start gap-4">
                           <Avatar className="h-10 w-10 border-2 border-primary">
                             <AvatarImage
-                              src={lastStep.courier.photoUrl || "/placeholder.svg"}
-                              alt={lastStep.courier.name}
+                              src={lastStep?.courier?.photoUrl || "/placeholder.svg"}
+                              alt={lastStep?.courier?.name || "Livreur"}
                             />
-                            <AvatarFallback>{lastStep.courier.name.charAt(0)}</AvatarFallback>
+                            <AvatarFallback>{lastStep?.courier?.name?.charAt(0) || "?"}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-medium">{lastStep.title}</p>
-                            <p className="text-sm text-foreground">{lastStep.description}</p>
-                            <p className="text-sm text-foreground mt-1">
-                              {formatDate(lastStep.date)} • {lastStep.courier.name}
-                            </p>
+                            <p className="font-medium">{lastStep?.title}</p>
+                            <p className="text-sm text-foreground">{lastStep?.description}</p>
                           </div>
                         </div>
                       </CardContent>
@@ -283,9 +270,6 @@ export default function DeliveryDetailsPage() {
                                 </Badge>
                               )}
                             </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold">{pkg.estimated_price} €</p>
                           </div>
                         </div>
                       ))}
@@ -325,10 +309,6 @@ export default function DeliveryDetailsPage() {
                                 </Badge>
                               )}
                             </div>
-                            <Badge variant="outline" className="bg-primary text-foreground">
-                              <EuroIcon className="w-3 h-3 mr-1" />
-                              {pkg.estimated_price} €
-                            </Badge>
                           </div>
 
                           <div className="grid grid-cols-2 gap-4 mt-4">

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { z } from "zod";
 import { Link } from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -50,19 +51,14 @@ export const schema = z.object({
   }),
   reply: z.boolean(),
   reply_content: z.string().nullable(),
-  date: z.string(),
   delivery_name: z.string(),
   rate: z.number(),
 });
 
-export const columnLink = [
-  { column_id: "author.name", text: "Auteur" },
-  { column_id: "delivery_name", text: "Livraison" },
-  { column_id: "rate", text: "Note" },
-  { column_id: "date", text: "Date" },
-];
+
 
 export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
+  const { t } = useTranslation();
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [replyMessage, setReplyMessage] = useState("");
 
@@ -80,7 +76,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     {
       id: "author",
       accessorKey: "author.name",
-      header: "Auteur",
+      header: t('client.pages.office.delivery.deliveryman.reviews.author'),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Avatar>
@@ -94,7 +90,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       accessorKey: "content",
-      header: "Message",
+      header: t('client.pages.office.delivery.deliveryman.reviews.message'),
       cell: ({ row }) => (
         <span>
           {row.original.content.length > 30
@@ -105,15 +101,14 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       accessorKey: "delivery_name",
-      header: "Livraison",
+      header: t('client.pages.office.delivery.deliveryman.reviews.delivery'),
       cell: ({ row }) => (
         <Link to={`/office/deliveries/${row.original.id}`}>
-          Voir la livraison
+          {t('client.pages.office.delivery.deliveryman.reviews.viewDelivery')}
         </Link>
       ),
     },
-    { accessorKey: "rate", header: "Note", cell: ({ row }) => row.original.rate },
-    { accessorKey: "date", header: "Date", cell: ({ row }) => row.original.date },
+    { accessorKey: "rate", header: t('client.pages.office.delivery.deliveryman.reviews.rate'), cell: ({ row }) => row.original.rate },
     {
       id: "actions",
       cell: ({ row }) => (
@@ -123,7 +118,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
               variant="link"
               className="w-fit px-0 text-left text-foreground"
             >
-              Détails
+              {t('client.pages.office.delivery.deliveryman.reviews.details')}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
@@ -136,22 +131,24 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
                 {row.original?.author.name}
               </DialogTitle>
               <DialogDescription className="text-sm text-gray-500">
-                {row.original?.date}
+
               </DialogDescription>
             </DialogHeader>
             <p className="text-sm text-center text-gray-600">{row.original?.content}</p>
             {!row.original?.reply && (
               <div className="mt-4">
                 <Textarea
-                  placeholder="Répondre à cet avis..."
+                  placeholder={t('client.pages.office.delivery.deliveryman.reviews.replyPlaceholder')}
                 />
-                <Button className="mt-2 w-full" onClick={handleReplySubmit}>Envoyer</Button>
+                <Button className="mt-2 w-full" onClick={handleReplySubmit}>
+                  {t('client.pages.office.delivery.deliveryman.reviews.send')}
+                </Button>
               </div>
             )}
             <DialogFooter>
               <DialogClose asChild>
                 <Button type="button" onClick={handleClose}>
-                  Fermer
+                  {t('client.pages.office.delivery.deliveryman.reviews.close')}
                 </Button>
               </DialogClose>
             </DialogFooter>
@@ -163,7 +160,15 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
 };
 
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
+  const { t } = useTranslation();
   const [data, setData] = React.useState(initialData);
+
+  const columnLink = [
+    { column_id: "author.name", text: t('client.pages.office.delivery.deliveryman.reviews.author') },
+    { column_id: "delivery_name", text: t('client.pages.office.delivery.deliveryman.reviews.deliveryName') },
+    { column_id: "rate", text: t('client.pages.office.delivery.deliveryman.reviews.rate') },
+    { column_id: "date", text: t('client.pages.office.delivery.deliveryman.reviews.date') },
+  ];
 
   React.useEffect(() => {
     if (initialData && initialData.length > 0) {
@@ -204,8 +209,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">Colonnes</span>
-                <span className="lg:hidden">Colonnes</span>
+                <span className="hidden lg:inline">{t('client.pages.office.delivery.deliveryman.reviews.columns')}</span>
+                <span className="lg:hidden">{t('client.pages.office.delivery.deliveryman.reviews.columns')}</span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -285,7 +290,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t('client.pages.office.delivery.deliveryman.reviews.noResults')}
                 </TableCell>
               </TableRow>
             )}

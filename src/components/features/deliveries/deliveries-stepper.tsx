@@ -13,6 +13,9 @@ import PackagesFormComponent from "./packageForm"
 import { PickupFormComponent } from "./pickUpForm"
 import { PickupEndFormComponent } from "./pickUpEndForm"
 import { PriceFormComponent } from "./priceForm"
+import axios from "axios"
+import { DeliveriesAPI } from "@/api/deliveries.api"
+import QuestionFinishForm from "./questionFinishForm"
 
 const packageSchema = z.object({
   name: z.string().min(1, "Nom de l'objet est requis"),
@@ -33,9 +36,6 @@ export const pickupSchema = z.object({
   city: z.string().min(1, "Ville requise"),
   lat: z.string().optional(),
   lon: z.string().optional(),
-  pickupMethod: z.enum(["vehicule", "manutention1", "manutention2"]).refine((val) => !!val, {
-    message: "Sélection requise",
-  }),
 })
 
 export const pickupEndSchema = z.object({
@@ -44,13 +44,13 @@ export const pickupEndSchema = z.object({
   city: z.string().min(1, "Ville requise"),
   lat: z.string().optional(),
   lon: z.string().optional(),
-  pickupMethod: z.enum(["vehicule", "manutention1", "manutention2"]).refine((val) => !!val, {
-    message: "Sélection requise",
-  }),
 })
 
 export const priceChoiceSchema = z.object({
   price : z.string().min(0, "Prix requis"),
+  deadline_date : z.string().min(0, "Date requise"),
+  isPriorityShipping: z.boolean().default(false),
+  shipmentName : z.string().min(0, "Nom de l'expédition requis"),
 })
 
 const { StepperProvider, StepperControls, StepperNavigation, StepperStep, StepperTitle, useStepper } = defineStepper(
@@ -82,7 +82,7 @@ const { StepperProvider, StepperControls, StepperNavigation, StepperStep, Steppe
     id : "summary",
     title : "Résumé",
     schema : z.object({}),
-    Component : () => <div>Résumé de la commande</div>,
+    Component : QuestionFinishForm,
   }
 )
 
@@ -112,6 +112,7 @@ type FormStepperProps = {
     pickup: PickUpFormValues | null
     pickupEnd: PickUpEndFormValues | null
     price : PriceChoiceFormValues | null
+
   }
   setFormData: React.Dispatch<
     React.SetStateAction<{
@@ -134,7 +135,7 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
       return { address: "", city: "", postalCode: "", pickupMethod: "", lat: "", lon: "" }
     }
     if (step === "price") {
-      return { price: "0" }
+      return { price: "0", deadline_date: "", isPriorityShipping: false, shipmentName: "" }
     }
     return {}
   }
@@ -145,27 +146,114 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
     defaultValues: formData[methods.current.id as keyof typeof formData] || getDefaultValues(methods.current.id),
   })
 
+  const getCoordinatesFromAddress = async (address: string, city: string, postalCode: string) => {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', ' + city + ', ' + postalCode)}`;
+    
+    try {
+      const response = await axios.get(url);
+      
+      if (response.data && response.data.length > 0) {
+        const { lat, lon } = response.data[0];
+        return { latitude: lat, longitude: lon };
+      } else {
+        throw new Error("Adresse non trouvée");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la récupération des coordonnées :", error);
+      throw new Error("Erreur de géocodage");
+    }
+  };
+  
   const onSubmit = async (values: any) => {
-
-      console.log("Form submitted with values:", values)
-
+    console.log("Form submitted with values:", values);
+  
     if (methods.current.id === "packages") {
-      setFormData((prev) => ({ ...prev, packages: values }))
+      setFormData((prev) => ({ ...prev, packages: values }));
     } else if (methods.current.id === "pickup") {
-      setFormData((prev) => ({ ...prev, pickup: values }))
+      setFormData((prev) => ({ ...prev, pickup: values }));
     } else if (methods.current.id === "pickupEnd") {
-      setFormData((prev) => ({ ...prev, pickupEnd: values }))
+      setFormData((prev) => ({ ...prev, pickupEnd: values }));
     } else if (methods.current.id === "price") {
-      setFormData((prev) => ({ ...prev, price: values }))
+      setFormData((prev) => ({ ...prev, price: values }));
     }
-
+  
     if (methods.isLast) {
-      console.log("Form completed with data:", formData)
-      return
-    }
+      const fullData = {
+        ...formData,
+        [methods.current.id]: values,
+      };
+  
+      const packageList = fullData.packages?.packages || [];
+      const pickup = fullData.pickup;
+      const pickupEnd = fullData.pickupEnd;
+      const price = fullData.price;
+      const [fromDate] = price?.deadline_date || [null];
+  
+      const formDataToSend = new FormData();
+  
+      formDataToSend.append("shipment[description]", price?.shipmentName || "Expédition");
+      formDataToSend.append("shipment[estimated_total_price]", price?.price || "0");
+      formDataToSend.append("shipment[weight]", packageList[0]?.weight || "0");
+      formDataToSend.append("shipment[volume]", packageList[0]?.volume || "0");
+      formDataToSend.append("shipment[deadline_date]", fromDate || "");
+      formDataToSend.append("shipment[urgent]", price?.isPriorityShipping ? "true" : "false");
+      formDataToSend.append("shipment[status]", "pending");
+      const keywords = ["fragile", "colis", "expédition"];
 
-    methods.next()
-  }
+      keywords.forEach((keyword, index) => {
+        formDataToSend.append(`shipment[keywords][${index}]`, keyword);
+      });      formDataToSend.append("shipment[departure_city]", pickup?.city || "0");
+      formDataToSend.append("shipment[arrival_city]", pickupEnd?.city || "0");
+      formDataToSend.append("shipment[departure_location][latitude]", pickup?.lat || "0");
+      formDataToSend.append("shipment[departure_location][longitude]", pickup?.lon || "0");
+      
+      formDataToSend.append("shipment[arrival_location][latitude]", pickupEnd?.lat || "0");
+      formDataToSend.append("shipment[arrival_location][longitude]", pickupEnd?.lon || "0");
+  
+      try {
+        const departureCoords = await getCoordinatesFromAddress(pickup?.address || "", pickup?.city || "", pickup?.postalCode || "");
+        const arrivalCoords = await getCoordinatesFromAddress(pickupEnd?.address || "", pickupEnd?.city || "", pickupEnd?.postalCode || "");
+  
+        formDataToSend.set("shipment[departure_location][latitude]", departureCoords.latitude);
+        formDataToSend.set("shipment[departure_location][longitude]", departureCoords.longitude);
+  
+        formDataToSend.set("shipment[arrival_location][latitude]", arrivalCoords.latitude);
+        formDataToSend.set("shipment[arrival_location][longitude]", arrivalCoords.longitude);
+      } catch (error) {
+        console.error("Erreur de géocodage des adresses", error);
+        return;
+      }
+  
+      for (let i = 0; i < packageList.length; i++) {
+        const pkg = packageList[i];
+  
+        formDataToSend.append(`shipment[parcels][${i}][name]`, pkg.name);
+        formDataToSend.append(`shipment[parcels][${i}][weight]`, pkg.weight);
+        formDataToSend.append(`shipment[parcels][${i}][estimate_price]`, pkg.estimatedPrice);
+        formDataToSend.append(`shipment[parcels][${i}][fragility]`, pkg.isFragile?.toString());
+        formDataToSend.append(`shipment[parcels][${i}][volume]`, pkg.volume);
+  
+        if (pkg.image && Array.isArray(pkg.image)) {
+          for (let j = 0; j < pkg.image.length; j++) {
+            const base64Data = pkg.image[j];
+            const blob = await (await fetch(base64Data)).blob();
+            formDataToSend.append(`shipment[parcels][${i}][images_${j + 1}]`, blob, `image_${i}_${j}.png`);
+          }
+        }
+      }
+  
+      try {
+        await DeliveriesAPI.createShipment(formDataToSend);
+      } catch (error) {
+        console.error("Erreur lors de l'envoi du formulaire : ", error);
+      }
+  
+      return;
+    }
+  
+    methods.next();
+  };
+  
 
   useEffect(() => {
     form.reset(formData[methods.current.id as keyof typeof formData] || getDefaultValues(methods.current.id))
@@ -212,6 +300,7 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
                 pickup: ({ Component }) => <Component onFormSubmit={onSubmit} />,
                 pickupEnd: ({ Component }) => <Component onFormSubmit={onSubmit} />,
                 price: ({ Component }) => <Component onFormSubmit={onSubmit} />,
+                summary: ({ Component }) => <Component />,
               })}
             </div>
             <StepperControls>

@@ -1,47 +1,56 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
-import { Truck } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { Truck } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
+import { BarcodeScanner } from "@/components/barcodeScanner";
 
 type DeliveryProps = {
   delivery: {
-    id: string
-    from: string
-    to: string
-    status: string
-    pickupDate: string
-    estimatedDeliveryDate: string
+    id: string;
+    from: string;
+    to: string;
+    status: string;
+    pickupDate: string | null;
+    estimatedDeliveryDate: string | null;
     coordinates: {
-      origin: [number, number]
-      destination: [number, number]
-      current: [number, number]
-    }
-    progress: number
-  }
-}
+      origin: [number, number];
+      destination: [number, number];
+    };
+    progress: number;
+  };
+};
 
 export default function DeliveryCard({ delivery }: DeliveryProps) {
-  const [isMounted, setIsMounted] = useState(false)
+  const { t } = useTranslation();
+  const [isMounted, setIsMounted] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scannedCode, setScannedCode] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
+    setIsMounted(true);
+  }, []);
+
+  const handleScanResult = (code: string) => {
+    setScannedCode(code);
+    setShowScanner(false);
+  };
 
   const getBadgeColor = (status: string) => {
     switch (status) {
       case "En cours de livraison":
-        return "bg-primary/20 text-primary hover:bg-primary/20"
+        return "bg-primary/20 text-primary hover:bg-primary/20";
       case "En transit":
-        return "bg-blue-100 text-blue-700 hover:bg-blue-100"
+        return "bg-blue-100 text-blue-700 hover:bg-blue-100";
       case "En préparation":
-        return "bg-amber-100 text-amber-700 hover:bg-amber-100"
+        return "bg-amber-100 text-amber-700 hover:bg-amber-100";
       default:
-        return "bg-gray-100 text-gray-700 hover:bg-gray-100"
+        return "bg-gray-100 text-gray-700 hover:bg-gray-100";
     }
-  }
+  };
 
   return (
     <Card className="rounded-xl">
@@ -50,10 +59,17 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
           <div className="bg-primary/20 p-2 rounded-full">
             <Truck className="h-5 w-5 text-primary" />
           </div>
-          <CardTitle className="text-xl font-semibold">Livraison {delivery.id}</CardTitle>
+          <CardTitle className="text-xl font-semibold">
+            {t("client.pages.office.deliveryman.ongoingDeliveries.deliveryId", {
+              id: delivery.id,
+            })}
+          </CardTitle>
         </div>
-        <Badge variant="outline" className={`${getBadgeColor(delivery.status)} px-4 py-1.5 rounded-full`}>
-          {delivery.status}
+        <Badge
+          variant="outline"
+          className={`${getBadgeColor(delivery.status)} px-4 py-1.5 rounded-full`}
+        >
+          {t("client.pages.office.deliveryman.ongoingDeliveries.pending")}
         </Badge>
       </CardHeader>
 
@@ -61,20 +77,23 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
         <div className="relative w-full h-[300px] overflow-hidden rounded-md">
           {isMounted && (
             <MapContainer
-              center={delivery.coordinates.current}
+              center={delivery.coordinates.destination}
               zoom={6}
-              style={{ height: "100%", width: "100%" }}
+              style={{ height: "100%", width: "100%", zIndex: 0 }}
               zoomControl={false}
             >
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <Marker position={delivery.coordinates.origin}>
-                <Popup>Départ : {delivery.from}</Popup>
+                <Popup>
+                  {t("client.pages.office.deliveryman.ongoingDeliveries.departure")}{" "}
+                  {delivery.from}
+                </Popup>
               </Marker>
               <Marker position={delivery.coordinates.destination}>
-                <Popup>Arrivée : {delivery.to}</Popup>
-              </Marker>
-              <Marker position={delivery.coordinates.current}>
-                <Popup>Position actuelle</Popup>
+                <Popup>
+                  {t("client.pages.office.deliveryman.ongoingDeliveries.arrival")}{" "}
+                  {delivery.to}
+                </Popup>
               </Marker>
             </MapContainer>
           )}
@@ -82,16 +101,15 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
 
         <div className="p-6">
           <div className="flex flex-col space-y-6">
-
             <div className="relative w-full h-4">
               <div className="h-1 bg-background w-full rounded-full"></div>
               <div
                 className="h-1 bg-primary rounded-full absolute top-0 left-0 transition-all duration-500"
-                style={{ width: `${delivery.progress}%` }}
+                style={{ width: `33%` }}
               ></div>
               <div
                 className="absolute transform -translate-y-1/2 bg-background p-1 rounded-full border-2 border-primary"
-                style={{ left: `${delivery.progress}%` }}
+                style={{ left: `33%` }}
               >
                 <Truck className="h-4 w-4 text-primary" />
               </div>
@@ -103,8 +121,10 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
                 <div className="flex items-center mt-2">
                   <div className="bg-primary w-4 h-4 rounded-full"></div>
                   <div className="text-sm text-foreground ml-2">
-                    Colis transmis
-                    <div className="font-semibold">{delivery.pickupDate}</div>
+                    {t("client.pages.office.deliveryman.ongoingDeliveries.packageTransmitted")}
+                    <div className="font-semibold">
+                      {delivery.pickupDate || "N/A"}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -113,17 +133,57 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
                 <span className="text-xl font-semibold">{delivery.to}</span>
                 <div className="flex items-center mt-2 justify-end">
                   <div className="text-sm text-foreground mr-2 text-right">
-                    Date d'arrivée estimée :
-                    <div className="font-semibold">{delivery.estimatedDeliveryDate}</div>
+                    {t("client.pages.office.deliveryman.ongoingDeliveries.estimatedArrivalDate")}
+                    <div className="font-semibold">
+                      {delivery.estimatedDeliveryDate || "N/A"}
+                    </div>
                   </div>
                   <div className="bg-foreground w-4 h-4 rounded-full"></div>
                 </div>
               </div>
             </div>
-
           </div>
+
+          {delivery.status === "pending" && (
+            <div className="mt-8">
+              {!showScanner ? (
+                <button
+                  onClick={() => setShowScanner(true)}
+                  className="bg-primary text-white px-4 py-2 rounded-md"
+                >
+                  📦 Scanner le colis
+                </button>
+              ) : (
+                <div className="flex flex-col items-center gap-4 mt-4">
+                  <BarcodeScanner onResult={handleScanResult} />
+                  <button
+                    onClick={() => setShowScanner(false)}
+                    className="text-sm text-red-600 underline"
+                  >
+                    ❌ Annuler le scan
+                  </button>
+                </div>
+              )}
+              {scannedCode && (
+                <p className="mt-2 text-green-600 font-medium">
+                  ✅ Code scanné : {scannedCode}
+                </p>
+              )}
+            </div>
+          )}
+
+          {delivery.status === "taken" && (
+            <div className="mt-8">
+                <button
+                  onClick={() => setShowScanner(true)}
+                  className="bg-primary text-white px-4 py-2 rounded-md"
+                >
+                  Valider la livraison
+                </button>
+              </div>
+          )}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

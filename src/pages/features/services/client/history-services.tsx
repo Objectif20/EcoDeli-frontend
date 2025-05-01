@@ -6,9 +6,11 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { DataTable } from "@/components/features/services/client/history";
 import { ServiceApi, ServiceHistoryClient } from "@/api/service.api";
+import { useTranslation } from 'react-i18next';
 
 export default function HistoryServices() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [services, setServices] = useState<ServiceHistoryClient[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -17,11 +19,15 @@ export default function HistoryServices() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Prestations", "Historique"],
+        segments: [
+          t('client.pages.office.services.client.history.breadcrumb.home'),
+          t('client.pages.office.services.client.history.breadcrumb.services'),
+          t('client.pages.office.services.client.history.breadcrumb.history'),
+        ],
         links: ["/office/dashboard"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -39,7 +45,9 @@ export default function HistoryServices() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold mb-4">Historique des services</h1>
+      <h1 className="text-2xl font-semibold mb-4">
+        {t('client.pages.office.services.client.history.table.title')}
+      </h1>
       <DataTable
         key={`${pageIndex}-${pageSize}`}
         data={services}

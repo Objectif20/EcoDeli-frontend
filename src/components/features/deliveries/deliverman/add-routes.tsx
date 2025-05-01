@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
+import type React from "react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
@@ -12,27 +12,42 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { z } from "zod"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
-import { fr } from "date-fns/locale"
-import { DeliverymanApi, RoutePostDto } from "@/api/deliveryman.api"
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { z } from "zod";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { fr } from "date-fns/locale";
+import { DeliverymanApi, RoutePostDto } from "@/api/deliveryman.api";
+import { useTranslation } from 'react-i18next';
 
 export const routeSchema = z
   .object({
     id: z.string(),
-    from: z.string().min(1, "Le lieu de départ est requis"),
-    to: z.string().min(1, "Le lieu d'arrivée est requis"),
+    from: z.string().min(1, "client.pages.office.deliveryman.addRoute.fromRequired"),
+    to: z.string().min(1, "client.pages.office.deliveryman.addRoute.toRequired"),
     permanent: z.boolean(),
     coordinates: z.object({
       origin: z.tuple([z.number(), z.number()]),
@@ -40,31 +55,33 @@ export const routeSchema = z
     }),
     date: z.string().optional(),
     weekday: z.string().optional(),
-    tolerate_radius: z.number().min(0, "Le rayon doit être positif"),
+    tolerate_radius: z.number().min(0, "client.pages.office.deliveryman.addRoute.radiusPositive"),
     comeback_today_or_tomorrow: z.union([z.literal("today"), z.literal("tomorrow"), z.literal("later")]),
   })
   .refine(
     (data) => {
       if (data.permanent) {
-        return !!data.weekday
+        return !!data.weekday;
       } else {
-        return !!data.date
+        return !!data.date;
       }
     },
     {
-      message: "Un jour de la semaine est requis pour les trajets permanents, une date pour les trajets ponctuels",
+      message: "client.pages.office.deliveryman.addRoute.weekdayOrDateRequired",
       path: ["weekday"],
-    },
-  )
-export type Route = z.infer<typeof routeSchema>
+    }
+  );
+
+export type Route = z.infer<typeof routeSchema>;
 
 interface AddRouteDialogProps {
-  children: React.ReactNode
-  onAddRoute: (route: Route) => void
+  children: React.ReactNode;
+  onAddRoute: (route: Route) => void;
 }
 
 export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
-  const [open, setOpen] = useState(false)
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
 
   const form = useForm<Route>({
     resolver: zodResolver(routeSchema),
@@ -80,35 +97,35 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
       tolerate_radius: 5,
       comeback_today_or_tomorrow: "tomorrow",
     },
-  })
+  });
 
-  const isPermanent = form.watch("permanent")
+  const isPermanent = form.watch("permanent");
 
   async function onSubmit(data: Route) {
     const newRoute: RoutePostDto = {
       ...data,
       weekday: isPermanent ? String(weekdays.indexOf(data.weekday!)) : undefined,
-    }
-  
+    };
+
     try {
-      const addedRoute = await DeliverymanApi.addDeliverymanRoute(newRoute)
-      onAddRoute(addedRoute)
-      form.reset()
-      setOpen(false)
+      const addedRoute = await DeliverymanApi.addDeliverymanRoute(newRoute);
+      onAddRoute(addedRoute);
+      form.reset();
+      setOpen(false);
     } catch (error) {
-      console.error("Erreur lors de l'ajout du trajet:", error)
+      console.error("Erreur lors de l'ajout du trajet:", error);
     }
   }
 
-  const weekdays = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+  const weekdays = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh]">
         <DialogHeader>
-          <DialogTitle>Ajouter un nouveau trajet</DialogTitle>
-          <DialogDescription>Remplissez les informations pour créer un nouveau trajet.</DialogDescription>
+          <DialogTitle>{t('client.pages.office.deliveryman.addRoute.title')}</DialogTitle>
+          <DialogDescription>{t('client.pages.office.deliveryman.addRoute.description')}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
@@ -119,9 +136,9 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
                 name="from"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Départ</FormLabel>
+                    <FormLabel>{t('client.pages.office.deliveryman.addRoute.from')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ville de départ" {...field} />
+                      <Input placeholder={t('client.pages.office.deliveryman.addRoute.fromPlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -133,9 +150,9 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
                 name="to"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Arrivée</FormLabel>
+                    <FormLabel>{t('client.pages.office.deliveryman.addRoute.to')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ville d'arrivée" {...field} />
+                      <Input placeholder={t('client.pages.office.deliveryman.addRoute.toPlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -152,9 +169,9 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                    <FormLabel>Trajet permanent</FormLabel>
+                    <FormLabel>{t('client.pages.office.deliveryman.addRoute.permanent')}</FormLabel>
                     <FormDescription>
-                      Cochez cette case si ce trajet est récurrent (ex: tous les lundis).
+                      {t('client.pages.office.deliveryman.addRoute.permanentDescription')}
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -167,11 +184,11 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
                 name="weekday"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Jour de la semaine</FormLabel>
+                    <FormLabel>{t('client.pages.office.deliveryman.addRoute.weekday')}</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Sélectionnez un jour" />
+                          <SelectValue placeholder={t('client.pages.office.deliveryman.addRoute.selectWeekday')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -192,7 +209,7 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
                 name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
-                    <FormLabel>Date du trajet</FormLabel>
+                    <FormLabel>{t('client.pages.office.deliveryman.addRoute.date')}</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -206,7 +223,7 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
                             {field.value ? (
                               format(new Date(field.value), "PPP", { locale: fr })
                             ) : (
-                              <span>Choisissez une date</span>
+                              <span>{t('client.pages.office.deliveryman.addRoute.chooseDate')}</span>
                             )}
                             <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
@@ -217,7 +234,7 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
                           mode="single"
                           selected={field.value ? new Date(field.value) : undefined}
                           onSelect={(date) => {
-                            field.onChange(date?.toISOString())
+                            field.onChange(date?.toISOString());
                           }}
                           disabled={(date) =>
                             date < new Date()
@@ -237,7 +254,7 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
               name="tolerate_radius"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Rayon de tolérance (km)</FormLabel>
+                  <FormLabel>{t('client.pages.office.deliveryman.addRoute.tolerateRadius')}</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
@@ -248,7 +265,7 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
                     />
                   </FormControl>
                   <FormDescription>
-                    Distance maximale acceptable par rapport au point de départ/arrivée.
+                    {t('client.pages.office.deliveryman.addRoute.tolerateRadiusDescription')}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -260,7 +277,7 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
               name="comeback_today_or_tomorrow"
               render={({ field }) => (
                 <FormItem className="space-y-3">
-                  <FormLabel>Retour</FormLabel>
+                  <FormLabel>{t('client.pages.office.deliveryman.addRoute.return')}</FormLabel>
                   <FormControl>
                     <RadioGroup
                       onValueChange={(value) => field.onChange(value)}
@@ -271,19 +288,19 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
                         <FormControl>
                           <RadioGroupItem value="today" />
                         </FormControl>
-                        <FormLabel className="font-normal">Retour le même jour</FormLabel>
+                        <FormLabel className="font-normal">{t('client.pages.office.deliveryman.addRoute.returnToday')}</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="tomorrow" />
                         </FormControl>
-                        <FormLabel className="font-normal">Retour le lendemain</FormLabel>
+                        <FormLabel className="font-normal">{t('client.pages.office.deliveryman.addRoute.returnTomorrow')}</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
                           <RadioGroupItem value="later" />
                         </FormControl>
-                        <FormLabel className="font-normal">Retour plus tard</FormLabel>
+                        <FormLabel className="font-normal">{t('client.pages.office.deliveryman.addRoute.returnLater')}</FormLabel>
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
@@ -294,12 +311,12 @@ export function AddRouteDialog({ children, onAddRoute }: AddRouteDialogProps) {
 
             <DialogFooter>
               <Button type="submit" className="bg-primary hover:bg-primary/90">
-                Ajouter le trajet
+                {t('client.pages.office.deliveryman.addRoute.addRoute')}
               </Button>
             </DialogFooter>
           </form>
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

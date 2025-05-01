@@ -14,9 +14,10 @@ interface CityAsyncSelectDemoProps {
   onCitySelect: (city: City) => void;
   labelValue?: string;
   placeholder?: string;
+  className?: string;
 }
 
-function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder }: CityAsyncSelectDemoProps) {
+function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder, className }: CityAsyncSelectDemoProps) {
   const [cities, setCities] = useState<City[]>([]);
   const [_, setIsLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState(labelValue || "");
@@ -112,6 +113,7 @@ function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder }: CityAsyn
         value={selectedValue}
         onChange={handleChange}
         width="375px"
+        className={className}
       />
     </div>
   );

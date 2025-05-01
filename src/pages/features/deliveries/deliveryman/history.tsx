@@ -3,18 +3,7 @@ import { PaginationControls } from "@/components/pagination-controle";
 import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { DataTable } from "@/components/features/deliveries/deliverman/history-table";
-
-interface HistoryDelivery {
-  id: string;
-  departure_city: string;
-  arrival_city: string;
-  price: number;
-  client: {
-    name: string;
-    photo_url: string;
-  };
-  status: string;
-}
+import { DeliveriesAPI, HistoryDelivery } from "@/api/deliveries.api";
 
 export default function MyDeliveryHistoryPage() {
   const dispatch = useDispatch();
@@ -35,35 +24,7 @@ export default function MyDeliveryHistoryPage() {
   useEffect(() => {
     const fetchDeliveries = async () => {
       try {
-        const response = {
-          data: [
-            {
-              id: "1",
-              departure_city: "Paris",
-              arrival_city: "Lyon",
-              price: 150.0,
-              client: {
-                name: "Alice Dupont",
-                photo_url: "https://example.com/alice.jpg",
-              },
-              status: "Livré",
-            },
-            {
-              id: "2",
-              departure_city: "Marseille",
-              arrival_city: "Nice",
-              price: 100.0,
-              client: {
-                name: "Bob Martin",
-                photo_url: "https://example.com/bob.jpg",
-              },
-              status: "En cours",
-            },
-            // Add more simulated data as needed
-          ],
-          totalRows: 2,
-        };
-
+        const response = await DeliveriesAPI.getMyDeliveryHistoryAsDeliveryman(pageIndex + 1, pageSize);
         setDeliveries(response.data);
         setTotalItems(response.totalRows);
       } catch (error) {

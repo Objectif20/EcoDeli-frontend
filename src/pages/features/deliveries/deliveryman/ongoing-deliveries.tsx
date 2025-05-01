@@ -1,104 +1,81 @@
-"use client"
+"use client";
 
-import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
-import { useEffect } from "react"
-import { useDispatch } from "react-redux"
-import { Card, CardHeader, CardTitle } from "@/components/ui/card"
-import "leaflet/dist/leaflet.css"
-import L from "leaflet"
-import DeliveryCard from "@/components/features/deliveries/delivery-card"
-import PackageIcon from "@/assets/illustrations/package.svg"
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+import DeliveryCard from "@/components/features/deliveries/delivery-card";
+import PackageIcon from "@/assets/illustrations/package.svg";
+import { useTranslation } from 'react-i18next';
+import { DeliveriesAPI } from "@/api/deliveries.api";
 
-
-const deliveriesData = [
-  {
-    id: "#A7EHDK7",
-    from: "Paris",
-    to: "Marseille",
-    status: "En cours de livraison",
-    pickupDate: "12 mai 2025",
-    estimatedDeliveryDate: "14 mai 2025",
-    coordinates: {
-      origin: [48.8566, 2.3522] as [number, number],
-      destination: [43.2965, 5.3698] as [number, number],
-      current: [45.764043, 4.835659] as [number, number],
-    },
-    progress: 50,
-  },
-  {
-    id: "#B8FJLM2",
-    from: "Lyon",
-    to: "Bordeaux",
-    status: "En transit",
-    pickupDate: "10 mai 2025",
-    estimatedDeliveryDate: "13 mai 2025",
-    coordinates: {
-      origin: [45.764043, 4.835659] as [number, number],
-      destination: [44.837789, -0.57918] as [number, number],
-      current: [45.1, 1.5] as [number, number],
-    },
-    progress: 30,
-  },
-  {
-    id: "#C9GKNP4",
-    from: "Lille",
-    to: "Nice",
-    status: "En préparation",
-    pickupDate: "15 mai 2025",
-    estimatedDeliveryDate: "18 mai 2025",
-    coordinates: {
-      origin: [50.62925, 3.057256] as [number, number],
-      destination: [43.7102, 7.262] as [number, number],
-      current: [50.62925, 3.057256] as [number, number],
-    },
-    progress: 10,
-  },
-  {
-    id: "#D1HPQR6",
-    from: "Strasbourg",
-    to: "Toulouse",
-    status: "En cours de livraison",
-    pickupDate: "11 mai 2025",
-    estimatedDeliveryDate: "15 mai 2025",
-    coordinates: {
-      origin: [48.5734, 7.7521] as [number, number],
-      destination: [43.6047, 1.4442] as [number, number],
-      current: [46.1, 4.2] as [number, number],
-    },
-    progress: 65,
-  },
-]
-
-
-
+export interface DeliveryOnGoing {
+  id: string;
+  from: string;
+  to: string;
+  status: string;
+  pickupDate: string | null;
+  estimatedDeliveryDate: string | null;
+  coordinates: {
+    origin: [number, number];
+    destination: [number, number];
+  };
+  progress: number;
+}
 
 export default function OngoingDeliveries() {
-  const dispatch = useDispatch()
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const [deliveriesData, setDeliveriesData] = useState<DeliveryOnGoing[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Mes livraisons en cours"],
+        segments: ["Accueil", t('client.pages.office.deliveryman.ongoingDeliveries.title')],
         links: ["/office/dashboard"],
-      }),
-    )
+      })
+    );
 
     if (typeof window !== "undefined") {
       L.Icon.Default.mergeOptions({
         iconUrl: PackageIcon,
-      })
+      });
     }
-  }, [dispatch])
+
+    const fetchDeliveries = async () => {
+      try {
+        const deliveries = await DeliveriesAPI.getMyOngoingDeliveriesAsDeliveryman();
+        setDeliveriesData(deliveries);
+      } catch (error) {
+        console.error("Error fetching ongoing deliveries:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDeliveries();
+  }, [dispatch, t]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Mes livraisons en cours</h1>
+      <h1 className="text-2xl font-bold">{t('client.pages.office.deliveryman.ongoingDeliveries.title')}</h1>
 
       {deliveriesData.length === 0 ? (
         <Card className="rounded-xl shadow-lg border bg-background">
           <CardHeader className="text-center">
-            <CardTitle className="text-xl font-semibold text-foreground">Aucune livraison en cours</CardTitle>
-            <p className="text-muted">Vous n'avez pas de livraison en cours.</p>
+            <CardTitle className="text-xl font-semibold text-foreground">
+              {t('client.pages.office.deliveryman.ongoingDeliveries.noDeliveries')}
+            </CardTitle>
+            <p>
+              {t('client.pages.office.deliveryman.ongoingDeliveries.noDeliveriesDescription')}
+            </p>
           </CardHeader>
         </Card>
       ) : (
@@ -109,5 +86,5 @@ export default function OngoingDeliveries() {
         </div>
       )}
     </div>
-  )
+  );
 }

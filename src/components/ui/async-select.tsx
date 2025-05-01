@@ -127,11 +127,10 @@ export function AsyncSelect<T>({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "justify-between",
+            "justify-between w-full",
             disabled && "opacity-50 cursor-not-allowed",
             triggerClassName
           )}
-          style={{ width: width }}
           disabled={disabled}
         >
           {selectedOption ? (

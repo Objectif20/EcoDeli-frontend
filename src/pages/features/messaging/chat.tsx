@@ -21,6 +21,7 @@ import { setBreadcrumb } from '@/redux/slices/breadcrumbSlice';
 import { useTranslation } from 'react-i18next';
 import { RootState } from '@/redux/store';
 import { useNavigate } from 'react-router-dom';
+import DeliveryNegotiateDialog from './delivery-negociate';
 
 interface Contact {
   user_id: string;
@@ -274,6 +275,7 @@ const ChatPage = () => {
           <h1 className="text-xl font-semibold">{selectedContactInfo?.first_name} {selectedContactInfo?.last_name}</h1>
           <p className="text-gray-600">{selectedContactInfo?.online ? t("client.pages.office.chat.online") : t("client.pages.office.chat.offline")}</p>
               </div>
+              <DeliveryNegotiateDialog deliveryman_user_id='123' />
             </div>
             <ScrollArea className="flex-1" style={{ height: `calc(100% - 48px)` }}>
               <ChatMessageList ref={messageListRef}>

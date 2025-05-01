@@ -106,6 +106,18 @@ export interface DeliveryDetails {
   }
 
 
+  export interface Warehouse {
+    warehouse_id: string;
+    city: string;
+    coordinates: {
+      type : string;
+      coordinates : [number, number];
+    },
+    photo : string;
+    description : string;
+  }
+
+
 export class DeliveriesAPI {
 
     static async getDeliveries(apiFilter : DeliveriesFilter) : Promise<Delivery[]> {
@@ -133,7 +145,7 @@ export class DeliveriesAPI {
             throw new Error("Failed to create shipment");
         }
     }
-    
+
     static async getShipmentDetailsById(shipment_id : string) : Promise<Shipment> {
 
         try {
@@ -152,6 +164,26 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error booking shipment:", error);
             throw new Error("Failed to book shipment");
+        }
+    }
+
+    static async askToNegotiate(shipment_id: string): Promise<any> {
+        try {
+            const response = await axiosInstance.post(`/client/shipments/${shipment_id}/askNegociation`);
+            return response.data;
+        } catch (error) {
+            console.error("Error asking to negotiate:", error);
+            throw new Error("Failed to ask to negotiate");
+        }
+    }
+
+    static async getWareHouse() : Promise<Warehouse[]> {
+        try {
+            const response = await axiosInstance.get("/client/shipments/warehouses");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching warehouses:", error);
+            throw new Error("Failed to fetch warehouses");
         }
     }
 

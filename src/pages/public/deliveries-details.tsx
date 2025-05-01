@@ -30,6 +30,7 @@ export default function DeliveryDetailsPage() {
 
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
   const isDeliveryman = user?.profile.includes('DELIVERYMAN');
+  const navigate = useNavigate();
 
   const {id } = useParams();
 
@@ -54,6 +55,7 @@ export default function DeliveryDetailsPage() {
     return <div>Chargement...</div>;
   }
 
+
   const lastStep = delivery.steps[delivery.steps.length - 1];
 
   const proposedPrice = delivery.details.initial_price;
@@ -71,8 +73,7 @@ export default function DeliveryDetailsPage() {
 
   const bookPartialShipment = async () => {
     try {
-      const response = await DeliveriesAPI.bookShipment(id);
-      const navigate = useNavigate();
+      const response = await DeliveriesAPI.askToNegotiate(id);
       navigate('/office/messaging')
       console.log("Réponse de la réservation partielle :", response);
     } catch (error) {

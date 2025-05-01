@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Clock, MapPin, AlertTriangle } from "lucide-react";
+import { MapPin, AlertTriangle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -12,10 +12,15 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { DeliveriesAPI, Shipment } from "@/api/deliveries.api";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 export default function DeliveryDetailsPage() {
   const [_, setActiveTab] = useState("overview");
   const [delivery, setDelivery] = useState<Shipment>();
+
+  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
+  const isDeliveryman = user?.profile.includes('DELIVERYMAN');
 
   const {id } = useParams();
 
@@ -57,7 +62,7 @@ export default function DeliveryDetailsPage() {
           <CardHeader className="bg-primary text-foreground rounded-t-lg">
             <div className="flex justify-between items-start">
               <div>
-                <CardTitle className="text-2xl md:text-3xl font-bold">{delivery.details.name}</CardTitle>
+                <CardTitle className="text-2xl md:text-3xl font-bold">{delivery.details.description}</CardTitle>
                 <CardDescription className="text-primary-foreground mt-1">Référence N°{delivery.details.id}</CardDescription>
               </div>
             </div>
@@ -67,10 +72,7 @@ export default function DeliveryDetailsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-6">
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-secondary px-3 py-1">
-                    <Clock className="w-4 h-4 mr-1" />
-                    Livraison prévue le {formatDate(delivery.details.arrival_date)}
-                  </Badge>
+
                 </div>
 
                 <div className="relative pl-8 space-y-6">
@@ -83,9 +85,7 @@ export default function DeliveryDetailsPage() {
                     <div>
                       <p className="text-sm font-medium text-foreground">Départ</p>
                       <h3 className="text-lg font-semibold">{lastStep?.departure?.city}</h3>
-                      <p className="text-sm text-foreground">
-                        Collecte le {formatDate(lastStep?.date)}
-                      </p>
+
                     </div>
                   </div>
 
@@ -96,9 +96,7 @@ export default function DeliveryDetailsPage() {
                     <div>
                       <p className="text-sm font-medium text-foreground">Arrivée</p>
                       <h3 className="text-lg font-semibold">{delivery.details.arrival.city}</h3>
-                      <p className="text-sm text-foreground">
-                        Livraison prévue le {formatDate(delivery.details.arrival_date)}
-                      </p>
+
                     </div>
                   </div>
                 </div>
@@ -119,13 +117,14 @@ export default function DeliveryDetailsPage() {
                     <span className="text-xl font-bold">{proposedPrice} €</span>
                   </div>
                 </div>
-
-                <Button
-                  className="w-full bg-green-500 text-white hover:bg-green-600"
-                  onClick={() => console.log("Prendre la livraison", id)}
-                >
-                  Prendre la livraison
-                </Button>
+                {isDeliveryman && (
+                  <Button
+                    className="w-full"
+                    onClick={() => console.log("Prendre la livraison", id)}
+                  >
+                    Prendre la livraison
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>

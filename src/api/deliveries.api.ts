@@ -133,8 +133,7 @@ export class DeliveriesAPI {
             throw new Error("Failed to create shipment");
         }
     }
-
-
+    
     static async getShipmentDetailsById(shipment_id : string) : Promise<Shipment> {
 
         try {
@@ -143,6 +142,16 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error fetching shipment details:", error);
             throw new Error("Failed to fetch shipment details");
+        }
+    }
+
+    static async bookShipment(shipment_id: string): Promise<any> {
+        try {
+            const response = await axiosInstance.post(`/client/shipments/${shipment_id}/book`);
+            return response.data;
+        } catch (error) {
+            console.error("Error booking shipment:", error);
+            throw new Error("Failed to book shipment");
         }
     }
 

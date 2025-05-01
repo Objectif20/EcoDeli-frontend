@@ -117,6 +117,22 @@ export interface DeliveryDetails {
     description : string;
   }
 
+  export interface DeliveryOnGoing {
+ 
+    id: string;
+    from: string;
+    to: string;
+    status: string;
+    pickupDate: string | null;
+    estimatedDeliveryDate: string | null;
+    coordinates: {
+      origin: [number, number];
+      destination: [number, number];
+    };
+    progress: number;
+  
+  }
+
 
 export class DeliveriesAPI {
 
@@ -207,5 +223,50 @@ export class DeliveriesAPI {
             throw new Error("Failed to create partial shipment");
         }
     }
+
+    static async getMyOngoingDeliveriesAsDeliveryman() : Promise<DeliveryOnGoing[]> {
+
+        try {
+            const response = await axiosInstance.get<DeliveryOnGoing[]>("/client/shipments/onGoingDeliveries");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching ongoing deliveries:", error);
+            throw new Error("Failed to fetch ongoing deliveries");
+        }
+
+    }
+
+    static async takeDeliveryPackage(delivery_id: string): Promise<any> {
+        try {
+            const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/taken`);
+            return response.data;
+        } catch (error) {
+            console.error("Error taking delivery package:", error);
+            throw new Error("Failed to take delivery package");
+        }
+    }
+
+    static async finishedDelivery(delivery_id: string): Promise<any> {
+      try {
+          const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/finish`);
+          return response.data;
+      } catch (error) {
+          console.error("Error taking delivery package:", error);
+          throw new Error("Failed to take delivery package");
+      }
+    }
+
+    static async validateDelivery(delivery_id: string): Promise<any> {
+      try {
+          const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/validate`);
+          return response.data;
+      } catch (error) {
+          console.error("Error taking delivery package:", error);
+          throw new Error("Failed to take delivery package");
+      }
+    }
+
+
+
 
 }

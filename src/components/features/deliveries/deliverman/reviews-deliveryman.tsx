@@ -51,7 +51,6 @@ export const schema = z.object({
   }),
   reply: z.boolean(),
   reply_content: z.string().nullable(),
-  date: z.string(),
   delivery_name: z.string(),
   rate: z.number(),
 });
@@ -110,7 +109,6 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
       ),
     },
     { accessorKey: "rate", header: t('client.pages.office.delivery.deliveryman.reviews.rate'), cell: ({ row }) => row.original.rate },
-    { accessorKey: "date", header: t('client.pages.office.delivery.deliveryman.reviews.date'), cell: ({ row }) => row.original.date },
     {
       id: "actions",
       cell: ({ row }) => (
@@ -133,7 +131,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
                 {row.original?.author.name}
               </DialogTitle>
               <DialogDescription className="text-sm text-gray-500">
-                {row.original?.date}
+
               </DialogDescription>
             </DialogHeader>
             <p className="text-sm text-center text-gray-600">{row.original?.content}</p>

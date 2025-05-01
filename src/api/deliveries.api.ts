@@ -145,6 +145,20 @@ export interface DeliveryDetails {
     status: string;
   }
 
+  export interface ReviewAsDeliveryPerson {
+    id: string;
+    content: string;
+    author: {
+      id: string;
+      name: string;
+      photo: string;
+    };
+    reply: boolean;
+    reply_content: string | null;
+    delivery_name: string;
+    rate: number;
+  }
+
 
 export class DeliveriesAPI {
 
@@ -292,6 +306,32 @@ export class DeliveriesAPI {
             throw new Error("Failed to fetch delivery history");
         }
 
+    }
+
+    static async getMyReviewsAsDeliveryman(pageIndex: number, pageSize: number): Promise<{ data: ReviewAsDeliveryPerson[], totalRows: number }> {
+        try {
+            const response = await axiosInstance.get<{ data: ReviewAsDeliveryPerson[], totalRows: number }>("/client/shipments/delivery/reviews", {
+                params: {
+                    page : pageIndex,
+                    limit : pageSize,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching delivery history:", error);
+            throw new Error("Failed to fetch delivery history");
+        }
+    }
+
+    static async replyToReview(review_id: string, content: string): Promise<any> {
+        try {
+            const id = review_id
+            const response = await axiosInstance.post(`/client/shipments/delivery/reviews/${id }/reply`, { content });
+            return response.data;
+        } catch (error) {
+            console.error("Error replying to review:", error);
+            throw new Error("Failed to reply to review");
+        }
     }
 
 }

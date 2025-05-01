@@ -187,4 +187,25 @@ export class DeliveriesAPI {
         }
     }
 
+    static async getMyCurrentShipments() : Promise<Delivery[]> {
+
+        try {
+            const response = await axiosInstance.get<Delivery[]>("/client/shipments/myCurrentShipments");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching current shipments:", error);
+            throw new Error("Failed to fetch current shipments");
+        }
+    }
+
+    static async createPartialDelivery(data: any, shipment_id : string): Promise<any> {
+        try {
+            const response = await axiosInstance.post(`/client/shipments/${shipment_id}/bookPartial`, data)
+            return response.data;
+        } catch (error) {
+            console.error("Error creating partial shipment:", error);
+            throw new Error("Failed to create partial shipment");
+        }
+    }
+
 }

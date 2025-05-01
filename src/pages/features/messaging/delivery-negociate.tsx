@@ -22,11 +22,11 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import CityAsyncSelectDemo from "@/components/search-place"
-import { DeliveriesAPI } from "@/api/deliveries.api"
+import { DeliveriesAPI } from "@/api/deliveries.api" // Import the API function
+import axios from "axios"
 
 interface DeliveryNegotiateProps {
   deliveryman_user_id: string
-  shipments?: ShipmentDetails[]
 }
 
 interface ShipmentDetails {
@@ -61,16 +61,14 @@ interface City {
 
 export default function DeliveryNegotiateDialog({
   deliveryman_user_id,
-  shipments = [],
 }: DeliveryNegotiateProps) {
   const [open, setOpen] = useState(false)
   const [warehouses, setWarehouses] = useState<Warehouse[]>([])
   const [selectedCity, setSelectedCity] = useState<City | null>(null)
   const [locationType, setLocationType] = useState<"warehouse" | "custom">("warehouse")
   const [date, setDate] = useState<Date | undefined>()
-  const [selectedShipment, setSelectedShipment] = useState<ShipmentDetails | null>(
-    shipments.length > 0 ? shipments[0] : null,
-  )
+  const [shipments, setShipments] = useState<ShipmentDetails[]>([])
+  const [selectedShipment, setSelectedShipment] = useState<ShipmentDetails | null>(null)
 
   const [formData, setFormData] = useState<{
     delivery_person_id: string
@@ -83,7 +81,7 @@ export default function DeliveryNegotiateDialog({
     end_date: string
   }>({
     delivery_person_id: deliveryman_user_id,
-    price: shipments.length > 0 ? shipments[0].price : 0,
+    price: 0,
     new_price: 0,
     warehouse_id: "",
     city: "",
@@ -107,42 +105,89 @@ export default function DeliveryNegotiateDialog({
       }
     }
 
+    const fetchShipments = async () => {
+      try {
+        const data = await DeliveriesAPI.getMyCurrentShipments()
+        setShipments(data.map((shipment) => ({
+          id: shipment.shipment_id,
+          name: shipment.description,
+          price: shipment.estimated_total_price || 0,
+          last_date: shipment.deadline_date || new Date().toISOString(),
+        })))
+        if (data.length > 0) {
+          setSelectedShipment({
+            id: data[0].shipment_id,
+            name: data[0].description,
+            price: data[0].estimated_total_price || 0,
+            last_date: data[0].deadline_date || new Date().toISOString(),
+          })
+          setFormData((prev) => ({
+            ...prev,
+            price: data[0].estimated_total_price || 0,
+          }))
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des livraisons :", error)
+      }
+    }
+
     fetchWarehouses()
+    fetchShipments()
   }, [])
 
-  const handleCitySelect = (city: City) => {
-    setSelectedCity(city)
-    setFormData({
-      ...formData,
-      city: city.label,
+  const getCityNameFromCoordinates = async (lat: number, lon: number) => {
+    try {
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`
+      );
+      const cityName = response.data.address.city || response.data.address.town || response.data.address.village;
+      return cityName || "Unknown";
+    } catch (error) {
+      console.error("Error fetching city name from OpenStreetMap:", error);
+      return "Unknown";
+    }
+  };
+
+  const handleCitySelect = async (city: City) => {
+    setSelectedCity(city);
+
+    const cityName = await getCityNameFromCoordinates(city.lat, city.lon);
+
+    setFormData((prev) => ({
+      ...prev,
+      city: cityName,
       latitude: city.lat,
       longitude: city.lon,
       warehouse_id: "",
-    })
-  }
+    }));
+  };
 
   const handleWarehouseChange = (warehouseId: string) => {
-    setFormData({
-      ...formData,
+    console.log("Warehouse selected:", warehouseId);
+    setFormData((prev) => ({
+      ...prev,
       warehouse_id: warehouseId,
       city: "",
       latitude: 0,
       longitude: 0,
-    })
-  }
+    }));
+    console.log("Form data after warehouse selection:", formData);
+  };
 
   const handleDateSelect = (selectedDate: Date | undefined) => {
     setDate(selectedDate)
     if (selectedDate) {
-      setFormData({
-        ...formData,
+      setFormData((prev) => ({
+        ...prev,
         end_date: selectedDate.toISOString(),
-      })
+      }))
     }
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const submissionData = { ...formData }
+
+    console.log('locationType', locationType)
 
     if (locationType === "warehouse") {
       delete submissionData.city
@@ -150,6 +195,15 @@ export default function DeliveryNegotiateDialog({
       delete submissionData.longitude
     } else if (locationType === "custom") {
       delete submissionData.warehouse_id
+    }
+
+    submissionData.price = Number(submissionData.price)
+    submissionData.new_price = Number(submissionData.new_price)
+
+    try {
+      await DeliveriesAPI.createPartialDelivery(submissionData, selectedShipment?.id || "")
+    } catch (error) {
+      console.error("Erreur lors de la soumission des données :", error)
     }
 
     console.log("Form data submitted:", submissionData)
@@ -177,10 +231,10 @@ export default function DeliveryNegotiateDialog({
                 onValueChange={(shipmentId) => {
                   const selected = shipments.find((s) => s.id === shipmentId)
                   if (selected) {
-                    setFormData({
-                      ...formData,
+                    setFormData((prev) => ({
+                      ...prev,
                       price: selected.price,
-                    })
+                    }))
                     setSelectedShipment(selected)
                   }
                 }}
@@ -217,10 +271,10 @@ export default function DeliveryNegotiateDialog({
                   step="0.01"
                   value={formData.new_price || ""}
                   onChange={(e) =>
-                    setFormData({
-                      ...formData,
+                    setFormData((prev) => ({
+                      ...prev,
                       new_price: Number.parseFloat(e.target.value) || 0,
-                    })
+                    }))
                   }
                 />
               </div>

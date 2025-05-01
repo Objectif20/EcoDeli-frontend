@@ -275,7 +275,7 @@ const ChatPage = () => {
           <h1 className="text-xl font-semibold">{selectedContactInfo?.first_name} {selectedContactInfo?.last_name}</h1>
           <p className="text-gray-600">{selectedContactInfo?.online ? t("client.pages.office.chat.online") : t("client.pages.office.chat.offline")}</p>
               </div>
-              <DeliveryNegotiateDialog deliveryman_user_id='123' />
+              <DeliveryNegotiateDialog deliveryman_user_id={selectedContactInfo?.user_id || ""} />
             </div>
             <ScrollArea className="flex-1" style={{ height: `calc(100% - 48px)` }}>
               <ChatMessageList ref={messageListRef}>

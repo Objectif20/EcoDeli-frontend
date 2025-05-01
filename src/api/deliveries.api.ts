@@ -133,6 +133,18 @@ export interface DeliveryDetails {
   
   }
 
+  export interface HistoryDelivery {
+    id: string;
+    departure_city: string;
+    arrival_city: string;
+    price: number;
+    client: {
+      name: string;
+      photo_url: string;
+    };
+    status: string;
+  }
+
 
 export class DeliveriesAPI {
 
@@ -266,7 +278,20 @@ export class DeliveriesAPI {
       }
     }
 
+    static async getMyDeliveryHistoryAsDeliveryman(pageIndex: number, pageSize: number): Promise<{ data: HistoryDelivery[], totalRows: number }>{
+        try {
+          const response = await axiosInstance.get<{ data: HistoryDelivery[], totalRows: number }>("/client/shipments/delivery/myHistory", {
+            params: {
+              page : pageIndex,
+              limit : pageSize,
+            },
+          });
+          return response.data;
+        } catch (error) {
+            console.error("Error fetching delivery history:", error);
+            throw new Error("Failed to fetch delivery history");
+        }
 
-
+    }
 
 }

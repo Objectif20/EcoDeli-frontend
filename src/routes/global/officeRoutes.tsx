@@ -54,7 +54,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="my-routes" element={<MyRoutes />} />
         </Route>
         
-                <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
+        <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
           <Route path="deliveries" element={<DeliveriesPage />} />
           <Route path="deliveries/:id" element={<DeliveryDetailsPage />} />
           <Route path="deliveries/create" element={<CreateDeliveryPage />} />

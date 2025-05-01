@@ -4,28 +4,13 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { DataTable } from "@/components/features/deliveries/reviews";
 import { useTranslation } from 'react-i18next';
+import { DeliveriesAPI, ReviewAsClient } from "@/api/deliveries.api";
 
-interface Review {
-  id: string;
-  content: string;
-  delivery: {
-    id: string;
-    deliveryman: {
-      id: string;
-      name: string;
-      photo: string;
-      email: string;
-    };
-  };
-  date: string;
-  services_name: string;
-  rate: number;
-}
 
 export default function MyReviewsDeliveryPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<ReviewAsClient[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
@@ -46,45 +31,7 @@ export default function MyReviewsDeliveryPage() {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = {
-          data: [
-            {
-              id: "1",
-              content: "Très bon service, je recommande !",
-              delivery: {
-                id: "d1",
-                deliveryman: {
-                  id: "dm1",
-                  name: "Jean Dupont",
-                  photo: "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
-                  email: "jean.dupont@example.com",
-                },
-              },
-              date: "2023-10-01",
-              services_name: "Nettoyage",
-              rate: 5,
-            },
-            {
-              id: "2",
-              content: "Service moyen, pourrait être amélioré.",
-              delivery: {
-                id: "d2",
-                deliveryman: {
-                  id: "dm2",
-                  name: "Marie Martin",
-                  photo: "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
-                  email: "marie.martin@example.com",
-                },
-              },
-              date: "2023-10-02",
-              services_name: "Livraison",
-              rate: 3,
-            },
-            // Add more simulated data as needed
-          ],
-          totalRows: 2,
-        };
-
+        const response = await DeliveriesAPI.getMyReviewsAsClient(pageIndex + 1, pageSize);
         setReviews(response.data);
         setTotalItems(response.totalRows);
       } catch (error) {

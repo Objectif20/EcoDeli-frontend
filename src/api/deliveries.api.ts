@@ -159,6 +159,22 @@ export interface DeliveryDetails {
     rate: number;
   }
 
+  export interface ReviewAsClient {
+    id: string;
+    content: string;
+    delivery: {
+      id: string;
+      deliveryman: {
+        id: string;
+        name: string;
+        photo: string;
+        email: string;
+      };
+    };
+    services_name: string;
+    rate: number;
+  }
+
 
 export class DeliveriesAPI {
 
@@ -331,6 +347,21 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error replying to review:", error);
             throw new Error("Failed to reply to review");
+        }
+    }
+
+    static async getMyReviewsAsClient(pageIndex: number, pageSize: number): Promise<{ data: ReviewAsClient[], totalRows: number }> {
+        try {
+            const response = await axiosInstance.get<{ data: ReviewAsClient[], totalRows: number }>("/client/shipments/delivery/myReviews", {
+                params: {
+                    page : pageIndex,
+                    limit : pageSize,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching delivery history:", error);
+            throw new Error("Failed to fetch delivery history");
         }
     }
 

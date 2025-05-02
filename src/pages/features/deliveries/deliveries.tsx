@@ -3,23 +3,11 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-
-interface Delivery {
-  id: string;
-  arrival_city: string;
-  departure_city: string;
-  date_departure: string;
-  date_arrival: string;
-  photo: string;
-  deliveryman: {
-    name: string;
-    photo: string;
-  };
-}
+import { CurrentDeliveryAsClient, DeliveriesAPI } from "@/api/deliveries.api";
 
 export function DeliveriesPage() {
   const dispatch = useDispatch();
-  const [deliveries, setDeliveries] = useState<Delivery[]>([]);
+  const [deliveries, setDeliveries] = useState<CurrentDeliveryAsClient[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,36 +22,8 @@ export function DeliveriesPage() {
   useEffect(() => {
     const fetchDeliveries = async () => {
       try {
-        const response = {
-          data: [
-            {
-              id: "1",
-              arrival_city: "Paris",
-              departure_city: "Lyon",
-              date_departure: "2023-10-01",
-              date_arrival: "2023-10-05",
-              photo: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
-              deliveryman: {
-                name: "Jean Dupont",
-                photo: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
-              },
-            },
-            {
-              id: "2",
-              arrival_city: "Marseille",
-              departure_city: "Nice",
-              date_departure: "2023-09-25",
-              date_arrival: "2023-09-30",
-              photo: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
-              deliveryman: {
-                name: "Marie Martin",
-                photo: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D",
-              },
-            },
-          ],
-        };
-
-        setDeliveries(response.data);
+        const response = await DeliveriesAPI.getCurrentDeliveriesAsClient();
+        setDeliveries(response);
       } catch (error) {
         console.error("Erreur lors de la récupération des livraisons", error);
       }

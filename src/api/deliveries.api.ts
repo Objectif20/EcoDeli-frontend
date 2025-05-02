@@ -175,6 +175,21 @@ export interface DeliveryDetails {
     rate: number;
   }
 
+  export interface DeliveriesLocation {
+    id: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+    deliveryman?: {
+      id: string;
+      name: string;
+      photo: string;
+      email: string;
+    };
+    potential_address?: string;
+  }
+
 
 export class DeliveriesAPI {
 
@@ -365,4 +380,15 @@ export class DeliveriesAPI {
         }
     }
 
+    static async getMyDeliveriesLocation() : Promise<DeliveriesLocation[]> {
+
+        try {
+            const response = await axiosInstance.get<DeliveriesLocation[]>("/client/shipments/delivery/myLocation");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching deliveries location:", error);
+            throw new Error("Failed to fetch deliveries location");
+        }
+
+    }
 }

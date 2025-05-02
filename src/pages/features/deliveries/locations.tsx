@@ -12,25 +12,12 @@ import { setBreadcrumb } from '@/redux/slices/breadcrumbSlice';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
-interface Deliveries {
-  id: string;
-  coordinates: {
-    lat: number;
-    lng: number;
-  };
-  deliveryman?: {
-    id: string;
-    name: string;
-    photo: string;
-    email: string;
-  };
-  potential_address?: string;
-}
+import { DeliveriesAPI, DeliveriesLocation } from '@/api/deliveries.api';
 
 const DeliveriesLocationPage = () => {
   const { t } = useTranslation();
-  const [, setSelectedDelivery] = useState<Deliveries | null>(null);
+  const [deliveries, setDeliveries] = useState<DeliveriesLocation[]>([]);
+  const [_, setSelectedDelivery] = useState<DeliveriesLocation | null>(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -44,36 +31,20 @@ const DeliveriesLocationPage = () => {
       ],
       links: ['/office/dashboard'],
     }));
+
+    const fetchDeliveries = async () => {
+      try {
+        const data = await DeliveriesAPI.getMyDeliveriesLocation();
+        setDeliveries(data);
+      } catch (error) {
+        console.error("Error fetching deliveries location:", error);
+      }
+    };
+
+    fetchDeliveries();
   }, [dispatch, t]);
 
-  const deliveries: Deliveries[] = [
-    {
-      id: '1',
-      coordinates: { lat: 48.8566, lng: 2.3522 },
-      potential_address: '123 Rue de Paris',
-      deliveryman: { id: 'dm1', name: 'Jean Dupont', photo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6Hb5xzFZJCTW4cMqmPwsgfw-gILUV7QevvQ&s', email: 'jean.dupont@example.com' }
-    },
-    {
-      id: '2',
-      coordinates: { lat: 43.6108, lng: 3.8767 },
-      potential_address: '456 Rue de Montpellier',
-      deliveryman: { id: 'dm2', name: 'Marie Martin', photo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6Hb5xzFZJCTW4cMqmPwsgfw-gILUV7QevvQ&s', email: 'marie.martin@example.com' }
-    },
-    {
-      id: '3',
-      coordinates: { lat: 45.7640, lng: 4.8357 },
-      potential_address: '789 Rue de Lyon',
-      deliveryman: { id: 'dm3', name: 'Pierre Leclerc', photo: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS6Hb5xzFZJCTW4cMqmPwsgfw-gILUV7QevvQ&s', email: 'pierre.leclerc@example.com' }
-    },
-    {
-      id: '4',
-      coordinates: { lat: 47.2184, lng: -1.5536 },
-      potential_address: '101 Rue de Nantes',
-      deliveryman: { id: 'dm4', name: 'Sophie Moreau', photo: 'path/to/photo.jpg', email: 'sophie.moreau@example.com' }
-    },
-  ];
-
-  const handleMarkerClick = (delivery: Deliveries) => {
+  const handleMarkerClick = (delivery: DeliveriesLocation) => {
     setSelectedDelivery(delivery);
   };
 

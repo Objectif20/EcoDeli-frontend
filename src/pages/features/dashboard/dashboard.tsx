@@ -58,7 +58,7 @@ export default function Dashboard() {
                 <div className="text-center mt-6">
                     {isMerchant && <MerchantDashboard />}
                     {isProvider && <ProviderDashboard />}
-                    {isClient && !isDeliveryman && <p>Bienvenue sur le dashboard du Client.</p>}
+                    {isClient && !isDeliveryman && <ClientDashboard />}
                     {isDeliveryman && !isClientOnly && (
                         <p>Le rôle Transporteur est uniquement accessible si vous êtes uniquement Client.</p>
                     )}

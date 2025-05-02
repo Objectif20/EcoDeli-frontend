@@ -175,6 +175,34 @@ export interface DeliveryDetails {
     rate: number;
   }
 
+  export interface DeliveriesLocation {
+    id: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    };
+    deliveryman?: {
+      id: string;
+      name: string;
+      photo: string;
+      email: string;
+    };
+    potential_address?: string;
+}
+
+export interface CurrentDeliveryAsClient {
+    id: string;
+    arrival_city: string;
+    departure_city: string;
+    date_departure: string;
+    date_arrival: string;
+    photo: string;
+    deliveryman: {
+      name: string;
+      photo: string;
+    };
+  }
+
 
 export class DeliveriesAPI {
 
@@ -365,4 +393,26 @@ export class DeliveriesAPI {
         }
     }
 
+    static async getMyDeliveriesLocation() : Promise<DeliveriesLocation[]> {
+
+        try {
+            const response = await axiosInstance.get<DeliveriesLocation[]>("/client/shipments/delivery/myLocation");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching deliveries location:", error);
+            throw new Error("Failed to fetch deliveries location");
+        }
+
+    }
+
+    static async getCurrentDeliveriesAsClient() : Promise<CurrentDeliveryAsClient[]> {
+        try {
+            const response = await axiosInstance.get<CurrentDeliveryAsClient[]>("/client/shipments/delivery/current");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching current deliveries:", error);
+            throw new Error("Failed to fetch current deliveries");
+        }
+
+    }
 }

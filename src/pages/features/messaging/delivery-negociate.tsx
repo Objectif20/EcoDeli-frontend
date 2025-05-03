@@ -22,7 +22,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import CityAsyncSelectDemo from "@/components/search-place"
-import { DeliveriesAPI } from "@/api/deliveries.api" // Import the API function
+import { DeliveriesAPI } from "@/api/deliveries.api"
 import axios from "axios"
 
 interface DeliveryNegotiateProps {
@@ -222,7 +222,6 @@ export default function DeliveryNegotiateDialog({
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
-          {/* Shipment selection */}
           <div className="grid gap-4">
             <h3 className="text-sm font-medium">Sélection de la livraison</h3>
             <div className="space-y-2">
@@ -254,13 +253,12 @@ export default function DeliveryNegotiateDialog({
             </div>
           </div>
 
-          {/* Price section */}
           <div className="grid gap-4">
             <h3 className="text-sm font-medium">Informations de prix</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="price">Prix actuel (€)</Label>
-                <Input id="price" value={formData.price} readOnly className="bg-gray-50" />
+                <Input id="price" value={formData.price} readOnly />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="new_price">Nouveau prix (€)</Label>
@@ -281,7 +279,6 @@ export default function DeliveryNegotiateDialog({
             </div>
           </div>
 
-          {/* Location section */}
           <div className="grid gap-4">
             <h3 className="text-sm font-medium">Destination</h3>
             <Tabs
@@ -319,7 +316,7 @@ export default function DeliveryNegotiateDialog({
                     labelValue={selectedCity?.label || ""}
                   />
                   {selectedCity && (
-                    <div className="mt-2 text-sm text-gray-500">
+                    <div className="mt-2 text-sm">
                       Coordonnées : {selectedCity.lat.toFixed(6)}, {selectedCity.lon.toFixed(6)}
                     </div>
                   )}

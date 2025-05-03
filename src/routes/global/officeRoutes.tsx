@@ -79,7 +79,6 @@ const OfficeRoute: React.FC = () => {
           <Route path="ads-history-provider" element={<ServicesHistory />} />
           <Route path="reviews-provider" element={<ReviewServicesPage />} />
           <Route path="planning-provider" element={<PlanningPage />} />
-          <Route path="billing-settings" element={<BillingSettings />} />
           <Route path="/services/create" element={<CreateService />} />
           <Route path="/services/success" element={<h1>Service Created Successfully</h1>} />
           <Route path="/services/:id" element={<ServiceDetailsPage />} />

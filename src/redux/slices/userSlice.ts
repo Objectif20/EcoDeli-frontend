@@ -13,6 +13,7 @@ export interface User {
   otp?: boolean | false;
   updgradablePlan?: boolean | false;
   planName?: string;
+  validateProfile?: boolean | false;
 }
 
 export interface UserState {

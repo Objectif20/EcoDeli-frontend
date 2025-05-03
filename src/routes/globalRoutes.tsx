@@ -13,10 +13,9 @@ export default function GlobalRoutes() {
         <Routes>
             <Route path="auth/*" element={<AuthRoutes />} />
             <Route path="info/*" element={<InfoRoute />} />
-            <Route element={<PrivateRoute requireAuth={false} />}>
+            <Route element={<PrivateRoute requireAuth={true} />}>
             <Route path="/office/*" element={<OfficeRoute />} />
             </Route>
-
             <Route path="/*" element={<PublicRoutes />} />
             <Route path="*" element={<NotFoundPage />} />
         </Routes>

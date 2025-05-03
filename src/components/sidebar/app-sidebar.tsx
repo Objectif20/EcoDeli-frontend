@@ -52,9 +52,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     avatar: user?.photo || `${user?.first_name?.charAt(0) || ""}${user?.last_name?.charAt(0) || ""}`,
   };
 
-  const {
-    open,
-  } = useSidebar()
+  const { open } = useSidebar();
 
   const isMerchant = user?.profile.includes("MERCHANT");
   const isProvider = user?.profile.includes("PROVIDER");
@@ -232,15 +230,27 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
       <ScrollArea className="h-full">
         <SidebarContent>
-          {
-            isClient && !isDeliveryman && (
-              <div className="mx-4">
-                <Button className="w-full" onClick={() => navigate("/office/register-deliveryman")}>
-                  {t("client.components.sidebar.becomeDeliveryman")}
-                </Button>
-              </div>
-            )
-          }
+          {isClient && !isDeliveryman && open &&(
+            <div className="mx-4">
+              <Button className="w-full" onClick={() => navigate("/office/register-deliveryman")}>
+                {t("client.components.sidebar.becomeDeliveryman")}
+              </Button>
+            </div>
+          )}
+          {isClient && isDeliveryman && open &&(
+            <div className="mx-4">
+              <Button className="w-full" onClick={() => navigate("/office/deliveries/create")}>
+                {t("client.components.sidebar.createDeliveryRequest")}
+              </Button>
+            </div>
+          )}
+          {isProviderValidated && open && (
+            <div className="mx-4">
+              <Button className="w-full" onClick={() => navigate("/office/create-service")}>
+                {t("client.components.sidebar.createService")}
+              </Button>
+            </div>
+          )}
           {data.navMain.map((nav, index) => (
             <NavMain key={index} items={nav.items} title={nav.title} />
           ))}

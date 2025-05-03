@@ -1484,6 +1484,8 @@
       },
       "sidebar": {
           "becomeDeliveryman": "Devenir Transporteur ?",
+          "createDeliveryRequest": "Nouvelle demande de livraison",
+          "createService" : "Nouvelle prestation",
           "becomeDeliverymanDescription": "Devenez transporteur et livrez vos colis en toute sécurité avec EcoDeli. Inscrivez-vous dès maintenant pour profiter de nos offres exclusives.",
           "close": "Fermer",
           "learnMore": "En savoir plus ?",
@@ -1539,7 +1541,6 @@
         "nextPage": "Page suivante",
         "lastPage": "Dernière page"
       }
-
     }
   }
 }

@@ -88,4 +88,16 @@ export class DeliverymanApi {
         return response.data;
       }
 
+
+      static async isDeliverymanElligibleToTakeDeliveries(user_id : string): Promise<boolean> {
+
+        try {
+          const id = user_id;
+          const response = await axiosInstance.get<boolean>(`/client/deliveryman/${id}/elligible`);
+          return response.data;
+        } catch (error) {
+          console.error("Error checking deliveryman eligibility:", error);
+          throw error;
+        }
+      }
 }

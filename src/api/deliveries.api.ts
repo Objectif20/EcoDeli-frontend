@@ -48,26 +48,28 @@ export interface DeliveriesFilter {
 export interface DeliveryDetails {
     id: string;
     name: string;
-    description: string;
-    complementary_info: string;
+    description?: string;
+    complementary_info?: string;
     departure: CityLocation;
     arrival: CityLocation;
-    departure_date: string;
-    arrival_date: string;
+    departure_date?: string;
+    arrival_date?: string;
     status: string;
     initial_price: number;
     price_with_step: PriceStep[];
     invoice: Invoice[];
+    finished: boolean;
+    urgent: boolean;
   }
   
   export interface CityLocation {
-    city: string;
+    city?: string;
     coordinates: [number, number];
   }
   
   export interface PriceStep {
     step: string;
-    price: number;
+    price: number | null;
   }
   
   export interface Invoice {
@@ -90,14 +92,14 @@ export interface DeliveryDetails {
     title: string;
     description: string;
     date: string;
-    departure: CityLocation;
-    arrival: CityLocation;
+    departure?: CityLocation;
+    arrival?: CityLocation;
     courier: Courier;
   }
   
   export interface Courier {
     name: string;
-    photoUrl: string;
+    photoUrl: string | null;
   }
   
   export interface Shipment {

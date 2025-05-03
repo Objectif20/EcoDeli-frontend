@@ -93,11 +93,23 @@ export class DeliverymanApi {
 
         try {
           const id = user_id;
-          const response = await axiosInstance.get<boolean>(`/client/deliveryman/${id}/elligible`);
+          const response = await axiosInstance.get<boolean>(`/client/deliveryman/${id}/admissible`);
           return response.data;
         } catch (error) {
           console.error("Error checking deliveryman eligibility:", error);
           throw error;
         }
+      }
+
+      static async isDeliverymanAvailableForThisDeliveries(deliveryID : string): Promise<boolean> {
+        try {
+          const id = deliveryID;
+          const response = await axiosInstance.get<boolean>(`/client/deliveryman/admissible/${id}`);
+          return response.data;
+        } catch (error) {
+          console.error("Error checking deliveryman availability:", error);
+          throw error;
+        }
+
       }
 }

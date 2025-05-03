@@ -10,8 +10,6 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DeliveriesAPI, Shipment } from "@/api/deliveries.api";
 import { useNavigate, useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import {
   Dialog,
   DialogClose,
@@ -23,13 +21,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { toast } from "sonner";
+import { DeliverymanApi } from "@/api/deliveryman.api";
 
 export default function DeliveryDetailsPage() {
   const [_, setActiveTab] = useState("overview");
   const [delivery, setDelivery] = useState<Shipment>();
+  const [isDeliveryman, setIsDeliveryman] = useState(false);
 
-  const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
-  const isDeliveryman = user?.profile.includes('DELIVERYMAN');
   const navigate = useNavigate();
 
   const {id } = useParams();
@@ -48,7 +46,20 @@ export default function DeliveryDetailsPage() {
       }
     };
 
+    const isElligible = async () => {
+      try {
+
+        const isEligible = await DeliverymanApi.isDeliverymanElligibleToTakeDeliveries(id);
+        setIsDeliveryman(isEligible);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+
+
     fetchShipment();
+    isElligible();
   }, [id]);
 
   if (!delivery) {

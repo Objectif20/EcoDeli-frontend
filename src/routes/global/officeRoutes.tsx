@@ -38,6 +38,7 @@ import MyRoutes from "@/pages/features/deliveries/my-routes/my-routes";
 import ServicesHistory from "@/pages/features/services/services-history";
 import NotFoundPage from "@/pages/error/404";
 import SuccessDeliverymanPage from "@/pages/auth/register/deliveryman/success";
+import ShipmentSuccessCreatePage from "@/pages/features/deliveries/create/success";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -60,6 +61,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="deliveries" element={<DeliveriesPage />} />
           <Route path="deliveries/:id" element={<DeliveryDetailsPage />} />
           <Route path="deliveries/create" element={<CreateDeliveryPage />} />
+          <Route path="deliveries/create/finish" element={<ShipmentSuccessCreatePage />} />
           <Route path="reviews" element={<MyReviewsDeliveryPage />} />
           <Route path="location" element={<DeliveriesLocationPage />} />
           <Route path="planning" element={<PlanningPage />} />

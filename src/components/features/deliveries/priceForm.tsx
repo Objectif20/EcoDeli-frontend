@@ -42,6 +42,7 @@ export type PriceChoiceFormValues = {
   deadline_date: string
   shipmentName: string
   isPriorityShipping: boolean
+  deliveryEmail: string
 }
 
 export const PriceFormComponent = ({
@@ -137,6 +138,20 @@ export const PriceFormComponent = ({
             <FormLabel>Nom de l'expédition</FormLabel>
             <FormControl>
               <Input {...field} placeholder="Entrez le nom de l'expédition" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={control}
+        name="deliveryEmail"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Email du réceptionneur final</FormLabel>
+            <FormControl>
+              <Input {...field} placeholder="Entrez le nom du réceptionneur" type="email" />
             </FormControl>
             <FormMessage />
           </FormItem>

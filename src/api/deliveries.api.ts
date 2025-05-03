@@ -22,6 +22,7 @@ export interface Delivery {
     arrival_city: string;
     departure_location: Location;
     arrival_location: Location;
+    delivery_mail: string;
 }
 
 export interface DeliveriesFilter {

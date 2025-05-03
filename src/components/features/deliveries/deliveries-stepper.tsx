@@ -16,6 +16,7 @@ import { PriceFormComponent } from "./priceForm"
 import axios from "axios"
 import { DeliveriesAPI } from "@/api/deliveries.api"
 import QuestionFinishForm from "./questionFinishForm"
+import { useNavigate } from "react-router-dom"
 
 const packageSchema = z.object({
   name: z.string().min(1, "Nom de l'objet est requis"),
@@ -51,6 +52,7 @@ export const priceChoiceSchema = z.object({
   deadline_date : z.string().min(0, "Date requise"),
   isPriorityShipping: z.boolean().default(false),
   shipmentName : z.string().min(0, "Nom de l'expédition requis"),
+  deliveryEmail : z.string().email("Email invalide"),
 })
 
 const { StepperProvider, StepperControls, StepperNavigation, StepperStep, StepperTitle, useStepper } = defineStepper(
@@ -126,6 +128,7 @@ type FormStepperProps = {
 
 const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
   const methods = useStepper()
+  const navigate = useNavigate()
 
   const getDefaultValues = (step: string) => {
     if (step === "packages") {
@@ -135,7 +138,7 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
       return { address: "", city: "", postalCode: "", pickupMethod: "", lat: "", lon: "" }
     }
     if (step === "price") {
-      return { price: "0", deadline_date: "", isPriorityShipping: false, shipmentName: "" }
+      return { price: "0", deadline_date: "", isPriorityShipping: false, shipmentName: "", deliveryEmail: "" }
     }
     return {}
   }
@@ -198,6 +201,7 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
       formDataToSend.append("shipment[deadline_date]", fromDate || "");
       formDataToSend.append("shipment[urgent]", price?.isPriorityShipping ? "true" : "false");
       formDataToSend.append("shipment[status]", "pending");
+      formDataToSend.append("shipment[delivery_mail]", price?.deliveryEmail || "");
       const keywords = ["fragile", "colis", "expédition"];
 
       keywords.forEach((keyword, index) => {
@@ -244,6 +248,7 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
   
       try {
         await DeliveriesAPI.createShipment(formDataToSend);
+        navigate("/office/deliveries/create/finish")
       } catch (error) {
         console.error("Erreur lors de l'envoi du formulaire : ", error);
       }

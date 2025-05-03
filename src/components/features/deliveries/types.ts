@@ -35,6 +35,7 @@ export const priceChoiceSchema = z.object({
   deadline_date : z.string().min(0, "Date requise"),
   isPriorityShipping: z.boolean().default(false),
   shipmentName : z.string().min(0, "Nom de l'expédition requis"),
+  deliveryEmail : z.string().email("Email invalide"),
 })
 
 export type PackagesFormValues = z.infer<typeof packagesSchema>;

@@ -307,36 +307,6 @@ export class DeliveriesAPI {
 
     }
 
-    static async takeDeliveryPackage(delivery_id: string): Promise<any> {
-        try {
-            const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/taken`);
-            return response.data;
-        } catch (error) {
-            console.error("Error taking delivery package:", error);
-            throw new Error("Failed to take delivery package");
-        }
-    }
-
-    static async finishedDelivery(delivery_id: string): Promise<any> {
-      try {
-          const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/finish`);
-          return response.data;
-      } catch (error) {
-          console.error("Error taking delivery package:", error);
-          throw new Error("Failed to take delivery package");
-      }
-    }
-
-    static async validateDelivery(delivery_id: string): Promise<any> {
-      try {
-          const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/validate`);
-          return response.data;
-      } catch (error) {
-          console.error("Error taking delivery package:", error);
-          throw new Error("Failed to take delivery package");
-      }
-    }
-
     static async getMyDeliveryHistoryAsDeliveryman(pageIndex: number, pageSize: number): Promise<{ data: HistoryDelivery[], totalRows: number }>{
         try {
           const response = await axiosInstance.get<{ data: HistoryDelivery[], totalRows: number }>("/client/shipments/delivery/myHistory", {
@@ -415,6 +385,46 @@ export class DeliveriesAPI {
             throw new Error("Failed to fetch current deliveries");
         }
 
+    }
+
+    static async takeDeliveryPackage(delivery_id: string, secretCode : string): Promise<any> {
+        try {
+            const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/taken` , { secretCode });
+            return response.data;
+        } catch (error) {
+            console.error("Error taking delivery package:", error);
+            throw new Error("Failed to take delivery package");
+        }
+    }
+
+    static async finishedDelivery(delivery_id: string): Promise<any> {
+      try {
+          const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/finish`);
+          return response.data;
+      } catch (error) {
+          console.error("Error taking delivery package:", error);
+          throw new Error("Failed to take delivery package");
+      }
+    }
+
+    static async validateDelivery(delivery_id: string): Promise<any> {
+      try {
+          const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/validate`);
+          return response.data;
+      } catch (error) {
+          console.error("Error taking delivery package:", error);
+          throw new Error("Failed to take delivery package");
+      }
+    }
+
+    static async validateDeliveryWithCode(delivery_id: string, secretCode : string): Promise<any> {
+        try {
+            const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/validateWithCode`, { secretCode });
+            return response.data;
+        } catch (error) {
+            console.error("Error taking delivery package:", error);
+            throw new Error("Failed to take delivery package");
+        }
     }
 
 

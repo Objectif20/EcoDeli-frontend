@@ -10,7 +10,7 @@ import { Spinner } from './ui/spinner';
 type PrivateRouteProps = {
   requireAuth?: boolean;
 };
-
+ 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ requireAuth = true }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);

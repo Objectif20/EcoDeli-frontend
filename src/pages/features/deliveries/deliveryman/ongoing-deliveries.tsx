@@ -59,6 +59,18 @@ export default function OngoingDeliveries() {
     fetchDeliveries();
   }, [dispatch, t]);
 
+  const handleUpdateDeliveries = async () => {
+    setLoading(true);
+    try {
+      const deliveries = await DeliveriesAPI.getMyOngoingDeliveriesAsDeliveryman();
+      setDeliveriesData(deliveries);
+    } catch (error) {
+      console.error("Error fetching ongoing deliveries:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -81,7 +93,7 @@ export default function OngoingDeliveries() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {deliveriesData.map((delivery) => (
-            <DeliveryCard key={delivery.id} delivery={delivery} />
+            <DeliveryCard key={delivery.id} delivery={delivery} onUpdate={handleUpdateDeliveries} />
           ))}
         </div>
       )}

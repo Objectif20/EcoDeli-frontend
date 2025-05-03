@@ -37,6 +37,7 @@ import OngoingDeliveries from "@/pages/features/deliveries/deliveryman/ongoing-d
 import MyRoutes from "@/pages/features/deliveries/my-routes/my-routes";
 import ServicesHistory from "@/pages/features/services/services-history";
 import NotFoundPage from "@/pages/error/404";
+import SuccessDeliverymanPage from "@/pages/auth/register/deliveryman/success";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -52,6 +53,7 @@ const OfficeRoute: React.FC = () => {
           <Route path="my-vehicles" element={<VehicleListPage />} />
           <Route path="add-vehicle" element={<AddVehicle />} />
           <Route path="my-routes" element={<MyRoutes />} />
+          <Route path="registerSuccess" element={<SuccessDeliverymanPage />} />
         </Route>
         
         <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
@@ -77,7 +79,6 @@ const OfficeRoute: React.FC = () => {
           <Route path="ads-history-provider" element={<ServicesHistory />} />
           <Route path="reviews-provider" element={<ReviewServicesPage />} />
           <Route path="planning-provider" element={<PlanningPage />} />
-          <Route path="billing-settings" element={<BillingSettings />} />
           <Route path="/services/create" element={<CreateService />} />
           <Route path="/services/success" element={<h1>Service Created Successfully</h1>} />
           <Route path="/services/:id" element={<ServiceDetailsPage />} />

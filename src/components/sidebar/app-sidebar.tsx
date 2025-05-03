@@ -60,6 +60,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isProvider = user?.profile.includes("PROVIDER");
   const isClient = user?.profile.includes("CLIENT");
   const isDeliveryman = user?.profile.includes("DELIVERYMAN");
+  const isProviderValidated = user?.profile.includes("PROVIDER") && user?.validateProfile;
+  const isDeliverymanValidated = user?.profile.includes("DELIVERYMAN") && user?.validateProfile;
 
   const data = {
     user: userData,
@@ -130,7 +132,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           ],
         }
       ] : []),
-      ...(isProvider ? [
+      ...(isProviderValidated ? [
         {
           title: t("client.components.sidebar.serviceSpace"),
           url: "#",
@@ -159,7 +161,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           ],
         }
       ] : []),
-      ...(isDeliveryman ? [
+      ...(isDeliverymanValidated ? [
         {
           title: t("client.components.sidebar.deliverySpace"),
           url: "#",
@@ -227,7 +229,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
-      
+
       <ScrollArea className="h-full">
         <SidebarContent>
           {
@@ -244,33 +246,66 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           ))}
         </SidebarContent>
       </ScrollArea>
-          {isClient && !isDeliveryman && open && (
-              <InfoCard className="mx-4 hidden lg:block">
-              <InfoCardContent>
-                <div className="relative">
-                  <div className="absolute -top-4 -right-4 w-[14px] h-[14px]  rounded-full animate-ping" />
-                  <div className="absolute -top-4 -right-4 w-[14px] h-[14px]  rounded-full" />
-                  <InfoCardTitle>{t("client.components.sidebar.becomeDeliveryman")}</InfoCardTitle>
-                  <InfoCardDescription>
-                    {t("client.components.sidebar.becomeDeliverymanDescription")}
-                  </InfoCardDescription>
-                  <InfoCardFooter>
-                    <InfoCardDismiss>{t("client.components.sidebar.close")}</InfoCardDismiss>
-                    <InfoCardAction>
-                      <Link
-                        to="#"
-                        className="flex flex-row items-center gap-1 underline"
-                      >
-                        {t("client.components.sidebar.learnMore")} <ExternalLink size={12} />
-                      </Link>
-                    </InfoCardAction>
-                  </InfoCardFooter>
-                </div>
-              </InfoCardContent>
-            </InfoCard>
-      ) }
+      {isClient && !isDeliveryman && open && (
+        <InfoCard className="mx-4 hidden lg:block">
+          <InfoCardContent>
+            <div className="relative">
+              <div className="absolute -top-4 -right-4 w-[14px] h-[14px] rounded-full animate-ping" />
+              <div className="absolute -top-4 -right-4 w-[14px] h-[14px] rounded-full" />
+              <InfoCardTitle>{t("client.components.sidebar.becomeDeliveryman")}</InfoCardTitle>
+              <InfoCardDescription>
+                {t("client.components.sidebar.becomeDeliverymanDescription")}
+              </InfoCardDescription>
+              <InfoCardFooter>
+                <InfoCardDismiss>{t("client.components.sidebar.close")}</InfoCardDismiss>
+                <InfoCardAction>
+                  <Link
+                    to="#"
+                    className="flex flex-row items-center gap-1 underline"
+                  >
+                    {t("client.components.sidebar.learnMore")} <ExternalLink size={12} />
+                  </Link>
+                </InfoCardAction>
+              </InfoCardFooter>
+            </div>
+          </InfoCardContent>
+        </InfoCard>
+      )}
+      {isProvider && !isProviderValidated && open && (
+        <InfoCard className="mx-4 hidden lg:block">
+          <InfoCardContent>
+            <div className="relative">
+              <div className="absolute -top-4 -right-4 w-[14px] h-[14px] rounded-full animate-ping" />
+              <div className="absolute -top-4 -right-4 w-[14px] h-[14px] rounded-full" />
+              <InfoCardTitle>{t("client.components.sidebar.providerProfileUnderReview")}</InfoCardTitle>
+              <InfoCardDescription>
+                {t("client.components.sidebar.providerProfileUnderReviewDescription")}
+              </InfoCardDescription>
+              <InfoCardFooter>
+                <InfoCardDismiss>{t("client.components.sidebar.close")}</InfoCardDismiss>
+              </InfoCardFooter>
+            </div>
+          </InfoCardContent>
+        </InfoCard>
+      )}
+      {isDeliveryman && !isDeliverymanValidated && open && (
+        <InfoCard className="mx-4 hidden lg:block">
+          <InfoCardContent>
+            <div className="relative">
+              <div className="absolute -top-4 -right-4 w-[14px] h-[14px] rounded-full animate-ping" />
+              <div className="absolute -top-4 -right-4 w-[14px] h-[14px] rounded-full" />
+              <InfoCardTitle>{t("client.components.sidebar.deliverymanProfileUnderReview")}</InfoCardTitle>
+              <InfoCardDescription>
+                {t("client.components.sidebar.deliverymanProfileUnderReviewDescription")}
+              </InfoCardDescription>
+              <InfoCardFooter>
+                <InfoCardDismiss>{t("client.components.sidebar.close")}</InfoCardDismiss>
+              </InfoCardFooter>
+            </div>
+          </InfoCardContent>
+        </InfoCard>
+      )}
       <SidebarFooter>
-
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />

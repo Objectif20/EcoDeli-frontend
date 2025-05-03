@@ -65,7 +65,7 @@ export default function LastDelivery() {
             <MapContainer
               center={delivery.coordinates.current as [number, number]}
               zoom={6}
-              style={{ height: "100%", width: "100%" }}
+              style={{ height: "100%", width: "100%", zIndex: 0 }}
               zoomControl={false}
             >
               <TileLayer

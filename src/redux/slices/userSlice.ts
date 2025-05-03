@@ -46,11 +46,19 @@ const userSlice = createSlice({
         state.user.language = action.payload;
       }
     },
+    addDeliverymanProfile: (state) => {
+      if (state.user) {
+        if (!state.user.profile.includes("DELIVERYMAN")) {
+          state.user.profile.push("DELIVERYMAN");
+        }
+        state.user.validateProfile = false;
+      }
+    },
     resetUser: () => {
       return initialState
     },
   },
 });
 
-export const { setUser, setLoading, setError, updateLang, resetUser } = userSlice.actions;
+export const { setUser, setLoading, setError, updateLang, resetUser, addDeliverymanProfile } = userSlice.actions;
 export default userSlice.reducer;

@@ -16,22 +16,23 @@ export default function Dashboard() {
     const isProvider = user?.profile.includes("PROVIDER");
     const isClient = user?.profile.includes("CLIENT");
     const isDeliveryman = user?.profile.includes("DELIVERYMAN");
+    const isProviderValidated = user?.profile.includes("PROVIDER") && user?.validateProfile;
+    const isDeliverymanValidated = user?.profile.includes("DELIVERYMAN") && user?.validateProfile;
 
     const isClientOnly = isClient && !isMerchant && !isProvider;
-    const isClientAndDeliveryman = isClientOnly && isDeliveryman;
+    const isClientAndDeliveryman = isClientOnly && isDeliverymanValidated;
 
-      const { t } = useTranslation();
-      const dispatch = useDispatch();
-    
-    
-      useEffect(() => {
+    const { t } = useTranslation();
+    const dispatch = useDispatch();
+
+    useEffect(() => {
         dispatch(
-          setBreadcrumb({
-            segments: [t("client.pages.office.myDocuments.home")],
-            links: ["/office/dashboard"],
-          })
+            setBreadcrumb({
+                segments: [t("client.pages.office.myDocuments.home")],
+                links: ["/office/dashboard"],
+            })
         );
-      }, [dispatch, t]);
+    }, [dispatch, t]);
 
     return (
         <div>
@@ -57,10 +58,14 @@ export default function Dashboard() {
             {!isClientAndDeliveryman && (
                 <div className="text-center mt-6">
                     {isMerchant && <MerchantDashboard />}
-                    {isProvider && <ProviderDashboard />}
+                    {isProviderValidated && <ProviderDashboard />}
                     {isClient && !isDeliveryman && <ClientDashboard />}
-                    {isDeliveryman && !isClientOnly && (
-                        <p>Le rôle Transporteur est uniquement accessible si vous êtes uniquement Client.</p>
+                    {isDeliveryman && !isDeliverymanValidated && <ClientDashboard />}
+                    {isProvider && !isProviderValidated && (
+                        <p>En attente de validation de votre profil Prestataire. Vous serez informé dès que le processus sera terminé.</p>
+                    )}
+                    {isDeliveryman && !isDeliverymanValidated && (
+                        <p>En attente de validation de votre profil Transporteur. Vous serez informé dès que le processus sera terminé.</p>
                     )}
                 </div>
             )}

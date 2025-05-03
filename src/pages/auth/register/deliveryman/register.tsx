@@ -19,6 +19,8 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { AlertCircleIcon, PaperclipIcon, UploadIcon, XIcon } from "lucide-react";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
+import { addDeliverymanProfile } from "@/redux/slices/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const createFormSchema = (t: (key: string) => string) => {
   return z.object({
@@ -57,6 +59,7 @@ export default function RegisterDeliveryman() {
   const [languages, setLanguages] = useState<Language[]>([]);
   const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(setBreadcrumb({
@@ -122,12 +125,11 @@ export default function RegisterDeliveryman() {
     }
 
     try {
-      const response = await RegisterApi.registerDeliveryPerson(formData);
-      console.log("Registration successful:", response);
-      // Vous pouvez ajouter ici une redirection ou un message de succès
+      await RegisterApi.registerDeliveryPerson(formData);
+      dispatch(addDeliverymanProfile());
+      navigate('/office/registerSuccess');
     } catch (error) {
       console.error("Error registering delivery person:", error);
-      // Vous pouvez ajouter ici un message d'erreur
     }
   }
 

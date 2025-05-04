@@ -206,6 +206,20 @@ export interface CurrentDeliveryAsClient {
     };
   }
 
+  export interface SubscriptionForClient {
+    planName: string;
+    discountRate?: number; 
+    priorityRate: number;
+    insuranceLimit?: number | null; 
+    additionalInsuranceCost?: number | null; 
+    freeShipmentAvailable?: boolean;
+    freePriorityShipmentsPerMonth?: number;
+    freePriotiryShipmentsIfLower?: number;
+    permanentDiscount?: number; 
+    hasUsedFreeShipment?: boolean; 
+    remainingPriorityShipments?: number; 
+  }
+
 
 export class DeliveriesAPI {
 
@@ -426,6 +440,16 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error taking delivery package:", error);
             throw new Error("Failed to take delivery package");
+        }
+    }
+
+    static async getSubscriptionStat() : Promise<SubscriptionForClient> {
+        try {
+            const response = await axiosInstance.get<SubscriptionForClient>("/client/shipments/subscriptionStat");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching subscription stats:", error);
+            throw new Error("Failed to fetch subscription stats");
         }
     }
 

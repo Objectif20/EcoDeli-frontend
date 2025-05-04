@@ -1,128 +1,134 @@
-"use client"
+import { useFormContext } from "react-hook-form";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { CalendarIcon, HelpCircle } from "lucide-react";
+import type { DateRange } from "react-day-picker";
 
-import { useFormContext } from "react-hook-form"
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
-import { CalendarIcon, HelpCircle } from "lucide-react"
-import type { DateRange } from "react-day-picker"
-
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import {
   FormField,
   FormItem,
   FormLabel,
   FormControl,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Switch } from "@/components/ui/switch"
+} from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/components/ui/tooltip";
+import { useEffect, useState } from "react";
+import { DeliveriesAPI } from "@/api/deliveries.api";
 
 export type PriceChoiceFormValues = {
-  price: string
-  deadline_date: string
-  shipmentName: string
-  isPriorityShipping: boolean
-  deliveryEmail: string
+  price: string;
+  deadline_date: string;
+  shipmentName: string;
+  isPriorityShipping: boolean;
+  deliveryEmail: string;
+};
+
+export interface SubscriptionForClient {
+  planName: string;
+  discountRate?: number;
+  priorityRate: number;
+  insuranceLimit?: number | null;
+  additionalInsuranceCost?: number | null;
+  freeShipmentAvailable?: boolean;
+  freePriorityShipmentsPerMonth?: number;
+  freePriotiryShipmentsIfLower?: number;
+  permanentDiscount?: number;
+  hasUsedFreeShipment?: boolean;
+  remainingPriorityShipments?: number;
 }
 
 export const PriceFormComponent = ({
   
 }: {
-  onFormSubmit: (data: PriceChoiceFormValues) => void
+  onFormSubmit: (data: PriceChoiceFormValues) => void;
 }) => {
-  const { control, watch } = useFormContext<PriceChoiceFormValues>()
+  const { control, watch } = useFormContext<PriceChoiceFormValues>();
 
-  const price = Number.parseFloat(watch("price") || "0")
-  const isPriorityShipping = watch("isPriorityShipping")
+  const price = Number.parseFloat(watch("price") || "0");
+  const isPriorityShipping = watch("isPriorityShipping");
+  const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionForClient | null>(null);
 
-  const userSubscription = {
-    plan: "Premium", 
-    hasUsedFreeShipment: true,
+  useEffect(() => {
+    const fetchSubscriptionStat = async () => {
+      try {
+        const data = await DeliveriesAPI.getSubscriptionStat();
+        setSubscriptionConfig(data);
+      } catch (error) {
+        console.error("Failed to fetch subscription stats:", error);
+      }
+    };
+
+    fetchSubscriptionStat();
+  }, []);
+
+  if (!subscriptionConfig) {
+    return <div>Loading...</div>;
   }
 
-  const subscriptionConfig = {
-    Free: {
-      discountRate: 0.0,
-      priorityRate: 0.15,
-      insuranceLimit: 115,
-      freeShipmentAvailable: false,
-    },
-    Starter: {
-      discountRate: 0.05,
-      priorityRate: 0.05,
-      insuranceLimit: 115,
-      freeShipmentAvailable: !userSubscription.hasUsedFreeShipment,
-    },
-    Premium: {
-      discountRate: 0.09,
-      priorityRate: 0.05,
-      insuranceLimit: 3000,
-      freeShipmentAvailable: !userSubscription.hasUsedFreeShipment,
-    },
-  }[userSubscription.plan]
-
-  const discountAmount = price * (subscriptionConfig?.priorityRate ?? 0)
   const priorityShippingFee = isPriorityShipping
-    ? price * (subscriptionConfig?.priorityRate ?? 0)
-    : 0
-  const hasFreeShipment = (subscriptionConfig?.priorityRate ?? 0) && price <= 150
-  const handlingFee = hasFreeShipment ? 0 : price > 0 ? 29.0 : 0
-  const deliveryFee = hasFreeShipment ? 0 : 15.0
-  const ecoDeliFee = 5.0
+    ? price * subscriptionConfig.priorityRate
+    : 0;
+  const ecoDeliFee = 5.0;
+  const additionalInsuranceCost =
+    subscriptionConfig.insuranceLimit != null && price > (subscriptionConfig.insuranceLimit ?? 0)
+      ? subscriptionConfig.additionalInsuranceCost ?? 0
+      : 0;
 
   const totalPrice =
-    price - discountAmount +
-    (hasFreeShipment ? 0 : handlingFee + deliveryFee) +
+    price +
     ecoDeliFee +
-    priorityShippingFee
+    priorityShippingFee +
+    additionalInsuranceCost;
 
   const formatRangeToString = (range: DateRange | undefined): string => {
-    if (!range || !range.from) return ""
-    const fromDate = format(range.from, "yyyy-MM-dd")
-    const toDate = range.to ? format(range.to, "yyyy-MM-dd") : fromDate
-    return `${fromDate}_${toDate}`
-  }
+    if (!range || !range.from) return "";
+    const fromDate = format(range.from, "yyyy-MM-dd");
+    const toDate = range.to ? format(range.to, "yyyy-MM-dd") : fromDate;
+    return `${fromDate}_${toDate}`;
+  };
 
   const parseDateRange = (dateString: string): DateRange | undefined => {
-    if (!dateString) return undefined
-    const [fromStr, toStr] = dateString.split("_")
-    if (!fromStr) return undefined
-    const from = new Date(fromStr)
-    const to = toStr ? new Date(toStr) : from
-    return { from, to }
-  }
+    if (!dateString) return undefined;
+    const [fromStr, toStr] = dateString.split("_");
+    if (!fromStr) return undefined;
+    const from = new Date(fromStr);
+    const to = toStr ? new Date(toStr) : from;
+    return { from, to };
+  };
 
   const formatDateRange = (dateString: string): string => {
-    const range = parseDateRange(dateString)
-    if (!range || !range.from) return ""
-    const fromFormatted = format(range.from, "PPP", { locale: fr })
+    const range = parseDateRange(dateString);
+    if (!range || !range.from) return "";
+    const fromFormatted = format(range.from, "PPP", { locale: fr });
     const toFormatted = range.to
       ? format(range.to, "PPP", { locale: fr })
-      : ""
+      : "";
     return toFormatted && toFormatted !== fromFormatted
       ? `${fromFormatted} - ${toFormatted}`
-      : fromFormatted
-  }
+      : fromFormatted;
+  };
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
@@ -151,7 +157,11 @@ export const PriceFormComponent = ({
           <FormItem>
             <FormLabel>Email du réceptionneur final</FormLabel>
             <FormControl>
-              <Input {...field} placeholder="Entrez le nom du réceptionneur" type="email" />
+              <Input
+                {...field}
+                placeholder="Entrez le nom du réceptionneur"
+                type="email"
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -189,10 +199,10 @@ export const PriceFormComponent = ({
                   selected={parseDateRange(field.value)}
                   onSelect={(range) => {
                     if (range?.from) {
-                      const formattedValue = formatRangeToString(range)
-                      field.onChange(formattedValue)
+                      const formattedValue = formatRangeToString(range);
+                      field.onChange(formattedValue);
                     } else {
-                      field.onChange("")
+                      field.onChange("");
                     }
                   }}
                   numberOfMonths={2}
@@ -242,14 +252,7 @@ export const PriceFormComponent = ({
           />
 
           <div className="mt-2 text-sm text-muted-foreground">
-            Abonnement : <strong>{userSubscription.plan}</strong> —{" "}
-            {(subscriptionConfig?.priorityRate ?? 0)* 100}% de réduction
-            {hasFreeShipment && (
-              <>
-                <br />
-                <strong>Premier envoi offert !</strong>
-              </>
-            )}
+            Abonnement : <strong>{subscriptionConfig.planName}</strong>
           </div>
 
           {price > 0 && (
@@ -269,8 +272,7 @@ export const PriceFormComponent = ({
                   <div className="space-y-0.5">
                     <FormLabel>Envoi prioritaire</FormLabel>
                     <div className="text-sm text-muted-foreground">
-                      Ajoute {(subscriptionConfig?.priorityRate ?? 0) * 100}% au montant
-                      de l'envoi
+                      Ajoute {subscriptionConfig.priorityRate * 100}% au montant de l'envoi
                     </div>
                   </div>
                   <FormControl>
@@ -286,21 +288,6 @@ export const PriceFormComponent = ({
         </CardContent>
         <CardFooter className="flex flex-col">
           <div className="w-full space-y-2">
-            {!hasFreeShipment && (
-              <>
-                <div className="flex justify-between text-sm">
-                  <span>Livraison</span>
-                  <span>{deliveryFee.toFixed(2)} €</span>
-                </div>
-                {handlingFee > 0 && (
-                  <div className="flex justify-between text-sm">
-                    <span>Manutention</span>
-                    <span>{handlingFee.toFixed(2)} €</span>
-                  </div>
-                )}
-              </>
-            )}
-
             <div className="flex justify-between text-sm">
               <span className="flex items-center">
                 Charge supplémentaire EcoDeli
@@ -310,9 +297,9 @@ export const PriceFormComponent = ({
                       <HelpCircle className="h-4 w-4 ml-1 text-muted-foreground" />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="max-w-xs">
+                      <p className="max-w-xs text-center">
                         Cette charge correspond à la garantie EcoDeli pour
-                        assurer votre expédition.
+                        assurer votre expédition ainsi que les frais de transaction et de gestion. Cette charge ne s'applique qu'une fois par demande de livraison.
                       </p>
                     </TooltipContent>
                   </Tooltip>
@@ -321,27 +308,43 @@ export const PriceFormComponent = ({
               <span>{ecoDeliFee.toFixed(2)} €</span>
             </div>
 
-            {discountAmount > 0 && (
-              <div className="flex justify-between text-sm text-green-700">
-                <span>Réduction abonnement</span>
-                <span>-{discountAmount.toFixed(2)} €</span>
-              </div>
-            )}
-
-            {isPriorityShipping && (
+            {isPriorityShipping && priorityShippingFee > 0 && (
               <div className="flex justify-between text-sm">
                 <span>Supplément envoi prioritaire</span>
                 <span>{priorityShippingFee.toFixed(2)} €</span>
               </div>
             )}
 
-            <div className="flex justify-between text-sm">
-              <span>Assurance incluse</span>
-              <span>Jusqu’à {subscriptionConfig?.insuranceLimit ?? 0} €</span>
-            </div>
+            {subscriptionConfig.insuranceLimit !== null && (
+              <div className="flex justify-between text-sm">
+                <span>Assurance incluse</span>
+                <span>Jusqu’à {subscriptionConfig.insuranceLimit} €</span>
+              </div>
+            )}
+
+            {additionalInsuranceCost > 0 && (
+              <div className="flex justify-between text-sm">
+                <span>Assurance supplémentaire</span>
+                <span>{additionalInsuranceCost.toFixed(2)} €</span>
+              </div>
+            )}
 
             <div className="flex justify-between font-medium text-base pt-2 border-t">
-              <span>Prix total TTC</span>
+              <div className="flex items-center">
+                <span>Prix total TTC</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <HelpCircle className="h-4 w-4 ml-1 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs text-center">
+                        Ce prix TTC est le prix théorique dans le cas où votre demande de livraison est réalisée en une seule fois. Dans le cas d'une livraison en plusieurs étapes, le prix pourra varier.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
               <span className="text-primary font-bold">
                 {totalPrice.toFixed(2)} €
               </span>
@@ -350,5 +353,5 @@ export const PriceFormComponent = ({
         </CardFooter>
       </Card>
     </div>
-  )
-}
+  );
+};

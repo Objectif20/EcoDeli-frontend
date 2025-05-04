@@ -218,12 +218,22 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
         }
       }
 
+      const shipmentImage = localStorage.getItem("shipment-img");
+      if (shipmentImage) {
+        const response = await fetch(shipmentImage);
+        const blob = await response.blob();
+        formDataToSend.append("shipment[img]", blob, "shipment_image.png");
+      }
+
       try {
         await DeliveriesAPI.createShipment(formDataToSend);
         navigate("/office/deliveries/create/finish")
       } catch (error) {
         console.error("Erreur lors de l'envoi du formulaire : ", error);
       }
+
+      localStorage.removeItem("shipment-img")
+
 
       return;
     }

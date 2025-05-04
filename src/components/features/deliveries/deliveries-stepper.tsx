@@ -260,7 +260,6 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
         console.error("Erreur lors de l'envoi du formulaire : ", error);
       }
 
-      localStorage.removeItem("shipment-img")
   
       return;
     }

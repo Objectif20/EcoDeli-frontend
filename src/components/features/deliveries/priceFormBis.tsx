@@ -34,8 +34,18 @@ import {
 } from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
 import { DeliveriesAPI } from "@/api/deliveries.api";
-import { PriceChoiceBisFormValues } from "./types";
 import { TimePickerInput } from "@/components/ui/time-picker-input"; // Import the TimePickerInput component
+
+
+export type PriceChoiceBisFormValues = {
+  price: string;
+  deadline_date: string;
+  hour_date: string;
+  shipmentName: string;
+  isPriorityShipping: boolean;
+  deliveryEmail: string;
+  shipmentImage: FileList;
+};
 
 export interface SubscriptionForClient {
   planName: string;
@@ -61,6 +71,7 @@ export const PriceFormComponent = ({
   const price = Number.parseFloat(watch("price") || "0");
   const isPriorityShipping = watch("isPriorityShipping");
   const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionForClient | null>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSubscriptionStat = async () => {
@@ -73,6 +84,11 @@ export const PriceFormComponent = ({
     };
 
     fetchSubscriptionStat();
+
+    const savedImage = localStorage.getItem("shipment-img");
+    if (savedImage) {
+      setImageSrc(savedImage);
+    }
   }, []);
 
   if (!subscriptionConfig) {
@@ -118,6 +134,18 @@ export const PriceFormComponent = ({
   ) => {
     const timeString = date ? date.toTimeString().slice(0, 5) : null;
     setValue(field, timeString || "");
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageSrc(reader.result as string);
+        localStorage.setItem("shipment-img", reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -232,6 +260,33 @@ export const PriceFormComponent = ({
           </FormItem>
         )}
       />
+
+    <FormField
+        control={control}
+        name="shipmentImage"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Image de l'expédition</FormLabel>
+            <FormControl>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  handleImageChange(e);
+                  field.onChange(e.target.files);
+                }}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {imageSrc && (
+        <div className="mt-4">
+          <img src={imageSrc} alt="Shipment" className="max-w-xs mx-auto" />
+        </div>
+      )}
 
       <Card>
         <CardHeader>

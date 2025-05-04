@@ -1,13 +1,29 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
-import { IntroDisclosure } from "@/components/ui/intro-disclosure"
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { IntroDisclosure } from "@/components/ui/intro-disclosure";
 import { UserApi } from "@/api/user.api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 
-const steps = [
+export interface User {
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  photo: string | null;
+  active: boolean;
+  language: string;
+  iso_code: string;
+  profile: string[];
+  otp?: boolean | false;
+  updgradablePlan?: boolean | false;
+  planName?: string;
+  validateProfile?: boolean | false;
+}
+
+const clientSteps = [
   {
     title: "Devenir Partenaire Livreur",
     short_description: "Commencez votre parcours en tant que partenaire livreur avec nous.",
@@ -84,51 +100,149 @@ const steps = [
   },
 ];
 
+const merchantSteps = [
+  {
+    title: "Créer une Demande de Livraison",
+    short_description: "Créez des demandes de livraison pour vos produits.",
+    full_description:
+      "Utilisez notre plateforme pour créer des demandes de livraison pour vos produits. Spécifiez les détails de livraison et choisissez les options qui conviennent le mieux à vos besoins.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Créer une demande de livraison",
+    },
+  },
+  {
+    title: "Demander une Livraison Spéciale",
+    short_description: "Faites des demandes de livraison spéciale comme le lâcher de chariot.",
+    full_description:
+      "Pour des besoins spécifiques, vous pouvez demander des livraisons spéciales comme le lâcher de chariot. Indiquez les détails spécifiques et nous nous occuperons du reste.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Demander une livraison spéciale",
+    },
+  },
+  {
+    title: "Suivre les Livraisons",
+    short_description: "Suivez l'état de vos livraisons en temps réel.",
+    full_description:
+      "Utilisez notre application pour suivre l'état de vos livraisons en temps réel. Recevez des notifications à chaque étape du processus de livraison.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Suivre les livraisons",
+    },
+  },
+  {
+    title: "Gérer les Retours",
+    short_description: "Gérez les retours de produits facilement.",
+    full_description:
+      "Notre plateforme vous permet de gérer les retours de produits de manière efficace. Suivez les retours et traitez-les rapidement pour assurer la satisfaction de vos clients.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Gérer les retours",
+    },
+  },
+];
+
+const providerSteps = [
+  {
+    title: "Publier des Services",
+    short_description: "Publiez les services que vous proposez.",
+    full_description:
+      "Utilisez notre plateforme pour publier les services que vous proposez. Décrivez vos services en détail pour attirer plus de clients.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Publier des services",
+    },
+  },
+  {
+    title: "Définir les Plannings",
+    short_description: "Définissez vos horaires de disponibilité.",
+    full_description:
+      "Indiquez vos horaires de disponibilité pour que les clients puissent réserver vos services aux moments qui vous conviennent le mieux.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Définir les plannings",
+    },
+  },
+  {
+    title: "Discuter avec les Clients",
+    short_description: "Communiquez avec vos clients via notre plateforme.",
+    full_description:
+      "Utilisez notre système de messagerie intégré pour discuter avec vos clients, répondre à leurs questions et confirmer les détails des services.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Discuter avec les clients",
+    },
+  },
+  {
+    title: "Gérer les Réservations",
+    short_description: "Gérez les réservations de vos services.",
+    full_description:
+      "Consultez et gérez les réservations de vos services directement depuis notre plateforme. Acceptez ou refusez les réservations en fonction de votre disponibilité.",
+    media: {
+      type: "image" as const,
+      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      alt: "Gérer les réservations",
+    },
+  },
+];
+
 export function IntroDisclosureDemo() {
-  const [open, setOpen] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const user = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-  
+
     handleResize();
     window.addEventListener("resize", handleResize);
-  
+
     const checkFirstLogin = async () => {
       try {
         const isFirstLogin = await UserApi.isFirstLogin();
-        if (!isFirstLogin && user?.profile.includes("CLIENT")) {
-          setOpen(true);
-        } else {
-          setOpen(false);
-        }
+        setOpen(!isFirstLogin);
       } catch (error) {
         console.error("Erreur lors du check first login", error);
       }
     };
-  
+
     checkFirstLogin();
-  
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const getSteps = () => {
+    if (user?.profile.includes("MERCHANT")) {
+      return merchantSteps;
+    } else if (user?.profile.includes("PROVIDER")) {
+      return providerSteps;
+    } else {
+      return clientSteps;
+    }
+  };
 
   return (
     <div>
       {open && (
         <IntroDisclosure
-        open={open}
-        setOpen={setOpen}
-        steps={steps}
-        featureId={isMobile ? "intro-demo-mobile" : "intro-demo"}
-        onSkip={() => toast.info("Tour skipped")}
-        forceVariant={isMobile ? "mobile" : undefined}
-      />
+          open={open}
+          setOpen={setOpen}
+          steps={getSteps()}
+          featureId={isMobile ? "intro-demo-mobile" : "intro-demo"}
+          onSkip={() => toast.info("Tour skipped")}
+          forceVariant={isMobile ? "mobile" : undefined}
+        />
       )}
-        
     </div>
-  )
+  );
 }

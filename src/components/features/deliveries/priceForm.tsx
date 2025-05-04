@@ -72,7 +72,7 @@ export const PriceFormComponent = ({
 
   useEffect(() => {
     const fetchSubscriptionStat = async () => {
-      try {
+      try { 
         const data = await DeliveriesAPI.getSubscriptionStat();
         setSubscriptionConfig(data);
       } catch (error) {

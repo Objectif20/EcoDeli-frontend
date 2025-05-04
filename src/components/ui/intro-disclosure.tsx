@@ -351,7 +351,6 @@ function StepContent({
                   : t("client.components.disclosure.next")}
               </Button>
             </div>
-            {/* Don't show again checkbox */}
           </div>
         </motion.div>
       </AnimatePresence>

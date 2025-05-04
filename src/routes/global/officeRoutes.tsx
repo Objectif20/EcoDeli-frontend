@@ -21,7 +21,7 @@ import GeneralSettings from "@/pages/features/settings.tsx/general";
 import ProfileSettings from "@/pages/features/settings.tsx/profile";
 import ReportSettings from "@/pages/features/settings.tsx/reports";
 import SubscriptionSettings from "@/pages/features/settings.tsx/subscriptions";
-import { IntroDisclosureDemo } from "@/components/test";
+import { IntroDisclosureDemo } from "@/components/disclosure";
 import ProofsPage from "@/pages/features/documents/proofs";
 import DeliveryDetailsPage from "@/pages/features/deliveries/delivery-details";
 import RegisterDeliveryman from "@/pages/auth/register/deliveryman/register";

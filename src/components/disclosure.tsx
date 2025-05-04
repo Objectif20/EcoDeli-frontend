@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { IntroDisclosure } from "@/components/ui/intro-disclosure"
 import { UserApi } from "@/api/user.api";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 const steps = [
   {
@@ -85,6 +87,7 @@ const steps = [
 export function IntroDisclosureDemo() {
   const [open, setOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const user = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
     const handleResize = () => {
@@ -96,10 +99,12 @@ export function IntroDisclosureDemo() {
   
     const checkFirstLogin = async () => {
       try {
-        console.log("courou");
         const isFirstLogin = await UserApi.isFirstLogin();
-        console.log("isFirstLogin", isFirstLogin);
-        setOpen(!isFirstLogin);
+        if (!isFirstLogin && user?.profile.includes("CLIENT")) {
+          setOpen(true);
+        } else {
+          setOpen(false);
+        }
       } catch (error) {
         console.error("Erreur lors du check first login", error);
       }
@@ -119,7 +124,6 @@ export function IntroDisclosureDemo() {
         setOpen={setOpen}
         steps={steps}
         featureId={isMobile ? "intro-demo-mobile" : "intro-demo"}
-        onComplete={() => toast.success("Tour completed")}
         onSkip={() => toast.info("Tour skipped")}
         forceVariant={isMobile ? "mobile" : undefined}
       />

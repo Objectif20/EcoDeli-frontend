@@ -226,7 +226,7 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
       }
 
       try {
-        await DeliveriesAPI.createShipment(formDataToSend);
+        await DeliveriesAPI.createShipmentTrolley(formDataToSend);
         navigate("/office/deliveries/create/finish")
       } catch (error) {
         console.error("Erreur lors de l'envoi du formulaire : ", error);

@@ -60,6 +60,7 @@ export interface DeliveryDetails {
     invoice: Invoice[];
     finished: boolean;
     urgent: boolean;
+    trolleydrop : boolean
   }
   
   export interface CityLocation {
@@ -238,6 +239,20 @@ export class DeliveriesAPI {
     static async createShipment(data: FormData): Promise<any> {
         try {
             const response = await axiosInstance.post("/client/shipments", data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error creating shipment:", error);
+            throw new Error("Failed to create shipment");
+        }
+    }
+
+    static async createShipmentTrolley(data: FormData): Promise<any> {
+        try {
+            const response = await axiosInstance.post("/client/shipments/trolley", data, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },

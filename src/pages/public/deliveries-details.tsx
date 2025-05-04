@@ -200,7 +200,10 @@ export default function DeliveryDetailsPage() {
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
-                  <Dialog>
+
+                  { delivery.details.trolleydrop === false && ( 
+                    
+                    <Dialog>
                     <DialogTrigger asChild>
                       <Button className="w-full">Prise en charge partielle</Button>
                     </DialogTrigger>
@@ -219,6 +222,10 @@ export default function DeliveryDetailsPage() {
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
+                  
+                  
+                  )}
+
                 </div>
               )}
             </div>

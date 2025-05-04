@@ -41,7 +41,7 @@ export type PriceChoiceFormValues = {
   shipmentName: string;
   isPriorityShipping: boolean;
   deliveryEmail: string;
-  shipmentImage: FileList; // Ajout du champ pour l'image
+  shipmentImage: FileList;
 };
 
 export interface SubscriptionForClient {

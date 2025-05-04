@@ -1,224 +1,286 @@
 import axiosInstance from "./axiosInstance";
 
 interface Location {
-    type: string;
-    coordinates: [number, number];
+type: string;
+coordinates: [number, number];
 }
 
 export interface Delivery {
-    shipment_id: string;
-    description: string;
-    estimated_total_price: number | null;
-    proposed_delivery_price: number | null;
-    weight: string;
-    volume: string;
-    deadline_date: string | null;
-    time_slot: string | null;
-    urgent: boolean;
-    status: string | null;
-    image: string | null;
-    views: number;
-    departure_city: string;
-    arrival_city: string;
-    departure_location: Location;
-    arrival_location: Location;
-    delivery_mail: string;
+shipment_id: string;
+description: string;
+estimated_total_price: number | null;
+proposed_delivery_price: number | null;
+weight: string;
+volume: string;
+deadline_date: string | null;
+time_slot: string | null;
+urgent: boolean;
+status: string | null;
+image: string | null;
+views: number;
+departure_city: string;
+arrival_city: string;
+departure_location: Location;
+arrival_location: Location;
+delivery_mail: string;
 }
 
 export interface DeliveriesFilter {
-    latitude: number;
-    longitude: number;
-    radius: number;
-    limit?: number;
-    page?: number;
-    routeStartLatitude?: number;
-    routeStartLongitude?: number;
-    routeEndLatitude?: number;
-    routeEndLongitude?: number;
-    routeRadius?: number;
-    minPrice?: number;
-    maxPrice?: number;
-    minWeight?: number;
-    maxWeight?: number;
-    deliveryType?: string;
+latitude: number;
+longitude: number;
+radius: number;
+limit?: number;
+page?: number;
+routeStartLatitude?: number;
+routeStartLongitude?: number;
+routeEndLatitude?: number;
+routeEndLongitude?: number;
+routeRadius?: number;
+minPrice?: number;
+maxPrice?: number;
+minWeight?: number;
+maxWeight?: number;
+deliveryType?: string;
 }
 
 // Interface pour le détail d'une annonce de livraison
 
 export interface DeliveryDetails {
+id: string;
+name: string;
+description?: string;
+complementary_info?: string;
+departure: CityLocation;
+arrival: CityLocation;
+departure_date?: string;
+arrival_date?: string;
+status: string;
+initial_price: number;
+price_with_step: PriceStep[];
+invoice: Invoice[];
+finished: boolean;
+urgent: boolean;
+trolleydrop : boolean
+}
+
+export interface CityLocation {
+city?: string;
+coordinates: [number, number];
+}
+
+export interface PriceStep {
+step: string;
+price: number | null;
+}
+
+export interface Invoice {
+name: string;
+url_invoice: string;
+}
+
+export interface Package {
+id: string;
+picture: string[];
+name: string;
+fragility: boolean;
+estimated_price: number;
+weight: number;
+volume: number;
+}
+
+export interface Step {
+id: number;
+title: string;
+description: string;
+date: string;
+departure?: CityLocation;
+arrival?: CityLocation;
+courier: Courier;
+}
+
+export interface Courier {
+name: string;
+photoUrl: string | null;
+}
+
+export interface Shipment {
+details: DeliveryDetails;
+package: Package[];
+steps: Step[];
+}
+
+
+export interface Warehouse {
+warehouse_id: string;
+city: string;
+coordinates: {
+    type : string;
+    coordinates : [number, number];
+},
+photo : string;
+description : string;
+}
+
+export interface DeliveryOnGoing {
+
+id: string;
+from: string;
+to: string;
+status: string;
+pickupDate: string | null;
+estimatedDeliveryDate: string | null;
+coordinates: {
+    origin: [number, number];
+    destination: [number, number];
+};
+progress: number;
+
+}
+
+export interface HistoryDelivery {
+id: string;
+departure_city: string;
+arrival_city: string;
+price: number;
+client: {
+    name: string;
+    photo_url: string;
+};
+status: string;
+}
+
+export interface ReviewAsDeliveryPerson {
+id: string;
+content: string;
+author: {
     id: string;
     name: string;
-    description?: string;
-    complementary_info?: string;
-    departure: CityLocation;
-    arrival: CityLocation;
-    departure_date?: string;
-    arrival_date?: string;
-    status: string;
-    initial_price: number;
-    price_with_step: PriceStep[];
-    invoice: Invoice[];
-    finished: boolean;
-    urgent: boolean;
-    trolleydrop : boolean
-  }
-  
-  export interface CityLocation {
-    city?: string;
-    coordinates: [number, number];
-  }
-  
-  export interface PriceStep {
-    step: string;
-    price: number | null;
-  }
-  
-  export interface Invoice {
+    photo: string;
+};
+reply: boolean;
+reply_content: string | null;
+delivery_name: string;
+rate: number;
+}
+
+export interface ReviewAsClient {
+id: string;
+content: string;
+delivery: {
+    id: string;
+    deliveryman: {
+    id: string;
     name: string;
-    url_invoice: string;
-  }
-  
-  export interface Package {
+    photo: string;
+    email: string;
+    };
+};
+services_name: string;
+rate: number;
+}
+
+export interface DeliveriesLocation {
+id: string;
+coordinates: {
+    lat: number;
+    lng: number;
+};
+deliveryman?: {
     id: string;
-    picture: string[];
     name: string;
-    fragility: boolean;
-    estimated_price: number;
-    weight: number;
-    volume: number;
-  }
-  
-  export interface Step {
-    id: number;
-    title: string;
-    description: string;
-    date: string;
-    departure?: CityLocation;
-    arrival?: CityLocation;
-    courier: Courier;
-  }
-  
-  export interface Courier {
-    name: string;
-    photoUrl: string | null;
-  }
-  
-  export interface Shipment {
-    details: DeliveryDetails;
-    package: Package[];
-    steps: Step[];
-  }
-
-
-  export interface Warehouse {
-    warehouse_id: string;
-    city: string;
-    coordinates: {
-      type : string;
-      coordinates : [number, number];
-    },
-    photo : string;
-    description : string;
-  }
-
-  export interface DeliveryOnGoing {
- 
-    id: string;
-    from: string;
-    to: string;
-    status: string;
-    pickupDate: string | null;
-    estimatedDeliveryDate: string | null;
-    coordinates: {
-      origin: [number, number];
-      destination: [number, number];
-    };
-    progress: number;
-  
-  }
-
-  export interface HistoryDelivery {
-    id: string;
-    departure_city: string;
-    arrival_city: string;
-    price: number;
-    client: {
-      name: string;
-      photo_url: string;
-    };
-    status: string;
-  }
-
-  export interface ReviewAsDeliveryPerson {
-    id: string;
-    content: string;
-    author: {
-      id: string;
-      name: string;
-      photo: string;
-    };
-    reply: boolean;
-    reply_content: string | null;
-    delivery_name: string;
-    rate: number;
-  }
-
-  export interface ReviewAsClient {
-    id: string;
-    content: string;
-    delivery: {
-      id: string;
-      deliveryman: {
-        id: string;
-        name: string;
-        photo: string;
-        email: string;
-      };
-    };
-    services_name: string;
-    rate: number;
-  }
-
-  export interface DeliveriesLocation {
-    id: string;
-    coordinates: {
-      lat: number;
-      lng: number;
-    };
-    deliveryman?: {
-      id: string;
-      name: string;
-      photo: string;
-      email: string;
-    };
-    potential_address?: string;
+    photo: string;
+    email: string;
+};
+potential_address?: string;
 }
 
 export interface CurrentDeliveryAsClient {
-    id: string;
-    arrival_city: string;
-    departure_city: string;
-    date_departure: string;
-    date_arrival: string;
+id: string;
+arrival_city: string;
+departure_city: string;
+date_departure: string;
+date_arrival: string;
+photo: string;
+deliveryman: {
+    name: string;
     photo: string;
-    deliveryman: {
-      name: string;
-      photo: string;
-    };
-  }
+};
+}
 
-  export interface SubscriptionForClient {
-    planName: string;
-    discountRate?: number; 
-    priorityRate: number;
-    insuranceLimit?: number | null; 
-    additionalInsuranceCost?: number | null; 
-    freeShipmentAvailable?: boolean;
-    freePriorityShipmentsPerMonth?: number;
-    freePriotiryShipmentsIfLower?: number;
-    permanentDiscount?: number; 
-    hasUsedFreeShipment?: boolean; 
-    remainingPriorityShipments?: number; 
+export interface SubscriptionForClient {
+planName: string;
+discountRate?: number; 
+priorityRate: number;
+insuranceLimit?: number | null; 
+additionalInsuranceCost?: number | null; 
+freeShipmentAvailable?: boolean;
+freePriorityShipmentsPerMonth?: number;
+freePriotiryShipmentsIfLower?: number;
+permanentDiscount?: number; 
+hasUsedFreeShipment?: boolean; 
+remainingPriorityShipments?: number; 
+}
+
+// Interface pour le détail d'une annonce de livraison
+
+export interface ShipmentsDetailsOffice {
+    details: {
+      id: string;
+      name: string;
+      description: string;
+      complementary_info: string;
+      facture_url : string;
+      departure: {
+        city: string;
+        coordinates: [number, number];
+      };
+      arrival: {
+        city: string;
+        coordinates: [number, number];
+      };
+      departure_date: string;
+      arrival_date: string;
+      status: string;
+      initial_price: number;
+      price_with_step: {
+        step: string;
+        price: number;
+      }[];
+      invoice: {
+        name: string;
+        url_invoice: string;
+      }[];
+      urgent: boolean;
+      finished: boolean;
+    };
+    package: {
+      id: string;
+      picture: string[];
+      name: string;
+      fragility: boolean;
+      estimated_price: number;
+      weight: number;
+      volume: number;
+    }[];
+    steps: {
+      id: number;
+      title: string;
+      description: string;
+      date: string;
+      departure: {
+        city: string;
+        coordinates: [number, number];
+      };
+      arrival: {
+        city: string;
+        coordinates: [number, number];
+      };
+      courier: {
+        name: string;
+        photoUrl: string;
+      };
+      idLink: number;
+    }[];
   }
 
 
@@ -465,6 +527,16 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error fetching subscription stats:", error);
             throw new Error("Failed to fetch subscription stats");
+        }
+    }
+
+    static async getShipmentDetailsByIdOffice(shipment_id : string) : Promise<ShipmentsDetailsOffice> {
+        try {
+            const response = await axiosInstance.get<ShipmentsDetailsOffice>(`/client/shipments/office/${shipment_id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching shipment details:", error);
+            throw new Error("Failed to fetch shipment details");
         }
     }
 

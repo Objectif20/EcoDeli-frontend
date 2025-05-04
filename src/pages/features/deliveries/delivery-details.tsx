@@ -14,145 +14,17 @@ import { fr } from "date-fns/locale"
 import { useParams, useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
-
-const fakeDeliveries = {
-  details: {
-    id: "1",
-    name: "Package Delivery",
-    description: "Fragile package delivery",
-    complementary_info: "Package to be delivered on time",
-    departure: {
-      city: "Paris",
-      coordinates: [48.8566, 2.3522],
-    },
-    arrival: {
-      city: "Lyon",
-      coordinates: [45.764, 4.8357],
-    },
-    departure_date: "2023-10-01",
-    arrival_date: "2023-10-03",
-    status: "In Progress",
-    initial_price: 50,
-    price_with_step: [
-      {
-        step: "Step 1",
-        price: 20,
-      },
-      {
-        step: "Step 2",
-        price: 15,
-      },
-      {
-        step: "Step 3",
-        price: 25,
-      },
-    ],
-    invoice: [
-      {
-        name: "Package 1",
-        url_invoice: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
-      },
-    ],
-    urgent : true,
-    finished: false,
-  },
-  package: [
-    {
-      id: "1",
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-      name: "Package 1",
-      fragility: true,
-      estimated_price: 20,
-      weight: 2,
-      volume: 1,
-    },
-    {
-      id: "2",
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-      name: "Package 2",
-      fragility: false,
-      estimated_price: 15,
-      weight: 1,
-      volume: 0.5,
-    },
-    {
-      id: "3",
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-      name: "Package 3",
-      fragility: true,
-      estimated_price: 25,
-      weight: 3,
-      volume: 1.5,
-    },
-  ],
-  steps: [
-    {
-      id: 1,
-      title: "Step 1",
-      description: "Departure from the main warehouse.",
-      date: "2023-10-01",
-      departure: {
-        city: "Paris",
-        coordinates: [48.8566, 2.3522],
-      },
-      arrival: {
-        city: "Lyon",
-        coordinates: [45.764, 4.8357],
-      },
-      courier: {
-        name: "Jean Dupont",
-        photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
-      },
-      idLink : 1000,
-    },
-    {
-      id: 2,
-      title: "Step 2",
-      description: "Transfer to the distribution center.",
-      date: "2023-10-02",
-      departure: {
-        city: "Lyon",
-        coordinates: [45.764, 4.8357],
-      },
-      arrival: {
-        city: "Marseille",
-        coordinates: [43.2965, 5.3698],
-      },
-      courier: {
-        name: "Marie Martin",
-        photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
-      },
-      idLink : 1000,
-    },
-    {
-      id: 3,
-      title: "Step 3",
-      description: "Final delivery to the customer.",
-      date: "2023-10-03",
-      departure: {
-        city: "Marseille",
-        coordinates: [43.2965, 5.3698],
-      },
-      arrival: {
-        city: "Nice",
-        coordinates: [43.7102, 7.262],
-      },
-      courier: {
-        name: "Paul Leclerc",
-        photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
-      },
-      idLink : 1000,
-    },
-  ],
-}
+import { DeliveriesAPI, ShipmentsDetailsOffice } from "@/api/deliveries.api"
 
 export default function ShipmentsDetailsOfficePage() {
   const [_, setActiveTab] = useState("overview")
-  const delivery = fakeDeliveries
+  const [delivery, setDelivery] = useState<ShipmentsDetailsOffice | null>(null)
   const navigate = useNavigate()
 
 
   const dispatch = useDispatch();
+
+  const { id } = useParams()
 
   useEffect(() => {
     dispatch(
@@ -160,10 +32,24 @@ export default function ShipmentsDetailsOfficePage() {
         segments: ["Accueil", "Demandes de livraison", "Détails"],
         links: ["/office/dashboard", "/office/shipments"],
       })
-    );
-  }, [dispatch]);
+    )
 
-  const { id } = useParams()
+    const fetchDeliveryDetails = async () => {
+      if (id) {
+        try {
+          const data = await DeliveriesAPI.getShipmentDetailsByIdOffice(id)
+          setDelivery(data)
+        } catch (error) {
+          console.error("Erreur lors de la récupération des détails de la livraison.")
+        }
+      } else {
+        console.error("Erreur : ID de livraison manquant")
+      }
+    }
+
+    fetchDeliveryDetails()
+  }, [dispatch, id])
+
 
   if (!id) return <div>Erreur : ID de livraison manquant</div>
   if (!delivery) return <div>Chargement...</div>
@@ -171,11 +57,10 @@ export default function ShipmentsDetailsOfficePage() {
   const lastStep = delivery.steps[delivery.steps.length - 1]
   let progress = 0
 
-  // Nouvelle logique de progression selon les IDs des étapes
   if (lastStep?.id === -1) {
-    progress = 0 // Aucune étape
+    progress = 0 
   } else if (lastStep?.id === 0 || lastStep?.id === 1000) {
-    progress = 100 // Livraison complète
+    progress = 100 
   } else if (lastStep?.id >= 1 && lastStep?.id <= 999) {
     const maxStepId = Math.max(
       ...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id),

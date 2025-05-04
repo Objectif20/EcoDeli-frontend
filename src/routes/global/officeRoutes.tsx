@@ -47,7 +47,7 @@ const OfficeRoute: React.FC = () => {
       <IntroDisclosureDemo />
       <Routes>
 
-      <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "DELIVERYMAN"]} />}>
+      <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "DELIVERYMAN", "MERCHANT"]} />}>
         <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
       </Route>
         

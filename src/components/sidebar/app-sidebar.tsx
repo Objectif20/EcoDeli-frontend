@@ -82,6 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "#",
               icon: ShoppingCart,
               items: [
+                { title: t("client.components.sidebar.activeShipments"), url: "/office/shipments" },
                 { title: t("client.components.sidebar.activeAds"), url: "/office/deliveries" },
                 { title: t("client.components.sidebar.history"), url: "/office/ads-history" },
                 { title: t("client.components.sidebar.reviews"), url: "/office/reviews" },
@@ -107,8 +108,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "#",
               icon: ShoppingCart,
               items: [
-                { title: t("client.components.sidebar.activeAds"), url: "/office/deliveries"},
+                { title: t("client.components.sidebar.activeShipments"), url: "/office/shipments"},
+                { title: t("client.components.sidebar.activeAds"), url: "/office/deliveries" },
                 { title: t("client.components.sidebar.history"), url: "/office/ads-history" },
+                { title: t("client.components.sidebar.shipmentsHistory"), url: "/office/shipments-history" },
                 { title: t("client.components.sidebar.reviews"), url: "/office/reviews" },
                 { title: t("client.components.sidebar.location"), url: "/office/location" },
               ],
@@ -237,9 +240,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </Button>
             </div>
           )}
-          {isClient && isDeliveryman && open &&(
+          {((isClient && isDeliveryman) || isMerchant) && open &&(
             <div className="mx-4">
-              <Button className="w-full" onClick={() => navigate("/office/deliveries/create")}>
+              <Button className="w-full" onClick={() => navigate("/office/shipments/create")}>
                 {t("client.components.sidebar.createDeliveryRequest")}
               </Button>
             </div>

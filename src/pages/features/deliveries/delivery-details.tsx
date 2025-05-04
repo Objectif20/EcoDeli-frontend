@@ -1,28 +1,19 @@
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
+"use client"
 
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  FileText,
-  MapPin,
-} from "lucide-react";
-import "leaflet/dist/leaflet.css";
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
+import { MapPin, AlertTriangle, FileText } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { Truck, AlertTriangle, Clock, DollarSign } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Progress } from "@/components/ui/progress"
+import { useParams, useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 
 const fakeDeliveries = {
   details: {
@@ -62,6 +53,8 @@ const fakeDeliveries = {
         url_invoice: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
       },
     ],
+    urgent : true,
+    finished: false,
   },
   package: [
     {
@@ -110,6 +103,7 @@ const fakeDeliveries = {
         name: "Jean Dupont",
         photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
       },
+      idLink : 1000,
     },
     {
       id: 2,
@@ -128,6 +122,7 @@ const fakeDeliveries = {
         name: "Marie Martin",
         photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
       },
+      idLink : 1000,
     },
     {
       id: 3,
@@ -146,342 +141,440 @@ const fakeDeliveries = {
         name: "Paul Leclerc",
         photoUrl: "https://plus.unsplash.com/premium_photo-1689568126014-06fea9d5d341?fm=jpg&q=60&w=3000",
       },
+      idLink : 1000,
     },
   ],
 }
 
-export default function DeliveryDetailsPage() {
+export default function ShipmentsDetailsOfficePage() {
+  const [_, setActiveTab] = useState("overview")
+  const delivery = fakeDeliveries
+  const navigate = useNavigate()
+
+
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Livraisons", fakeDeliveries.details.name],
-        links: ["/office/dashboard", "/office/deliveries"],
+        segments: ["Accueil", "Demandes de livraison", "Détails"],
+        links: ["/office/dashboard", "/office/shipments"],
       })
     );
   }, [dispatch]);
 
-    const [_, setActiveTab] = useState("overview")
-  
-    const delivery = fakeDeliveries
-  
-    const lastStep = delivery.steps[delivery.steps.length - 1]
-  
-    const totalPrice = delivery.details.price_with_step.reduce((sum, step) => sum + step.price, 0)
-  
-    const progress = (delivery.steps.length / 3) * 100
-  
-    const formatDate = (dateString: string) => {
-      return format(new Date(dateString), "d MMMM yyyy", { locale: fr })
-    }
+  const { id } = useParams()
+
+  if (!id) return <div>Erreur : ID de livraison manquant</div>
+  if (!delivery) return <div>Chargement...</div>
+
+  const lastStep = delivery.steps[delivery.steps.length - 1]
+  let progress = 0
+
+  // Nouvelle logique de progression selon les IDs des étapes
+  if (lastStep?.id === -1) {
+    progress = 0 // Aucune étape
+  } else if (lastStep?.id === 0 || lastStep?.id === 1000) {
+    progress = 100 // Livraison complète
+  } else if (lastStep?.id >= 1 && lastStep?.id <= 999) {
+    const maxStepId = Math.max(
+      ...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id),
+    )
+    const totalSteps = maxStepId + 1
+    progress = (maxStepId / totalSteps) * 100
+  }
+
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), "d MMMM yyyy", { locale: fr })
+  }
+
+  const totalPrice = delivery.details.price_with_step.reduce((sum, step) => sum + step.price, 0)
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
-      <div className="flex flex-col gap-6">
-        <Card className="border-none shadow-lg">
-          <CardHeader className="bg-primary text-foreground rounded-t-lg">
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle className="text-2xl md:text-3xl font-bold">{delivery.details.name}</CardTitle>
-                <CardDescription className="text-primary-foreground mt-1">Référence N°{delivery.details.id}</CardDescription>
+      <Card className="border-none shadow-xl overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-primary to-primary/90 text-foreground rounded-t-lg py-8">
+          <div>
+            <CardTitle className="text-2xl md:text-3xl font-bold flex items-center">
+              {delivery.details.name}
+              {delivery.details.urgent && <Badge className="ml-2 bg-red-500 text-white border-none">URGENT</Badge>}
+            </CardTitle>
+            <CardDescription className="text-primary-foreground/90 mt-1">
+              Référence N°{delivery.details.id}
+            </CardDescription>
+            {(delivery.details.departure_date || delivery.details.arrival_date) && (
+              <div className="flex flex-wrap gap-x-6 gap-y-2 mt-3 text-sm text-primary-foreground/80">
+                {delivery.details.departure_date && (
+                  <div className="flex items-center gap-2">
+                    <span>Départ prévu:</span>
+                    <span className="font-medium">
+                      {formatDate(delivery.details.departure_date)}
+                    </span>
+                  </div>
+                )}
+                {delivery.details.arrival_date && (
+                  <div className="flex items-center gap-2">
+                    <span>Arrivée prévue:</span>
+                    <span className="font-medium">
+                      {formatDate(delivery.details.arrival_date)}
+                    </span>
+                  </div>
+                )}
               </div>
-              <Badge variant="outline" className="bg-white/20 text-foreground border-none px-3 py-1">
-                {delivery.details.status}
-              </Badge>
-            </div>
-          </CardHeader>
-
-          <CardContent className="pt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-6">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="bg-secondary text-primary px-3 py-1">
-                    <Clock className="w-4 h-4 mr-1" />
-                    Livraison prévue le {formatDate(delivery.details.arrival_date)}
-                  </Badge>
-                </div>
-
-                <div className="relative pl-8 space-y-6">
-                  <div className="absolute left-3 top-4 bottom-4 w-0.5"></div>
-
-                  <div className="relative">
-                    <div className="absolute left-[-29px] top-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-background"></div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Départ</p>
-                      <h3 className="text-lg font-semibold">{delivery.details.departure.city}</h3>
-                      <p className="text-sm text-foreground">Collecte le {formatDate(delivery.details.departure_date)}</p>
-                    </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <div className="relative pl-8 space-y-6">
+                <div className="relative">
+                  <div className="absolute left-[-29px] top-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-background"></div>
                   </div>
-
-                  <div className="relative">
-                    <div className="absolute left-[-29px] top-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                      <MapPin className="w-3 h-3 text-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Arrivée</p>
-                      <h3 className="text-lg font-semibold">{delivery.details.arrival.city}</h3>
-                      <p className="text-sm text-foreground">
-                        Livraison prévue le {formatDate(delivery.details.arrival_date)}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="flex flex-col gap-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-foreground">Progression</span>
-                    <span className="text-sm font-medium">{Math.round(progress)}%</span>
-                  </div>
-                  <Progress value={progress} className="h-2" />
-                </div>
-
-                <div className="bg-background p-4 rounded-lg">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="font-medium">Prix total</span>
-                    <span className="text-xl font-bold">{totalPrice} €</span>
-                  </div>
-                  <p className="text-sm text-foreground">Prix initial: {delivery.details.initial_price} €</p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <FileText className="w-4 h-4" />
-                    Voir la facture
-                  </Button>
-                  <Button className="flex items-center gap-2">
-                    <Truck className="w-4 h-4" />
-                    Suivre la livraison
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Tabs defaultValue="overview" onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="overview">Aperçu</TabsTrigger>
-            <TabsTrigger value="packages">Colis ({delivery.package.length})</TabsTrigger>
-            <TabsTrigger value="steps">Étapes ({delivery.steps.length})</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="overview" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">Informations complémentaires</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p >{delivery.details.complementary_info}</p>
-
-                <Separator className="my-6" />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Dernière mise à jour</h3>
-                    <Card className="border border-primary">
-                      <CardContent className="pt-6">
-                        <div className="flex items-start gap-4">
-                          <Avatar className="h-10 w-10 border-2 border-primary">
-                            <AvatarImage
-                              src={lastStep.courier.photoUrl || "/placeholder.svg"}
-                              alt={lastStep.courier.name}
-                            />
-                            <AvatarFallback>{lastStep.courier.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{lastStep.title}</p>
-                            <p className="text-sm text-foreground">{lastStep.description}</p>
-                            <p className="text-sm text-foreground mt-1">
-                              {formatDate(lastStep.date)} • {lastStep.courier.name}
+                    <p className="text-sm font-medium">Départ</p>
+                    <h3 className="text-lg font-semibold">{delivery.details.departure.city}</h3>
+                    <p className="text-sm text-foreground">Collecte le {formatDate(delivery.details.departure_date)}</p>
+                  </div>
+                </div>
+                <div className="relative">
+                  <div className="absolute left-[-29px] top-0 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <MapPin className="w-3 h-3 text-foreground" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Arrivée</p>
+                    <h3 className="text-lg font-semibold">{delivery.details.arrival.city}</h3>
+                    <p className="text-sm text-foreground">
+                      Livraison prévue le {formatDate(delivery.details.arrival_date)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-6">
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between">
+                  <span className="text-sm font-medium">Progression</span>
+                  <span className="text-sm font-medium">{Math.round(progress)}%</span>
+                </div>
+                <Progress value={progress} className="h-2" />
+                <p className="text-xs text-muted-foreground">
+                  {lastStep?.id === -1
+                    ? "Aucune étape pour le moment"
+                    : lastStep?.id === 0
+                      ? "Livraison entièrement prise en charge"
+                      : lastStep?.id === 1000
+                        ? "Dernière étape en cours"
+                        : `${delivery.steps.length} étape${delivery.steps.length > 1 ? "s" : ""} sur ${Math.max(...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id)) + 1}`}
+                </p>
+              </div>
+              <div className="bg-background p-4 rounded-lg">
+                <div className="flex justify-between">
+                  <span className="font-medium">Prix total</span>
+                  <span className="text-xl font-bold">{totalPrice} €</span>
+                </div>
+                <p className="text-sm text-foreground">Prix initial: {delivery.details.initial_price} €</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Voir la facture
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Tabs defaultValue="overview" onValueChange={setActiveTab} className="w-full mt-6">
+        <TabsList className="grid grid-cols-3 mb-6">
+          <TabsTrigger value="overview">Aperçu</TabsTrigger>
+          <TabsTrigger value="packages">Colis ({delivery.package.length})</TabsTrigger>
+          {delivery.steps.some(step => step.id !== -1) && (
+            <TabsTrigger value="steps">Étapes ({delivery.steps.filter(step => step.id !== -1).length})</TabsTrigger>
+          )}
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Informations complémentaires</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p>{delivery.details.complementary_info}</p>
+              <Separator className="my-6" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">État de la livraison</h3>
+                  <Card className="border-none shadow-md bg-gradient-to-br from-background to-muted">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start gap-4">
+                        <Avatar className="h-12 w-12 border-2 border-primary shadow-md">
+                          <AvatarImage
+                            src={lastStep?.courier?.photoUrl || "/placeholder.svg"}
+                            alt={lastStep?.courier?.name || "Livreur"}
+                          />
+                          <AvatarFallback>{lastStep?.courier?.name?.charAt(0) || "?"}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold">{lastStep?.courier?.name || "Transporteur"}</p>
+                            <Badge
+                              variant="outline"
+                              className={delivery.details.urgent ? "bg-red-50 text-red-700 border-red-200" : "hidden"}
+                            >
+                              URGENT
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-foreground mt-1">
+                            {lastStep?.id === -1
+                              ? "Aucune étape pour le moment"
+                              : lastStep?.id === 0
+                                ? "Le transporteur assure toute la distance"
+                                : lastStep?.id === 1000
+                                  ? "Le transporteur assure le reste de la distance"
+                                  : "Le transporteur assure une partie de la distance"}
+                          </p>
+                          {lastStep?.date && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {formatDate(lastStep?.date)}
                             </p>
-                          </div>
+                          )}
                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <div>
-                    <h3 className="text-lg font-semibold mb-4">Aperçu des colis</h3>
-                    <div className="space-y-3">
-                      {delivery.package.slice(0, 2).map((pkg) => (
-                        <div key={pkg.id} className="flex items-center gap-3 p-3 bg-background rounded-lg">
-                          <div className="w-12 h-12 rounded bg-background overflow-hidden">
-                            <img
-                              src={pkg.picture[0] || "/placeholder.svg"}
-                              alt={pkg.name}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <p className="font-medium">{pkg.name}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <Badge variant="outline" className="text-xs">
-                                {pkg.weight} kg
-                              </Badge>
-                              {pkg.fragility && (
-                                <Badge
-                                  variant="outline"
-                                  className="bg-amber-50 text-amber-700 border-amber-200 text-xs"
-                                >
-                                  <AlertTriangle className="w-3 h-3 mr-1" />
-                                  Fragile
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-semibold">{pkg.estimated_price} €</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="packages" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">Détails des colis</CardTitle>
-                <CardDescription>{delivery.package.length} colis pour cette livraison</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {delivery.package.map((pkg) => (
-                    <Card key={pkg.id} className="overflow-hidden">
-                      <div className="flex flex-col md:flex-row">
-                        <div className="w-full md:w-1/4 h-48 md:h-auto">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Aperçu des colis</h3>
+                  <div className="space-y-3">
+                    {delivery.package.slice(0, 2).map((pkg) => (
+                      <div
+                        key={pkg.id}
+                        className="flex items-center gap-3 p-4 bg-background rounded-lg border border-muted shadow-sm hover:shadow-md transition-shadow"
+                      >
+                        <div className="w-14 h-14 bg-muted rounded-lg overflow-hidden flex-shrink-0">
                           <img
                             src={pkg.picture[0] || "/placeholder.svg"}
                             alt={pkg.name}
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        <div className="flex-1 p-4">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="text-lg font-semibold">{pkg.name}</h3>
-                              {pkg.fragility && (
-                                <Badge className="mt-1 bg-amber-100 text-amber-800 border-none">
-                                  <AlertTriangle className="w-3 h-3 mr-1" />
-                                  Fragile
-                                </Badge>
-                              )}
-                            </div>
-                            <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                              <DollarSign className="w-3 h-3 mr-1" />
-                              {pkg.estimated_price} €
+                        <div className="flex-1">
+                          <p className="font-medium">{pkg.name}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {pkg.weight} kg
                             </Badge>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-4 mt-4">
-                            <div>
-                              <p className="text-sm text-foreground">Poids</p>
-                              <p className="font-medium">{pkg.weight} kg</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-foreground">Volume</p>
-                              <p className="font-medium">{pkg.volume} m³</p>
-                            </div>
+                            {pkg.estimated_price > 0 && (
+                              <Badge variant="outline" className="text-xs">
+                                {pkg.estimated_price} €
+                              </Badge>
+                            )}
+                            {pkg.fragility && (
+                              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
+                                <AlertTriangle className="w-3 h-3 mr-1" /> Fragile
+                              </Badge>
+                            )}
                           </div>
                         </div>
                       </div>
-                    </Card>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="steps" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-xl">Étapes de livraison</CardTitle>
-                <CardDescription>Suivi du parcours de votre livraison</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="relative pl-8 space-y-8">
-                  <div className="absolute left-3 top-4 bottom-4 w-0.5 bg-blue-200"></div>
-
-                  {delivery.steps.map((step, index) => (
-                    <div key={step.id} className="relative">
-                      <div
-                        className={`absolute left-[-29px] top-0 w-6 h-6 rounded-full ${
-                          index === delivery.steps.length - 1 ? "bg-primary" : "bg-primary bg-opacity-30"
-                        } flex items-center justify-center`}
+              </div>
+              <div className="col-span-1 md:col-span-2 mt-6">
+                <h3 className="text-lg font-semibold mb-4">Détails de l'expédition</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
+                    <div className="flex flex-col">
+                      <span className="text-sm text-muted-foreground">Statut</span>
+                      <Badge
+                        className={`w-fit mt-2 ${
+                          delivery.details.status === "pending"
+                            ? "bg-amber-100 text-amber-800 hover:bg-amber-100"
+                            : delivery.details.finished
+                              ? "bg-green-100 text-green-800 hover:bg-green-100"
+                              : ""
+                        }`}
                       >
-                        {index === delivery.steps.length - 1 ? (
-                          <div className="w-2 h-2 rounded-full bg-white"></div>
-                        ) : (
-                          <div className="w-2 h-2 rounded-full bg-primary"></div>
-                        )}
-                      </div>
-
-                      <Card
-                        className={`border ${index === delivery.steps.length - 1 ? "bg-secondary" : ""}`}
-                      >
-                        <CardContent className="pt-6">
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <h3 className="font-semibold">{step.title}</h3>
-                                <Badge variant="outline" className="text-xs">
-                                  {formatDate(step.date)}
-                                </Badge>
-                              </div>
-                              <p className="text-sm mt-1">{step.description}</p>
-                            </div>
-
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-8 w-8">
-                                <AvatarImage
-                                  src={step.courier.photoUrl || "/placeholder.svg"}
-                                  alt={step.courier.name}
-                                />
-                                <AvatarFallback>{step.courier.name.charAt(0)}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="text-sm font-medium">{step.courier.name}</p>
-                                <p className="text-xs">Livreur</p>
-                              </div>
-                            </div>
-                          </div>
-
-                          <Separator className="my-4" />
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4" />
-                              <div>
-                                <p className="text-sm ">Départ</p>
-                                <p className="font-medium">{step.departure.city}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <MapPin className="w-4 h-4 " />
-                              <div>
-                                <p className="text-sm">Arrivée</p>
-                                <p className="font-medium">{step.arrival.city}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                        {delivery.details.status === "pending"
+                          ? "En attente"
+                          : delivery.details.status === "In Progress"
+                            ? "En cours"
+                            : delivery.details.finished
+                              ? "Terminée"
+                              : delivery.details.status}
+                      </Badge>
                     </div>
-                  ))}
+                  </Card>
+                  <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
+                    <div className="flex flex-col">
+                      <span className="text-sm text-muted-foreground">Distance</span>
+                      <span className="font-medium mt-2">
+                        {Math.round(
+                          Math.sqrt(
+                            Math.pow(
+                              delivery.details.departure.coordinates[0] - delivery.details.arrival.coordinates[0],
+                              2,
+                            ) +
+                              Math.pow(
+                                delivery.details.departure.coordinates[1] - delivery.details.arrival.coordinates[1],
+                                2,
+                              ),
+                          ) * 111.32,
+                        )}{" "}
+                        km
+                      </span>
+                    </div>
+                  </Card>
+                  <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
+                    <div className="flex flex-col">
+                      <span className="text-sm text-muted-foreground">Poids total</span>
+                      <span className="font-medium mt-2">
+                        {delivery.package.reduce((total, pkg) => total + pkg.weight, 0)} kg
+                      </span>
+                    </div>
+                  </Card>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="packages">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Détails des colis</CardTitle>
+              <CardDescription>{delivery.package.length} colis pour cette livraison</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {delivery.package.map((pkg) => (
+                  <Card key={pkg.id} className="overflow-hidden">
+                    <div className="flex flex-col md:flex-row">
+                      <img
+                        src={pkg.picture[0] || "/placeholder.svg"}
+                        alt={pkg.name}
+                        className="w-full md:w-1/4 h-48 object-cover"
+                      />
+                      <div className="flex-1 p-4">
+                        <div className="flex justify-between">
+                          <h3 className="text-lg font-semibold">{pkg.name}</h3>
+                          {pkg.fragility && (
+                            <Badge className="border-none">
+                              <AlertTriangle className="w-3 h-3 mr-1" /> Fragile
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-4 mt-4">
+                          <div>
+                            <p className="text-sm text-foreground">Poids</p>
+                            <p className="font-medium">{pkg.weight} kg</p>
+                          </div>
+                          <div>
+                            <p className="text-sm text-foreground">Volume</p>
+                            <p className="font-medium">{pkg.volume} m³</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="steps" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Étapes de livraison</CardTitle>
+              <CardDescription>Suivi du parcours de votre livraison</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="relative pl-8 space-y-8">
+                <div className="absolute left-3 top-4 bottom-4 w-0.5 bg-blue-200"></div>
+
+                {delivery.steps.map((step, index) => (
+                  <div key={step.id} className="relative">
+                    <div
+                      className={`absolute left-[-29px] top-0 w-6 h-6 rounded-full ${
+                        index === delivery.steps.length - 1 ? "bg-primary" : "bg-primary bg-opacity-30"
+                      } flex items-center justify-center`}
+                    >
+                      {index === delivery.steps.length - 1 ? (
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                      ) : (
+                        <div className="w-2 h-2 rounded-full bg-primary"></div>
+                      )}
+                    </div>
+
+                    <Card
+                      className={`border ${index === delivery.steps.length - 1 ? "bg-secondary" : ""}`}
+                    >
+                      <CardContent className="pt-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{step.title}</h3>
+                              <Badge variant="outline" className="text-xs">
+                                {formatDate(step.date)}
+                              </Badge>
+                            </div>
+                            <p className="text-sm mt-1">{step.description}</p>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage
+                                src={step.courier.photoUrl || "/placeholder.svg"}
+                                alt={step.courier.name}
+                              />
+                              <AvatarFallback>{step.courier.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-sm font-medium">{step.courier.name}</p>
+                              <p className="text-xs">Livreur</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Separator className="my-4" />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            <div>
+                              <p className="text-sm ">Départ</p>
+                              <p className="font-medium">{step.departure.city}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 " />
+                            <div>
+                              <p className="text-sm">Arrivée</p>
+                              <p className="font-medium">{step.arrival.city}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => navigate(`/office/deliveries/public/${step.idLink}`)}
+                          className="mt-4"
+                        >
+                          Voir les détails
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

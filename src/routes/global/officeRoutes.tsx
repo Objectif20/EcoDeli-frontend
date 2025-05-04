@@ -39,6 +39,7 @@ import ServicesHistory from "@/pages/features/services/services-history";
 import NotFoundPage from "@/pages/error/404";
 import SuccessDeliverymanPage from "@/pages/auth/register/deliveryman/success";
 import ShipmentSuccessCreatePage from "@/pages/features/deliveries/create/success";
+import { CreateDeliveryAsMerchantPage } from "@/pages/features/deliveries/create/createAsMerchant";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -74,6 +75,11 @@ const OfficeRoute: React.FC = () => {
           <Route path="services-history" element={<HistoryServices />} />
           <Route path="my-service-reviews" element={<MyServiceReviews />} />
           <Route path="/service/:id" element={<ServiceDetailsPageClient />} />
+        </Route>
+
+        <Route element={<PrivateProfileRoutes requiredProfiles={["MERCHANT"]} />}>
+        <Route path="deliveries/create-trolley" element={<CreateDeliveryAsMerchantPage />} />
+        <Route path="deliveries/create-trolley/finish" element={<ShipmentSuccessCreatePage />} />
         </Route>
 
         <Route element={<PrivateProfileRoutes requiredProfiles={["PROVIDER"]} />}>

@@ -190,7 +190,6 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
       const pickup = fullData.pickup;
       const pickupEnd = fullData.pickupEnd;
       const price = fullData.price;
-      const [fromDate] = price?.deadline_date || [null];
   
       const formDataToSend = new FormData();
   
@@ -198,19 +197,20 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
       formDataToSend.append("shipment[estimated_total_price]", price?.price || "0");
       formDataToSend.append("shipment[weight]", packageList[0]?.weight || "0");
       formDataToSend.append("shipment[volume]", packageList[0]?.volume || "0");
-      formDataToSend.append("shipment[deadline_date]", fromDate || "");
+      formDataToSend.append("shipment[deadline_date]", fullData.price?.deadline_date || "");
       formDataToSend.append("shipment[urgent]", price?.isPriorityShipping ? "true" : "false");
       formDataToSend.append("shipment[status]", "pending");
       formDataToSend.append("shipment[delivery_mail]", price?.deliveryEmail || "");
       const keywords = ["fragile", "colis", "expédition"];
-
+  
       keywords.forEach((keyword, index) => {
         formDataToSend.append(`shipment[keywords][${index}]`, keyword);
-      });      formDataToSend.append("shipment[departure_city]", pickup?.city || "0");
+      });
+      formDataToSend.append("shipment[departure_city]", pickup?.city || "0");
       formDataToSend.append("shipment[arrival_city]", pickupEnd?.city || "0");
       formDataToSend.append("shipment[departure_location][latitude]", pickup?.lat || "0");
       formDataToSend.append("shipment[departure_location][longitude]", pickup?.lon || "0");
-      
+  
       formDataToSend.append("shipment[arrival_location][latitude]", pickupEnd?.lat || "0");
       formDataToSend.append("shipment[arrival_location][longitude]", pickupEnd?.lon || "0");
   
@@ -246,12 +246,21 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
         }
       }
   
+      const shipmentImage = localStorage.getItem("shipment-img");
+      if (shipmentImage) {
+        const response = await fetch(shipmentImage);
+        const blob = await response.blob();
+        formDataToSend.append("shipment[img]", blob, "shipment_image.png");
+      }
+  
       try {
         await DeliveriesAPI.createShipment(formDataToSend);
-        navigate("/office/deliveries/create/finish")
+        navigate("/office/deliveries/create/finish");
       } catch (error) {
         console.error("Erreur lors de l'envoi du formulaire : ", error);
       }
+
+      localStorage.removeItem("shipment-img")
   
       return;
     }

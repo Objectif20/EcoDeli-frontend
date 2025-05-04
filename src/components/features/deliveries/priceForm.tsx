@@ -41,6 +41,7 @@ export type PriceChoiceFormValues = {
   shipmentName: string;
   isPriorityShipping: boolean;
   deliveryEmail: string;
+  shipmentImage: FileList; // Ajout du champ pour l'image
 };
 
 export interface SubscriptionForClient {
@@ -62,11 +63,12 @@ export const PriceFormComponent = ({
 }: {
   onFormSubmit: (data: PriceChoiceFormValues) => void;
 }) => {
-  const { control, watch } = useFormContext<PriceChoiceFormValues>();
+  const { control, watch,  } = useFormContext<PriceChoiceFormValues>();
 
   const price = Number.parseFloat(watch("price") || "0");
   const isPriorityShipping = watch("isPriorityShipping");
   const [subscriptionConfig, setSubscriptionConfig] = useState<SubscriptionForClient | null>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSubscriptionStat = async () => {
@@ -79,6 +81,11 @@ export const PriceFormComponent = ({
     };
 
     fetchSubscriptionStat();
+
+    const savedImage = localStorage.getItem("shipment-img");
+    if (savedImage) {
+      setImageSrc(savedImage);
+    }
   }, []);
 
   if (!subscriptionConfig) {
@@ -100,11 +107,23 @@ export const PriceFormComponent = ({
     priorityShippingFee +
     additionalInsuranceCost;
 
-    const formatDate = (dateString: string): string => {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) return "";
-      return format(date, "PPP", { locale: fr });
-    };
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "";
+    return format(date, "PPP", { locale: fr });
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageSrc(reader.result as string);
+        localStorage.setItem("shipment-img", reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
@@ -175,7 +194,7 @@ export const PriceFormComponent = ({
                   selected={field.value ? new Date(field.value) : undefined}
                   onSelect={(date) => {
                     if (date) {
-                      field.onChange(format(date, "yyyy-MM-dd")); 
+                      field.onChange(format(date, "yyyy-MM-dd"));
                     } else {
                       field.onChange("");
                     }
@@ -190,6 +209,33 @@ export const PriceFormComponent = ({
           </FormItem>
         )}
       />
+
+      <FormField
+        control={control}
+        name="shipmentImage"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Image de l'expédition</FormLabel>
+            <FormControl>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  handleImageChange(e);
+                  field.onChange(e.target.files);
+                }}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {imageSrc && (
+        <div className="mt-4">
+          <img src={imageSrc} alt="Shipment" className="max-w-xs mx-auto" />
+        </div>
+      )}
 
       <Card>
         <CardHeader>

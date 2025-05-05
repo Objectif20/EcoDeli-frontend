@@ -39,7 +39,8 @@ import NotFoundPage from "@/pages/error/404";
 import SuccessDeliverymanPage from "@/pages/auth/register/deliveryman/success";
 import ShipmentSuccessCreatePage from "@/pages/features/deliveries/create/success";
 import { CreateDeliveryAsMerchantPage } from "@/pages/features/deliveries/create/createAsMerchant";
-import ShipmentsDetailsOfficePage from "@/pages/features/deliveries/delivery-details";
+import ShipmentsDetailsOfficePage from "@/pages/features/deliveries/shipment-details";
+import CurrentShipmentsPage from "@/pages/features/deliveries/shipments";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -64,7 +65,7 @@ const OfficeRoute: React.FC = () => {
         <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
           <Route path="deliveries" element={<DeliveriesPage />} />
           <Route path="shipments/:id" element={<ShipmentsDetailsOfficePage />} />
-          <Route path="shipments/" element={<h1>Shipments</h1>} />
+          <Route path="shipments/" element={<CurrentShipmentsPage />} />
           <Route path="shipments/create" element={<CreateDeliveryPage />} />
           <Route path="shipments/create/finish" element={<ShipmentSuccessCreatePage />} />
           <Route path="reviews" element={<MyReviewsDeliveryPage />} />

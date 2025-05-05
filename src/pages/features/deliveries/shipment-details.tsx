@@ -21,7 +21,6 @@ export default function ShipmentsDetailsOfficePage() {
   const [delivery, setDelivery] = useState<ShipmentsDetailsOffice | null>(null)
   const navigate = useNavigate()
 
-
   const dispatch = useDispatch();
 
   const { id } = useParams()

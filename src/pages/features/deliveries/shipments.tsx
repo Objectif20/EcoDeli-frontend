@@ -12,30 +12,12 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Link } from "react-router-dom"
 import { useDispatch } from "react-redux"
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
-
-interface ShipmentListItem {
-  id: string
-  name: string
-  status: string
-  urgent: boolean
-  departure: {
-    city: string
-    coordinates: [number, number]
-  }
-  arrival: {
-    city: string
-    coordinates: [number, number]
-  }
-  departure_date: string
-  arrival_date: string
-  packageCount: number
-  progress: number
-  finished: boolean
-  initial_price: number
-}
+import { DeliveriesAPI, ShipmentListItem } from "@/api/deliveries.api"
 
 const formatDate = (dateString: string) => {
-  return format(new Date(dateString), "d MMM yyyy", { locale: fr })
+  // Ensure the date string is parsed correctly
+  const date = new Date(dateString);
+  return isNaN(date.getTime()) ? "Date invalide" : format(date, "d MMM yyyy", { locale: fr });
 }
 
 const StatusBadge = ({ status, finished }: { status: string; finished: boolean }) => {
@@ -56,147 +38,22 @@ const StatusBadge = ({ status, finished }: { status: string; finished: boolean }
 export default function ShipmentsListPage() {
   const [shipments, setShipments] = useState<ShipmentListItem[]>([])
   const [loading, setLoading] = useState(true)
-    const dispatch = useDispatch()
-
-    useEffect(() => {
-      dispatch(
-        setBreadcrumb({
-          segments: ["Accueil", "Demandes de livraison"],
-          links: ["/office/dashboard"],
-        })
-      );
-    }, [dispatch, ]);
+  const dispatch = useDispatch()
 
   useEffect(() => {
+    dispatch(
+      setBreadcrumb({
+        segments: ["Accueil", "Demandes de livraison"],
+        links: ["/office/dashboard"],
+      })
+    );
+  }, [dispatch]);
 
+  useEffect(() => {
     const fetchShipments = async () => {
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000))
-
-        const mockData: ShipmentListItem[] = [
-          {
-            id: "SHP001",
-            name: "Livraison de mobilier",
-            status: "In Progress",
-            urgent: true,
-            departure: {
-              city: "Paris",
-              coordinates: [48.8566, 2.3522],
-            },
-            arrival: {
-              city: "Lyon",
-              coordinates: [45.7578, 4.832],
-            },
-            departure_date: "2024-05-10T10:00:00",
-            arrival_date: "2024-05-12T18:00:00",
-            packageCount: 3,
-            progress: 65,
-            finished: false,
-            initial_price: 250,
-          },
-          {
-            id: "SHP002",
-            name: "Colis électroniques",
-            status: "pending",
-            urgent: false,
-            departure: {
-              city: "Marseille",
-              coordinates: [43.2965, 5.3698],
-            },
-            arrival: {
-              city: "Bordeaux",
-              coordinates: [44.8378, -0.5792],
-            },
-            departure_date: "2024-05-15T09:00:00",
-            arrival_date: "2024-05-17T14:00:00",
-            packageCount: 2,
-            progress: 0,
-            finished: false,
-            initial_price: 180,
-          },
-          {
-            id: "SHP003",
-            name: "Livraison matériel médical",
-            status: "In Progress",
-            urgent: true,
-            departure: {
-              city: "Lille",
-              coordinates: [50.6292, 3.0573],
-            },
-            arrival: {
-              city: "Strasbourg",
-              coordinates: [48.5734, 7.7521],
-            },
-            departure_date: "2024-05-08T08:00:00",
-            arrival_date: "2024-05-09T16:00:00",
-            packageCount: 5,
-            progress: 80,
-            finished: false,
-            initial_price: 320,
-          },
-          {
-            id: "SHP004",
-            name: "Documents confidentiels",
-            status: "In Progress",
-            urgent: false,
-            departure: {
-              city: "Nice",
-              coordinates: [43.7102, 7.262],
-            },
-            arrival: {
-              city: "Toulouse",
-              coordinates: [43.6047, 1.4442],
-            },
-            departure_date: "2024-05-07T11:00:00",
-            arrival_date: "2024-05-08T17:00:00",
-            packageCount: 1,
-            progress: 100,
-            finished: true,
-            initial_price: 150,
-          },
-          {
-            id: "SHP005",
-            name: "Équipement sportif",
-            status: "pending",
-            urgent: false,
-            departure: {
-              city: "Nantes",
-              coordinates: [47.2184, -1.5536],
-            },
-            arrival: {
-              city: "Rennes",
-              coordinates: [48.1173, -1.6778],
-            },
-            departure_date: "2024-05-20T10:00:00",
-            arrival_date: "2024-05-20T15:00:00",
-            packageCount: 4,
-            progress: 0,
-            finished: false,
-            initial_price: 120,
-          },
-          {
-            id: "SHP006",
-            name: "Produits alimentaires",
-            status: "In Progress",
-            urgent: true,
-            departure: {
-              city: "Montpellier",
-              coordinates: [43.6108, 3.8767],
-            },
-            arrival: {
-              city: "Grenoble",
-              coordinates: [45.1885, 5.7245],
-            },
-            departure_date: "2024-05-09T07:00:00",
-            arrival_date: "2024-05-10T12:00:00",
-            packageCount: 6,
-            progress: 45,
-            finished: false,
-            initial_price: 280,
-          },
-        ]
-
-        setShipments(mockData)
+        const data = await DeliveriesAPI.getMyCurrentShipmentsOffice();
+        setShipments(data)
         setLoading(false)
       } catch (error) {
         console.error("Erreur lors de la récupération des livraisons:", error)

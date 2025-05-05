@@ -28,7 +28,6 @@ export default function HistoryShipmentRequestsClientPage() {
       setBreadcrumb({
         segments: [
           t('client.pages.office.shipment.shipmentHistory.breadcrumb.home'),
-          t('client.pages.office.shipment.shipmentHistory.breadcrumb.shipments'),
           t('client.pages.office.shipment.shipmentHistory.breadcrumb.shipmentHistory')
         ],
         links: ["/office/dashboard"],

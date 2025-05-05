@@ -1812,7 +1812,6 @@
             "title": "Historique des demandes de livraisons terminées",
             "breadcrumb": {
               "home": "Accueil",
-              "shipments": "Expéditions",
               "shipmentHistory": "Historique des demandes"
             },
             "table": {

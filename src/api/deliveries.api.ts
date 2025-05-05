@@ -284,6 +284,28 @@ export interface ShipmentsDetailsOffice {
   }
 
 
+export interface ShipmentListItem {
+    id: string
+    name: string
+    status: string
+    urgent: boolean
+    departure: {
+      city: string
+      coordinates: [number, number]
+    }
+    arrival: {
+      city: string
+      coordinates: [number, number]
+    }
+    departure_date: string
+    arrival_date: string
+    packageCount: number
+    progress: number
+    finished: boolean
+    initial_price: number
+  }
+
+
 export class DeliveriesAPI {
 
     static async getDeliveries(apiFilter : DeliveriesFilter) : Promise<Delivery[]> {
@@ -370,7 +392,7 @@ export class DeliveriesAPI {
     static async getMyCurrentShipments() : Promise<Delivery[]> {
 
         try {
-            const response = await axiosInstance.get<Delivery[]>("/client/shipments/myCurrentShipments");
+            const response = await axiosInstance.get<Delivery[]>("/client/shipments/myCurrentShipmentsForNegotiation");
             return response.data;
         } catch (error) {
             console.error("Error fetching current shipments:", error);
@@ -537,6 +559,16 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error fetching shipment details:", error);
             throw new Error("Failed to fetch shipment details");
+        }
+    }
+
+    static async getMyCurrentShipmentsOffice() : Promise<ShipmentListItem[]> {
+        try {
+            const response = await axiosInstance.get<ShipmentListItem[]>("/client/shipments/myCurrentShipments");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching current shipments:", error);
+            throw new Error("Failed to fetch current shipments");
         }
     }
 

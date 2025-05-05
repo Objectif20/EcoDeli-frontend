@@ -305,6 +305,16 @@ export interface ShipmentListItem {
     initial_price: number
   }
 
+  export interface ShipmentHistoryRequest {
+    id: string;
+    name: string;
+    departureCity: string;
+    arrivalCity: string;
+    urgent: boolean;
+    nbColis: number;
+    nbLivraisons: number;
+  }
+
 
 export class DeliveriesAPI {
 
@@ -569,6 +579,21 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error fetching current shipments:", error);
             throw new Error("Failed to fetch current shipments");
+        }
+    }
+
+    static async getMyShipmentsHistoryOffice(pageIndex: number, pageSize: number): Promise<{ data: ShipmentHistoryRequest[], totalRows: number }> {
+        try {
+            const response = await axiosInstance.get<{ data: ShipmentHistoryRequest[], totalRows: number }>("/client/shipments/myShipmentsHistory", {
+                params: {
+                    page : pageIndex,
+                    limit : pageSize,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching shipment history:", error);
+            throw new Error("Failed to fetch shipment history");
         }
     }
 

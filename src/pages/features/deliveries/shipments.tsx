@@ -15,7 +15,6 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 import { DeliveriesAPI, ShipmentListItem } from "@/api/deliveries.api"
 
 const formatDate = (dateString: string) => {
-  // Ensure the date string is parsed correctly
   const date = new Date(dateString);
   return isNaN(date.getTime()) ? "Date invalide" : format(date, "d MMM yyyy", { locale: fr });
 }

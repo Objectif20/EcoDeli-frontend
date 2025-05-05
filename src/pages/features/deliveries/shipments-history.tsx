@@ -4,21 +4,12 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { PaginationControls } from "@/components/pagination-controle";
 import { useTranslation } from 'react-i18next';
 import { DataTable } from "@/components/features/deliveries/client/shipments";
-
-interface ShipmentRequest {
-  id: string;
-  name: string;
-  departureCity: string;
-  arrivalCity: string;
-  urgent: boolean;
-  nbColis: number;
-  nbLivraisons: number;
-}
+import { DeliveriesAPI, ShipmentHistoryRequest } from "@/api/deliveries.api";
 
 export default function HistoryShipmentRequestsClientPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
-  const [shipmentRequests, setShipmentRequests] = useState<ShipmentRequest[]>([]);
+  const [shipmentRequests, setShipmentRequests] = useState<ShipmentHistoryRequest[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
@@ -38,30 +29,7 @@ export default function HistoryShipmentRequestsClientPage() {
   useEffect(() => {
     const fetchShipmentRequests = async () => {
       try {
-        const response = {
-          data: [
-            {
-              id: "1",
-              name: "Livraison de meubles",
-              departureCity: "Paris",
-              arrivalCity: "Lyon",
-              urgent: false,
-              nbColis: 5,
-              nbLivraisons: 1,
-            },
-            {
-              id: "2",
-              name: "Livraison de colis",
-              departureCity: "Marseille",
-              arrivalCity: "Nice",
-              urgent: true,
-              nbColis: 3,
-              nbLivraisons: 2,
-            },
-          ],
-          totalRows: 2,
-        };
-
+        const response = await DeliveriesAPI.getMyShipmentsHistoryOffice(pageIndex + 1, pageSize);
         setShipmentRequests(response.data);
         setTotalItems(response.totalRows);
       } catch (error) {

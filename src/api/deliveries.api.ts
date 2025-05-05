@@ -224,95 +224,111 @@ remainingPriorityShipments?: number;
 // Interface pour le détail d'une annonce de livraison
 
 export interface ShipmentsDetailsOffice {
-    details: {
-      id: string;
-      name: string;
-      description: string;
-      complementary_info: string;
-      facture_url : string;
-      departure: {
-        city: string;
-        coordinates: [number, number];
-      };
-      arrival: {
-        city: string;
-        coordinates: [number, number];
-      };
-      departure_date: string;
-      arrival_date: string;
-      status: string;
-      initial_price: number;
-      price_with_step: {
-        step: string;
-        price: number;
-      }[];
-      invoice: {
-        name: string;
-        url_invoice: string;
-      }[];
-      urgent: boolean;
-      finished: boolean;
+details: {
+    id: string;
+    name: string;
+    description: string;
+    complementary_info: string;
+    facture_url : string;
+    departure: {
+    city: string;
+    coordinates: [number, number];
     };
-    package: {
-      id: string;
-      picture: string[];
-      name: string;
-      fragility: boolean;
-      estimated_price: number;
-      weight: number;
-      volume: number;
+    arrival: {
+    city: string;
+    coordinates: [number, number];
+    };
+    departure_date: string;
+    arrival_date: string;
+    status: string;
+    initial_price: number;
+    price_with_step: {
+    step: string;
+    price: number;
     }[];
-    steps: {
-      id: number;
-      title: string;
-      description: string;
-      date: string;
-      departure: {
-        city: string;
-        coordinates: [number, number];
-      };
-      arrival: {
-        city: string;
-        coordinates: [number, number];
-      };
-      courier: {
-        name: string;
-        photoUrl: string;
-      };
-      idLink: number;
+    invoice: {
+    name: string;
+    url_invoice: string;
     }[];
-  }
+    urgent: boolean;
+    finished: boolean;
+};
+package: {
+    id: string;
+    picture: string[];
+    name: string;
+    fragility: boolean;
+    estimated_price: number;
+    weight: number;
+    volume: number;
+}[];
+steps: {
+    id: number;
+    title: string;
+    description: string;
+    date: string;
+    departure: {
+    city: string;
+    coordinates: [number, number];
+    };
+    arrival: {
+    city: string;
+    coordinates: [number, number];
+    };
+    courier: {
+    name: string;
+    photoUrl: string;
+    };
+    idLink: number;
+}[];
+}
 
 
 export interface ShipmentListItem {
-    id: string
-    name: string
-    status: string
-    urgent: boolean
-    departure: {
-      city: string
-      coordinates: [number, number]
-    }
-    arrival: {
-      city: string
-      coordinates: [number, number]
-    }
-    departure_date: string
-    arrival_date: string
-    packageCount: number
-    progress: number
-    finished: boolean
-    initial_price: number
-  }
+id: string
+name: string
+status: string
+urgent: boolean
+departure: {
+    city: string
+    coordinates: [number, number]
+}
+arrival: {
+    city: string
+    coordinates: [number, number]
+}
+departure_date: string
+arrival_date: string
+packageCount: number
+progress: number
+finished: boolean
+initial_price: number
+}
 
-  export interface ShipmentHistoryRequest {
+export interface ShipmentHistoryRequest {
+id: string;
+name: string;
+departureCity: string;
+arrivalCity: string;
+urgent: boolean;
+nbColis: number;
+nbLivraisons: number;
+}
+
+export interface DeliveryHistoryAsClient {
     id: string;
-    name: string;
+    deliveryman: {
+      id: string;
+      name: string;
+      photo: string;
+    };
+    departureDate: string;
+    arrivalDate: string;
     departureCity: string;
     arrivalCity: string;
-    urgent: boolean;
-    nbColis: number;
-    nbLivraisons: number;
+    announcementName: string;
+    rate: number | null;
+    comment: string | null;
   }
 
 
@@ -594,6 +610,21 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error fetching shipment history:", error);
             throw new Error("Failed to fetch shipment history");
+        }
+    }
+
+    static async getMyDeliveriesHistoryAsClient(pageIndex: number, pageSize: number): Promise<{ data: DeliveryHistoryAsClient[], totalRows: number }> {
+        try {
+            const response = await axiosInstance.get<{ data: DeliveryHistoryAsClient[], totalRows: number }>("/client/shipments/delivery/myHistoryAsClient", {
+                params: {
+                    page : pageIndex,
+                    limit : pageSize,
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching delivery history:", error);
+            throw new Error("Failed to fetch delivery history");
         }
     }
 

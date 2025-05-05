@@ -628,5 +628,15 @@ export class DeliveriesAPI {
         }
     }
 
+    static async addReviewsAsClient(delivery_id: string, rate: number, comment: string): Promise<{message: string}> {
+        try {
+            const response = await axiosInstance.post(`/client/shipments/delivery/${delivery_id}/comments`, { rate, comment });
+            return response.data;
+        } catch (error) {
+            console.error("Error adding review:", error);
+            throw new Error("Failed to add review");
+        }
+    }
+
 
 }

@@ -32,7 +32,7 @@ const delivery = {
   arrival_date: "2023-10-03",
   status: "En cours",
   total_price: 35,
-  cart_dropped: true, // Boolean pour le lâcher de chariot
+  cart_dropped: true,
   packages: [
     {
       id: "1",

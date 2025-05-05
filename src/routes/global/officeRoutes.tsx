@@ -41,6 +41,7 @@ import ShipmentSuccessCreatePage from "@/pages/features/deliveries/create/succes
 import { CreateDeliveryAsMerchantPage } from "@/pages/features/deliveries/create/createAsMerchant";
 import ShipmentsDetailsOfficePage from "@/pages/features/deliveries/shipment-details";
 import CurrentShipmentsPage from "@/pages/features/deliveries/shipments";
+import HistoryShipmentRequestsClientPage from "@/pages/features/deliveries/shipments-history";
 
 const OfficeRoute: React.FC = () => {
   return (
@@ -65,6 +66,7 @@ const OfficeRoute: React.FC = () => {
         <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
           <Route path="deliveries" element={<DeliveriesPage />} />
           <Route path="shipments/:id" element={<ShipmentsDetailsOfficePage />} />
+          <Route path="shipments-history" element={<HistoryShipmentRequestsClientPage />} />
           <Route path="shipments/" element={<CurrentShipmentsPage />} />
           <Route path="shipments/create" element={<CreateDeliveryPage />} />
           <Route path="shipments/create/finish" element={<ShipmentSuccessCreatePage />} />

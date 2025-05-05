@@ -482,7 +482,7 @@ export class DeliveriesAPI {
     static async replyToReview(review_id: string, content: string): Promise<any> {
         try {
             const id = review_id
-            const response = await axiosInstance.post(`/client/shipments/delivery/reviews/${id }/reply`, { content });
+            const response = await axiosInstance.post(`/client/shipments/delivery/reviews/${id}/reply`, { content });
             return response.data;
         } catch (error) {
             console.error("Error replying to review:", error);

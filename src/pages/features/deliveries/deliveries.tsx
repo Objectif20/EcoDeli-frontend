@@ -4,6 +4,7 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { CurrentDeliveryAsClient, DeliveriesAPI } from "@/api/deliveries.api";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function DeliveriesPage() {
   const dispatch = useDispatch();
@@ -56,11 +57,15 @@ export function DeliveriesPage() {
               Arrivée: {new Date(delivery.date_arrival).toLocaleDateString()}
             </p>
             <div className="flex items-center mt-4 space-x-2">
-              <img
-                src={delivery.deliveryman.photo}
-                alt={delivery.deliveryman.name}
-                className="w-8 h-8 rounded-full"
-              />
+              <Avatar>
+                <AvatarImage
+                  src={delivery.deliveryman.photo}
+                  alt={`Livreur ${delivery.deliveryman.name}`}
+                />
+                <AvatarFallback>
+                  {delivery.deliveryman.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               <p className="text-sm">{delivery.deliveryman.name}</p>
             </div>
             <Button

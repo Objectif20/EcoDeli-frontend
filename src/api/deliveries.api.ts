@@ -673,5 +673,15 @@ export class DeliveriesAPI {
         }
     }
 
+    static async cancelDelivery(delivery_id: string): Promise<any> {
+        try {
+            const response = await axiosInstance.delete(`/client/shipments/delivery/${delivery_id}/cancel`);
+            return response.data;
+        } catch (error) {
+            console.error("Error cancelling delivery:", error);
+            throw new Error("Failed to cancel delivery");
+        }
+    }
+
 
 }

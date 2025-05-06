@@ -1,94 +1,102 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { Truck } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useTranslation } from "react-i18next";
-import { BarcodeScanner } from "@/components/barcodeScanner";
-import { DeliveriesAPI } from "@/api/deliveries.api";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
+import { useEffect, useState } from "react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import { Truck } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { useTranslation } from "react-i18next"
+import { BarcodeScanner } from "@/components/barcodeScanner"
+import { DeliveriesAPI } from "@/api/deliveries.api"
+import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp"
+import { CancelDeliveryDialog } from "./cancel-delivery-dialog"
+import { Button } from "@/components/ui/button"
 
 type DeliveryProps = {
   delivery: {
-    id: string;
-    from: string;
-    to: string;
-    status: string;
-    pickupDate: string | null;
-    estimatedDeliveryDate: string | null;
+    id: string
+    from: string
+    to: string
+    status: string
+    pickupDate: string | null
+    estimatedDeliveryDate: string | null
     coordinates: {
-      origin: [number, number];
-      destination: [number, number];
-    };
-    progress: number;
-  };
-  onUpdate: () => void;
-};
+      origin: [number, number]
+      destination: [number, number]
+    }
+    progress: number
+  }
+  onUpdate: () => void
+}
 
 export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
-  const { t } = useTranslation();
-  const [isMounted, setIsMounted] = useState(false);
-  const [showScanner, setShowScanner] = useState(false);
-  const [scannedCode, setScannedCode] = useState<string | null>(null);
-  const [otpCode, setOtpCode] = useState<string>("");
+  const { t } = useTranslation()
+  const [isMounted, setIsMounted] = useState(false)
+  const [showScanner, setShowScanner] = useState(false)
+  const [scannedCode, setScannedCode] = useState<string | null>(null)
+  const [otpCode, setOtpCode] = useState<string>("")
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    setIsMounted(true)
+  }, [])
 
   const handleScanResult = (code: string) => {
-    setScannedCode(code);
-    setShowScanner(false);
-  };
+    setScannedCode(code)
+    setShowScanner(false)
+  }
 
   const handleTakeDelivery = async () => {
     if (scannedCode) {
       try {
-        await DeliveriesAPI.takeDeliveryPackage(delivery.id, scannedCode);
-        onUpdate();
+        await DeliveriesAPI.takeDeliveryPackage(delivery.id, scannedCode)
+        onUpdate()
       } catch (error) {
-        console.error("Error taking delivery package:", error);
+        console.error("Error taking delivery package:", error)
       }
     }
-  };
+  }
 
   const handleFinishDelivery = async () => {
     try {
-      await DeliveriesAPI.finishedDelivery(delivery.id);
-      onUpdate();
+      await DeliveriesAPI.finishedDelivery(delivery.id)
+      onUpdate()
     } catch (error) {
-      console.error("Error finishing delivery:", error);
+      console.error("Error finishing delivery:", error)
     }
-  };
+  }
 
   const handleValidateDelivery = async () => {
     try {
-      await DeliveriesAPI.validateDeliveryWithCode(delivery.id, otpCode);
-      onUpdate();
+      await DeliveriesAPI.validateDeliveryWithCode(delivery.id, otpCode)
+      onUpdate()
     } catch (error) {
-      console.error("Error validating delivery:", error);
+      console.error("Error validating delivery:", error)
     }
-  };
+  }
+
+  const handleCancelDelivery = async (deliveryId: string) => {
+    try {
+      // Here you would call your API to cancel the delivery
+      // For example: await DeliveriesAPI.cancelDelivery(deliveryId);
+      console.log("Delivery cancelled:", deliveryId)
+      onUpdate()
+    } catch (error) {
+      console.error("Error cancelling delivery:", error)
+    }
+  }
 
   const getBadgeColor = (status: string) => {
     switch (status) {
       case "En cours de livraison":
-        return "bg-primary/20 text-primary hover:bg-primary/20";
+        return "bg-primary/20 text-primary hover:bg-primary/20"
       case "En transit":
-        return "bg-blue-100 text-blue-700 hover:bg-blue-100";
+        return "bg-blue-100 text-blue-700 hover:bg-blue-100"
       case "En préparation":
-        return "bg-amber-100 text-amber-700 hover:bg-amber-100";
+        return "bg-amber-100 text-amber-700 hover:bg-amber-100"
       default:
-        return "bg-gray-100 text-gray-700 hover:bg-gray-100";
+        return "bg-gray-100 text-gray-700 hover:bg-gray-100"
     }
-  };
+  }
 
   return (
     <Card className="rounded-xl">
@@ -103,10 +111,7 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
             })}
           </CardTitle>
         </div>
-        <Badge
-          variant="outline"
-          className={`${getBadgeColor(delivery.status)} px-4 py-1.5 rounded-full`}
-        >
+        <Badge variant="outline" className={`${getBadgeColor(delivery.status)} px-4 py-1.5 rounded-full`}>
           {t("client.pages.office.deliveryman.ongoingDeliveries.pending")}
         </Badge>
       </CardHeader>
@@ -123,14 +128,12 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
               <Marker position={delivery.coordinates.origin}>
                 <Popup>
-                  {t("client.pages.office.deliveryman.ongoingDeliveries.departure")}{" "}
-                  {delivery.from}
+                  {t("client.pages.office.deliveryman.ongoingDeliveries.departure")} {delivery.from}
                 </Popup>
               </Marker>
               <Marker position={delivery.coordinates.destination}>
                 <Popup>
-                  {t("client.pages.office.deliveryman.ongoingDeliveries.arrival")}{" "}
-                  {delivery.to}
+                  {t("client.pages.office.deliveryman.ongoingDeliveries.arrival")} {delivery.to}
                 </Popup>
               </Marker>
             </MapContainer>
@@ -160,9 +163,7 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
                   <div className="bg-primary w-4 h-4 rounded-full"></div>
                   <div className="text-sm text-foreground ml-2">
                     {t("client.pages.office.deliveryman.ongoingDeliveries.packageTransmitted")}
-                    <div className="font-semibold">
-                      {delivery.pickupDate || "N/A"}
-                    </div>
+                    <div className="font-semibold">{delivery.pickupDate || "N/A"}</div>
                   </div>
                 </div>
               </div>
@@ -172,9 +173,7 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
                 <div className="flex items-center mt-2 justify-end">
                   <div className="text-sm text-foreground mr-2 text-right">
                     {t("client.pages.office.deliveryman.ongoingDeliveries.estimatedArrivalDate")}
-                    <div className="font-semibold">
-                      {delivery.estimatedDeliveryDate || "N/A"}
-                    </div>
+                    <div className="font-semibold">{delivery.estimatedDeliveryDate || "N/A"}</div>
                   </div>
                   <div className="bg-foreground w-4 h-4 rounded-full"></div>
                 </div>
@@ -185,47 +184,37 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
           {delivery.status === "pending" && (
             <div className="mt-8">
               {!showScanner ? (
-                <button
-                  onClick={() => setShowScanner(true)}
-                  className="bg-primary text-white px-4 py-2 rounded-md"
-                >
-                  📦 Scanner le colis
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <Button onClick={() => setShowScanner(true)} >
+                    📦 Scanner le colis
+                  </Button>
+                  <CancelDeliveryDialog deliveryId={delivery.id} onCancel={handleCancelDelivery} />
+                </div>
               ) : (
                 <div className="flex flex-col items-center gap-4 mt-4">
                   <BarcodeScanner onResult={handleScanResult} />
-                  <button
-                    onClick={() => setShowScanner(false)}
-                    className="text-sm text-red-600 underline"
-                  >
+                  <Button onClick={() => setShowScanner(false)} variant={"destructive"}>
                     ❌ Annuler le scan
-                  </button>
+                  </Button>
                 </div>
               )}
               {scannedCode && (
                 <div className="mt-2">
-                  <p className="text-green-600 font-medium">
-                    ✅ Code scanné : {scannedCode}
-                  </p>
-                  <button
-                    onClick={handleTakeDelivery}
-                    className="bg-primary text-white px-4 py-2 rounded-md mt-2"
-                  >
+                  <p className="font-medium">✅ Code scanné : {scannedCode}</p>
+                  <Button onClick={handleTakeDelivery} >
                     Prendre le colis
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
           )}
 
           {delivery.status === "taken" && (
-            <div className="mt-8">
-              <button
-                onClick={handleFinishDelivery}
-                className="bg-primary text-white px-4 py-2 rounded-md"
-              >
+            <div className="mt-8 flex flex-wrap gap-2">
+              <Button onClick={handleFinishDelivery}>
                 Terminer la livraison
-              </button>
+              </Button>
+              <CancelDeliveryDialog deliveryId={delivery.id} onCancel={handleCancelDelivery} />
             </div>
           )}
 
@@ -244,16 +233,16 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
                   <InputOTPSlot index={5} />
                 </InputOTPGroup>
               </InputOTP>
-              <button
-                onClick={handleValidateDelivery}
-                className="bg-primary text-white px-4 py-2 rounded-md mt-2"
-              >
-                Valider la livraison
-              </button>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <Button onClick={handleValidateDelivery}>
+                  Valider la livraison
+                </Button>
+                <CancelDeliveryDialog deliveryId={delivery.id} onCancel={handleCancelDelivery} />
+              </div>
             </div>
           )}
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

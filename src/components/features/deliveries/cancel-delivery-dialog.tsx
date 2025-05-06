@@ -29,7 +29,6 @@ export function CancelDeliveryDialog({ deliveryId, onCancel }: CancelDeliveryDia
     try {
       const response = await DeliveriesAPI.cancelDelivery(deliveryId)
       if (response.status === 200) {
-        console.log("Calling onCancel")
         await onCancel(deliveryId)
         setOpen(false)
       } else {

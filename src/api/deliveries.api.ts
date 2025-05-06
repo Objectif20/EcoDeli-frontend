@@ -331,6 +331,31 @@ export interface DeliveryHistoryAsClient {
     comment: string | null;
   }
 
+export interface DeliveryDetailsPage {
+    departure: {
+      city: string;
+      coordinates: [number, number];
+    };
+    arrival: {
+      city: string;
+      coordinates: [number, number];
+    };
+    departure_date: string;
+    arrival_date: string;
+    status: "pending" | "taken" | "finished" | "validated";
+    total_price: number;
+    cart_dropped: boolean;
+    packages: {
+      id: string;
+      name: string;
+      fragility: boolean;
+      estimated_price: number;
+      weight: number;
+      volume: number;
+      picture: string[];
+    }[];
+  }
+
 
 export class DeliveriesAPI {
 
@@ -635,6 +660,16 @@ export class DeliveriesAPI {
         } catch (error) {
             console.error("Error adding review:", error);
             throw new Error("Failed to add review");
+        }
+    }
+
+    static async getDeliveryDetails(delivery_id : string) : Promise<DeliveryDetailsPage> {
+        try {
+            const response = await axiosInstance.get<DeliveryDetailsPage>(`/client/shipments/delivery/${delivery_id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching delivery details:", error);
+            throw new Error("Failed to fetch delivery details");
         }
     }
 

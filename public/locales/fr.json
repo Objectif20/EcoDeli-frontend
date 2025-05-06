@@ -1883,6 +1883,7 @@
         "becomeDeliveryman": "Devenir Transporteur ?",
         "createDeliveryRequest": "Nouvelle demande de livraison",
         "activeShipments": "Annonces actives",
+        "createTrolleyDrop" : "Lâcher de chariot",
         "createService": "Nouvelle prestation",
         "becomeDeliverymanDescription": "Devenez transporteur et livrez vos colis en toute sécurité avec EcoDeli. Inscrivez-vous dès maintenant pour profiter de nos offres exclusives.",
         "close": "Fermer",

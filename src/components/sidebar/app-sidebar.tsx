@@ -248,6 +248,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </Button>
             </div>
           )}
+          {isMerchant && open &&(
+            <div className="mx-4">
+              <Button className="w-full" onClick={() => navigate("/office/shipments/create-trolley")}>
+                {t("client.components.sidebar.createTrolleyDrop")}
+              </Button>
+            </div>
+          )}
           {isProviderValidated && open && (
             <div className="mx-4">
               <Button className="w-full" onClick={() => navigate("/office/create-service")}>

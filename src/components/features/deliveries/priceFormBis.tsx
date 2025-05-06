@@ -34,10 +34,13 @@ import {
 } from "@/components/ui/tooltip";
 import { useEffect, useState } from "react";
 import { DeliveriesAPI } from "@/api/deliveries.api";
+import { TimePickerInput } from "@/components/ui/time-picker-input"; // Import the TimePickerInput component
 
-export type PriceChoiceFormValues = {
+
+export type PriceChoiceBisFormValues = {
   price: string;
   deadline_date: string;
+  hour_date: string;
   shipmentName: string;
   isPriorityShipping: boolean;
   deliveryEmail: string;
@@ -61,9 +64,9 @@ export interface SubscriptionForClient {
 export const PriceFormComponent = ({
   
 }: {
-  onFormSubmit: (data: PriceChoiceFormValues) => void;
+  onFormSubmit: (data: PriceChoiceBisFormValues) => void;
 }) => {
-  const { control, watch,  } = useFormContext<PriceChoiceFormValues>();
+  const { control, watch, setValue } = useFormContext<PriceChoiceBisFormValues>();
 
   const price = Number.parseFloat(watch("price") || "0");
   const isPriorityShipping = watch("isPriorityShipping");
@@ -110,7 +113,27 @@ export const PriceFormComponent = ({
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "";
+    console.log("Formatted date:", date);
+    console.log("Formatted date string:", format(date, "PPP", { locale: fr }));
     return format(date, "PPP", { locale: fr });
+  };
+
+  const timeStringToDate = (time: string): Date => {
+    const [hours, minutes] = time.split(":").map(Number);
+    const date = new Date();
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
+  };
+
+  const handleTimeChange = (
+    field: "hour_date",
+    date: Date | undefined
+  ) => {
+    const timeString = date ? date.toTimeString().slice(0, 5) : null;
+    setValue(field, timeString || "");
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -210,7 +233,35 @@ export const PriceFormComponent = ({
         )}
       />
 
+      {/* Nouvel input pour l'heure du rendez-vous */}
       <FormField
+        control={control}
+        name="hour_date"
+        render={({ field }) => (
+          <FormItem className="flex flex-col">
+            <FormLabel>Heure du rendez-vous</FormLabel>
+            <div className="flex items-end gap-2">
+              <TimePickerInput
+                picker="hours"
+                date={field.value ? timeStringToDate(field.value) : undefined}
+                setDate={(date) => handleTimeChange("hour_date", date)}
+              />
+              <TimePickerInput
+                picker="minutes"
+                date={field.value ? timeStringToDate(field.value) : undefined}
+                setDate={(date) => {
+                  const current = field.value ? timeStringToDate(field.value) : new Date();
+                  current.setMinutes(date?.getMinutes() || 0);
+                  handleTimeChange("hour_date", current);
+                }}
+              />
+            </div>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+    <FormField
         control={control}
         name="shipmentImage"
         render={({ field }) => (

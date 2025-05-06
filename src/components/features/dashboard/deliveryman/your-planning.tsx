@@ -45,6 +45,7 @@ export default function YourPlanning() {
               eventDay:
                 "relative after:absolute after:w-2 after:h-2 after:bg-primary after:rounded-full after:bottom-1 after:left-1/2 after:-translate-x-1/2",
             }}
+            
           />
         </div>
       </CardContent>

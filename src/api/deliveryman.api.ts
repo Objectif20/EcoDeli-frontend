@@ -43,6 +43,8 @@ export interface Route {
   }
 
 
+
+
 export class DeliverymanApi {
 
     static async getDeliverymanRoutes() : Promise<Route[]> {
@@ -88,4 +90,28 @@ export class DeliverymanApi {
         return response.data;
       }
 
+
+      static async isDeliverymanElligibleToTakeDeliveries(user_id : string): Promise<boolean> {
+
+        try {
+          const id = user_id;
+          const response = await axiosInstance.get<boolean>(`/client/deliveryman/${id}/admissible`);
+          return response.data;
+        } catch (error) {
+          console.error("Error checking deliveryman eligibility:", error);
+          throw error;
+        }
+      }
+
+      static async isDeliverymanAvailableForThisDeliveries(deliveryID : string): Promise<boolean> {
+        try {
+          const id = deliveryID;
+          const response = await axiosInstance.get<boolean>(`/client/deliveryman/admissible/${id}`);
+          return response.data;
+        } catch (error) {
+          console.error("Error checking deliveryman availability:", error);
+          throw error;
+        }
+
+      }
 }

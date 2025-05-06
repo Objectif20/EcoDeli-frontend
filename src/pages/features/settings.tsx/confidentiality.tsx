@@ -107,13 +107,13 @@ const BillingSettings: React.FC = () => {
           <nav className="grid gap-4 text-sm text-muted-foreground">
             <Link to="/office/general-settings">{t('client.pages.office.settings.billing.generalSettings')}</Link>
             <Link to="/office/profile">{t('client.pages.office.settings.billing.profile')}</Link>
-            <Link to="/office/privacy">{t('client.pages.office.settings.billing.privacy')}</Link>
+            <Link to="/office/privacy" className="font-semibold text-primary active-link">{t('client.pages.office.settings.billing.privacy')}</Link>
             <Link to="/office/contact-details">{t('client.pages.office.settings.billing.contactDetails')}</Link>
             {(isMerchant || isClient) && (
               <Link to="/office/subscriptions">{t('client.pages.office.settings.billing.subscriptions')}</Link>
             )}
             {(isProvider || isDeliveryman) && (
-              <Link to="/office/billing-settings" className="font-semibold text-primary active-link">{t('client.pages.office.settings.billing.billing')}</Link>
+              <Link to="/office/billing-settings">{t('client.pages.office.settings.billing.billing')}</Link>
             )}
             <Link to="/office/reports">{t('client.pages.office.settings.billing.reports')}</Link>
           </nav>

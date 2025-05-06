@@ -36,10 +36,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
-import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
+import { DeliveriesAPI } from "@/api/deliveries.api";
 
 export const schema = z.object({
   id: z.string(),
@@ -55,28 +55,43 @@ export const schema = z.object({
   rate: z.number(),
 });
 
-
-
-export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
+export const columns = (
+  setData: React.Dispatch<React.SetStateAction<z.infer<typeof schema>[]>>
+): ColumnDef<z.infer<typeof schema>>[] => {
   const { t } = useTranslation();
-  const [selectedReview, setSelectedReview] = useState<any>(null);
-  const [replyMessage, setReplyMessage] = useState("");
+  const [selectedReview, setSelectedReview] = React.useState<z.infer<typeof schema> | null>(null);
+  const [open, setOpen] = React.useState(false);
+  const replyMessageRef = React.useRef<HTMLTextAreaElement>(null);
 
-  const handleClose = () => {
-    setSelectedReview(null);
-    setReplyMessage("");
-  };
+  const handleReplySubmit = async () => {
+    const replyMessage = replyMessageRef.current?.value;
 
-  const handleReplySubmit = () => {
-    console.log(`Réponse à l'avis ID ${selectedReview?.id}: ${replyMessage}`);
-    setReplyMessage("");
+    if (!replyMessage || !selectedReview) return;
+
+    try {
+      await DeliveriesAPI.replyToReview(selectedReview.id, replyMessage);
+
+      setData((prev) =>
+        prev.map((review) =>
+          review.id === selectedReview.id
+            ? { ...review, reply: true, reply_content: replyMessage }
+            : review
+        )
+      );
+
+      setOpen(false);
+      setSelectedReview(null);
+      if (replyMessageRef.current) replyMessageRef.current.value = "";
+    } catch (error) {
+      console.error("Error sending reply:", error);
+    }
   };
 
   return [
     {
       id: "author",
       accessorKey: "author.name",
-      header: t('client.pages.office.delivery.deliveryman.reviews.author'),
+      header: t("client.pages.office.delivery.deliveryman.reviews.author"),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Avatar>
@@ -90,7 +105,7 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       accessorKey: "content",
-      header: t('client.pages.office.delivery.deliveryman.reviews.message'),
+      header: t("client.pages.office.delivery.deliveryman.reviews.message"),
       cell: ({ row }) => (
         <span>
           {row.original.content.length > 30
@@ -101,63 +116,90 @@ export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
     },
     {
       accessorKey: "delivery_name",
-      header: t('client.pages.office.delivery.deliveryman.reviews.delivery'),
+      header: t("client.pages.office.delivery.deliveryman.reviews.delivery"),
       cell: ({ row }) => (
         <Link to={`/office/deliveries/${row.original.id}`}>
-          {t('client.pages.office.delivery.deliveryman.reviews.viewDelivery')}
+          {t("client.pages.office.delivery.deliveryman.reviews.viewDelivery")}
         </Link>
       ),
     },
-    { accessorKey: "rate", header: t('client.pages.office.delivery.deliveryman.reviews.rate'), cell: ({ row }) => row.original.rate },
+    {
+      accessorKey: "rate",
+      header: t("client.pages.office.delivery.deliveryman.reviews.rate"),
+      cell: ({ row }) => row.original.rate,
+    },
     {
       id: "actions",
       cell: ({ row }) => (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant="link"
-              className="w-fit px-0 text-left text-foreground"
-            >
-              {t('client.pages.office.delivery.deliveryman.reviews.details')}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader className="flex flex-col items-center text-center">
-              <Avatar className="w-16 h-16 mb-2">
-                <AvatarImage src={row.original?.author.photo} />
-                <AvatarFallback>{row.original?.author.name[0]}</AvatarFallback>
-              </Avatar>
-              <DialogTitle className="text-lg font-semibold">
-                {row.original?.author.name}
-              </DialogTitle>
-              <DialogDescription className="text-sm text-gray-500">
+        <>
+          <Button
+            variant="link"
+            className="w-fit px-0 text-left text-foreground"
+            onClick={() => {
+              setSelectedReview(row.original);
+              setOpen(true);
+              if (replyMessageRef.current) replyMessageRef.current.value = "";
+            }}
+          >
+            {t("client.pages.office.delivery.deliveryman.reviews.details")}
+          </Button>
 
-              </DialogDescription>
-            </DialogHeader>
-            <p className="text-sm text-center text-gray-600">{row.original?.content}</p>
-            {!row.original?.reply && (
-              <div className="mt-4">
-                <Textarea
-                  placeholder={t('client.pages.office.delivery.deliveryman.reviews.replyPlaceholder')}
-                />
-                <Button className="mt-2 w-full" onClick={handleReplySubmit}>
-                  {t('client.pages.office.delivery.deliveryman.reviews.send')}
-                </Button>
-              </div>
-            )}
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button type="button" onClick={handleClose}>
-                  {t('client.pages.office.delivery.deliveryman.reviews.close')}
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent className="sm:max-w-md">
+              {selectedReview && (
+                <>
+                  <DialogHeader className="flex flex-col items-center text-center">
+                    <Avatar className="w-16 h-16 mb-2">
+                      <AvatarImage src={selectedReview.author.photo} />
+                      <AvatarFallback>
+                        {selectedReview.author.name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <DialogTitle className="text-lg font-semibold">
+                      {selectedReview.author.name}
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-center">
+                      {selectedReview.content}
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  {!selectedReview.reply ? (
+                    <div className="mt-4">
+                      <Textarea
+                        ref={replyMessageRef}
+                        placeholder={t(
+                          "client.pages.office.delivery.deliveryman.reviews.replyPlaceholder"
+                        )}
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground mt-4">
+                      {t(
+                        "client.pages.office.delivery.deliveryman.reviews.alreadyReplied"
+                      )}
+                    </p>
+                  )}
+
+                  {!selectedReview.reply && (
+                    <DialogFooter>
+                      <Button
+                        className="mt-2 w-full"
+                        onClick={handleReplySubmit}
+                      >
+                        {t("client.pages.office.delivery.deliveryman.reviews.send")}
+                      </Button>
+                    </DialogFooter>
+                  )}
+                </>
+              )}
+            </DialogContent>
+          </Dialog>
+        </>
       ),
     },
   ];
 };
+
 
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
   const { t } = useTranslation();
@@ -183,7 +225,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
 
   const table = useReactTable({
     data,
-    columns: columns(),
+    columns: columns(setData),
     state: {
       sorting,
       columnVisibility,

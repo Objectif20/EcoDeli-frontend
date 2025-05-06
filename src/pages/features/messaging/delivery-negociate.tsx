@@ -22,8 +22,9 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import CityAsyncSelectDemo from "@/components/search-place"
-import { DeliveriesAPI } from "@/api/deliveries.api" // Import the API function
+import { DeliveriesAPI } from "@/api/deliveries.api"
 import axios from "axios"
+import { Switch } from "@/components/ui/switch"
 
 interface DeliveryNegotiateProps {
   deliveryman_user_id: string
@@ -69,6 +70,7 @@ export default function DeliveryNegotiateDialog({
   const [date, setDate] = useState<Date | undefined>()
   const [shipments, setShipments] = useState<ShipmentDetails[]>([])
   const [selectedShipment, setSelectedShipment] = useState<ShipmentDetails | null>(null)
+  const [customAddressEnabled, setCustomAddressEnabled] = useState(false)
 
   const [formData, setFormData] = useState<{
     delivery_person_id: string
@@ -79,6 +81,7 @@ export default function DeliveryNegotiateDialog({
     latitude?: number
     longitude?: number
     end_date: string
+    isbox: boolean 
   }>({
     delivery_person_id: deliveryman_user_id,
     price: 0,
@@ -88,6 +91,7 @@ export default function DeliveryNegotiateDialog({
     latitude: 0,
     longitude: 0,
     end_date: "",
+    isbox: false,
   })
 
   useEffect(() => {
@@ -123,7 +127,7 @@ export default function DeliveryNegotiateDialog({
           })
           setFormData((prev) => ({
             ...prev,
-            price: data[0].estimated_total_price || 0,
+            new_price: data[0].estimated_total_price || 0,
           }))
         }
       } catch (error) {
@@ -170,6 +174,7 @@ export default function DeliveryNegotiateDialog({
       city: "",
       latitude: 0,
       longitude: 0,
+      isbox : false
     }));
     console.log("Form data after warehouse selection:", formData);
   };
@@ -222,7 +227,6 @@ export default function DeliveryNegotiateDialog({
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
-          {/* Shipment selection */}
           <div className="grid gap-4">
             <h3 className="text-sm font-medium">Sélection de la livraison</h3>
             <div className="space-y-2">
@@ -254,26 +258,39 @@ export default function DeliveryNegotiateDialog({
             </div>
           </div>
 
-          {/* Price section */}
           <div className="grid gap-4">
             <h3 className="text-sm font-medium">Informations de prix</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="price">Prix actuel (€)</Label>
-                <Input id="price" value={formData.price} readOnly className="bg-gray-50" />
+                <div className="space-y-2">
+                  <Label htmlFor="new_price">Modifier le prix pour le reste de la demande de livraison</Label>
+                  <Input
+                    id="new_price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={formData.new_price}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        new_price: Number.parseFloat(e.target.value) || 0,
+                      }))
+                    }
+                  />
+                </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="new_price">Nouveau prix (€)</Label>
+                <Label htmlFor="price">Prix pour une livraison négociée avec ce transporteur</Label>
                 <Input
-                  id="new_price"
+                  id="price"
                   type="number"
                   min="0"
                   step="0.01"
-                  value={formData.new_price || ""}
+                  value={formData.price || ""}
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
-                      new_price: Number.parseFloat(e.target.value) || 0,
+                      price: Number.parseFloat(e.target.value) || 0,
                     }))
                   }
                 />
@@ -281,7 +298,6 @@ export default function DeliveryNegotiateDialog({
             </div>
           </div>
 
-          {/* Location section */}
           <div className="grid gap-4">
             <h3 className="text-sm font-medium">Destination</h3>
             <Tabs
@@ -319,10 +335,24 @@ export default function DeliveryNegotiateDialog({
                     labelValue={selectedCity?.label || ""}
                   />
                   {selectedCity && (
-                    <div className="mt-2 text-sm text-gray-500">
+                    <div className="mt-2 text-sm">
                       Coordonnées : {selectedCity.lat.toFixed(6)}, {selectedCity.lon.toFixed(6)}
                     </div>
                   )}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="isbox" className="">S'agit-il d'un box ?</Label>
+                  <Switch
+                    id="isbox"
+                    checked={customAddressEnabled}
+                    onCheckedChange={() => {
+                      setCustomAddressEnabled(!customAddressEnabled)
+                      setFormData((prev) => ({
+                        ...prev,
+                        isbox: !customAddressEnabled,
+                      }))
+                    }}
+                  />
                 </div>
               </TabsContent>
             </Tabs>

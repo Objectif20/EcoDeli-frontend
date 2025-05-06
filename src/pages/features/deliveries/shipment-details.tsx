@@ -5,58 +5,50 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { MapPin, AlertTriangle } from "lucide-react"
+import { MapPin, AlertTriangle, FileText } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { toast } from "sonner"
-import { DeliveriesAPI, type Shipment } from "@/api/deliveries.api"
-import { DeliverymanApi } from "@/api/deliveryman.api"
-import { useNavigate, useParams } from "react-router-dom"
+import { format } from "date-fns"
+import { fr } from "date-fns/locale"
+import { useParams, useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
+import { DeliveriesAPI, ShipmentsDetailsOffice } from "@/api/deliveries.api"
 
-export default function DeliveryDetailsPage() {
+export default function ShipmentsDetailsOfficePage() {
   const [_, setActiveTab] = useState("overview")
-  const [delivery, setDelivery] = useState<Shipment>()
-  const [isDeliveryman, setIsDeliveryman] = useState(false)
-  const [isBooked, setIsBooked] = useState(false)
-
+  const [delivery, setDelivery] = useState<ShipmentsDetailsOffice | null>(null)
   const navigate = useNavigate()
+
+  const dispatch = useDispatch();
+
   const { id } = useParams()
 
   useEffect(() => {
-    if (!id) return
+    dispatch(
+      setBreadcrumb({
+        segments: ["Accueil", "Demandes de livraison", "Détails"],
+        links: ["/office/dashboard", "/office/shipments"],
+      })
+    )
 
-    const fetchShipment = async () => {
-      try {
-        const data = await DeliveriesAPI.getShipmentDetailsById(id)
-        setDelivery(data)
-      } catch (error) {
-        console.error("Erreur de chargement de la livraison:", error)
+    const fetchDeliveryDetails = async () => {
+      if (id) {
+        try {
+          const data = await DeliveriesAPI.getShipmentDetailsByIdOffice(id)
+          setDelivery(data)
+        } catch (error) {
+          console.error("Erreur lors de la récupération des détails de la livraison.")
+        }
+      } else {
+        console.error("Erreur : ID de livraison manquant")
       }
     }
 
-    const checkEligibility = async () => {
-      try {
-        const eligible = await DeliverymanApi.isDeliverymanAvailableForThisDeliveries(id)
-        setIsDeliveryman(eligible)
-      } catch (error) {
-        console.error("Erreur d'éligibilité:", error)
-      }
-    }
+    fetchDeliveryDetails()
+  }, [dispatch, id])
 
-    fetchShipment()
-    checkEligibility()
-  }, [id])
 
   if (!id) return <div>Erreur : ID de livraison manquant</div>
   if (!delivery) return <div>Chargement...</div>
@@ -64,13 +56,11 @@ export default function DeliveryDetailsPage() {
   const lastStep = delivery.steps[delivery.steps.length - 1]
   let progress = 0
 
-  // Nouvelle logique de progression selon les IDs des étapes
   if (lastStep?.id === -1) {
-    progress = 0 // Aucune étape
+    progress = 0 
   } else if (lastStep?.id === 0 || lastStep?.id === 1000) {
-    progress = 100 // Livraison complète
+    progress = 100 
   } else if (lastStep?.id >= 1 && lastStep?.id <= 999) {
-    // Trouver l'étape avec le plus grand ID entre 1 et 999
     const maxStepId = Math.max(
       ...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id),
     )
@@ -78,25 +68,11 @@ export default function DeliveryDetailsPage() {
     progress = (maxStepId / totalSteps) * 100
   }
 
-  const handleBook = async () => {
-    try {
-      await DeliveriesAPI.bookShipment(id)
-      toast.success("Réservation réussie !")
-      setIsBooked(true)
-    } catch (error) {
-      console.error("Erreur de réservation:", error)
-    }
+  const formatDate = (dateString: string) => {
+    return format(new Date(dateString), "d MMMM yyyy", { locale: fr })
   }
 
-  const handlePartialBook = async () => {
-    try {
-      await DeliveriesAPI.askToNegotiate(id)
-      navigate("/office/messaging")
-      setIsBooked(true)
-    } catch (error) {
-      console.error("Erreur de négociation:", error)
-    }
-  }
+  const totalPrice = delivery.details.price_with_step.reduce((sum, step) => sum + step.price, 0)
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -116,7 +92,7 @@ export default function DeliveryDetailsPage() {
                   <div className="flex items-center gap-2">
                     <span>Départ prévu:</span>
                     <span className="font-medium">
-                      {new Date(delivery.details.departure_date).toLocaleDateString("fr-FR")}
+                      {formatDate(delivery.details.departure_date)}
                     </span>
                   </div>
                 )}
@@ -124,7 +100,7 @@ export default function DeliveryDetailsPage() {
                   <div className="flex items-center gap-2">
                     <span>Arrivée prévue:</span>
                     <span className="font-medium">
-                      {new Date(delivery.details.arrival_date).toLocaleDateString("fr-FR")}
+                      {formatDate(delivery.details.arrival_date)}
                     </span>
                   </div>
                 )}
@@ -143,6 +119,7 @@ export default function DeliveryDetailsPage() {
                   <div>
                     <p className="text-sm font-medium">Départ</p>
                     <h3 className="text-lg font-semibold">{delivery.details.departure.city}</h3>
+                    <p className="text-sm text-foreground">Collecte le {formatDate(delivery.details.departure_date)}</p>
                   </div>
                 </div>
                 <div className="relative">
@@ -152,6 +129,9 @@ export default function DeliveryDetailsPage() {
                   <div>
                     <p className="text-sm font-medium">Arrivée</p>
                     <h3 className="text-lg font-semibold">{delivery.details.arrival.city}</h3>
+                    <p className="text-sm text-foreground">
+                      Livraison prévue le {formatDate(delivery.details.arrival_date)}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -175,68 +155,29 @@ export default function DeliveryDetailsPage() {
               </div>
               <div className="bg-background p-4 rounded-lg">
                 <div className="flex justify-between">
-                  <span className="font-medium">Prix proposé</span>
-                  <span className="text-xl font-bold">{delivery.details.initial_price} €</span>
+                  <span className="font-medium">Prix total</span>
+                  <span className="text-xl font-bold">{totalPrice} €</span>
                 </div>
+                <p className="text-sm text-foreground">Prix initial: {delivery.details.initial_price} €</p>
               </div>
-              {isDeliveryman && !isBooked && !delivery.details.finished && (
-                <div className="space-y-2">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="w-full">Prendre la livraison</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Prise en charge complète</DialogTitle>
-                        <DialogDescription>Souhaitez-vous prendre en charge toute la livraison ?</DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button onClick={handleBook}>Oui</Button>
-                        </DialogClose>
-                        <DialogClose asChild>
-                          <Button variant="outline">Non</Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-
-                  { delivery.details.trolleydrop === false && ( 
-                    
-                    <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="w-full">Prise en charge partielle</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Livraison partielle</DialogTitle>
-                        <DialogDescription>Vous serez redirigé vers la messagerie pour en discuter.</DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button onClick={handlePartialBook}>Oui</Button>
-                        </DialogClose>
-                        <DialogClose asChild>
-                          <Button variant="outline">Non</Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                  
-                  
-                  )}
-
-                </div>
-              )}
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Voir la facture
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
       <Tabs defaultValue="overview" onValueChange={setActiveTab} className="w-full mt-6">
-        <TabsList className="grid grid-cols-2 mb-6">
+        <TabsList className="grid grid-cols-3 mb-6">
           <TabsTrigger value="overview">Aperçu</TabsTrigger>
           <TabsTrigger value="packages">Colis ({delivery.package.length})</TabsTrigger>
+          {delivery.steps.some(step => step.id !== -1) && (
+            <TabsTrigger value="steps">Étapes ({delivery.steps.filter(step => step.id !== -1).length})</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -281,13 +222,7 @@ export default function DeliveryDetailsPage() {
                           </p>
                           {lastStep?.date && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              {new Date(lastStep?.date).toLocaleDateString("fr-FR", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {formatDate(lastStep?.date)}
                             </p>
                           )}
                         </div>
@@ -430,6 +365,94 @@ export default function DeliveryDetailsPage() {
                       </div>
                     </div>
                   </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="steps" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">Étapes de livraison</CardTitle>
+              <CardDescription>Suivi du parcours de votre livraison</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="relative pl-8 space-y-8">
+                <div className="absolute left-3 top-4 bottom-4 w-0.5 bg-blue-200"></div>
+
+                {delivery.steps.map((step, index) => (
+                  <div key={step.id} className="relative">
+                    <div
+                      className={`absolute left-[-29px] top-0 w-6 h-6 rounded-full ${
+                        index === delivery.steps.length - 1 ? "bg-primary" : "bg-primary bg-opacity-30"
+                      } flex items-center justify-center`}
+                    >
+                      {index === delivery.steps.length - 1 ? (
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                      ) : (
+                        <div className="w-2 h-2 rounded-full bg-primary"></div>
+                      )}
+                    </div>
+
+                    <Card
+                      className={`border ${index === delivery.steps.length - 1 ? "bg-secondary" : ""}`}
+                    >
+                      <CardContent className="pt-6">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-semibold">{step.title}</h3>
+                              <Badge variant="outline" className="text-xs">
+                                {formatDate(step.date)}
+                              </Badge>
+                            </div>
+                            <p className="text-sm mt-1">{step.description}</p>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage
+                                src={step.courier.photoUrl || "/placeholder.svg"}
+                                alt={step.courier.name}
+                              />
+                              <AvatarFallback>{step.courier.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-sm font-medium">{step.courier.name}</p>
+                              <p className="text-xs">Livreur</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Separator className="my-4" />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4" />
+                            <div>
+                              <p className="text-sm ">Départ</p>
+                              <p className="font-medium">{step.departure.city}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 " />
+                            <div>
+                              <p className="text-sm">Arrivée</p>
+                              <p className="font-medium">{step.arrival.city}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button
+                          onClick={() => navigate(`/office/deliveries/public/${step.idLink}`)}
+                          className="mt-4"
+                        >
+                          Voir les détails
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </div>
                 ))}
               </div>
             </CardContent>

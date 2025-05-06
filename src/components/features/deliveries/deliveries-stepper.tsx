@@ -16,6 +16,7 @@ import { PriceFormComponent } from "./priceForm"
 import axios from "axios"
 import { DeliveriesAPI } from "@/api/deliveries.api"
 import QuestionFinishForm from "./questionFinishForm"
+import { useNavigate } from "react-router-dom"
 
 const packageSchema = z.object({
   name: z.string().min(1, "Nom de l'objet est requis"),
@@ -51,6 +52,7 @@ export const priceChoiceSchema = z.object({
   deadline_date : z.string().min(0, "Date requise"),
   isPriorityShipping: z.boolean().default(false),
   shipmentName : z.string().min(0, "Nom de l'expédition requis"),
+  deliveryEmail : z.string().email("Email invalide"),
 })
 
 const { StepperProvider, StepperControls, StepperNavigation, StepperStep, StepperTitle, useStepper } = defineStepper(
@@ -126,6 +128,7 @@ type FormStepperProps = {
 
 const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
   const methods = useStepper()
+  const navigate = useNavigate()
 
   const getDefaultValues = (step: string) => {
     if (step === "packages") {
@@ -135,7 +138,7 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
       return { address: "", city: "", postalCode: "", pickupMethod: "", lat: "", lon: "" }
     }
     if (step === "price") {
-      return { price: "0", deadline_date: "", isPriorityShipping: false, shipmentName: "" }
+      return { price: "0", deadline_date: "", isPriorityShipping: false, shipmentName: "", deliveryEmail: "" }
     }
     return {}
   }
@@ -187,7 +190,6 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
       const pickup = fullData.pickup;
       const pickupEnd = fullData.pickupEnd;
       const price = fullData.price;
-      const [fromDate] = price?.deadline_date || [null];
   
       const formDataToSend = new FormData();
   
@@ -195,18 +197,20 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
       formDataToSend.append("shipment[estimated_total_price]", price?.price || "0");
       formDataToSend.append("shipment[weight]", packageList[0]?.weight || "0");
       formDataToSend.append("shipment[volume]", packageList[0]?.volume || "0");
-      formDataToSend.append("shipment[deadline_date]", fromDate || "");
+      formDataToSend.append("shipment[deadline_date]", fullData.price?.deadline_date || "");
       formDataToSend.append("shipment[urgent]", price?.isPriorityShipping ? "true" : "false");
       formDataToSend.append("shipment[status]", "pending");
+      formDataToSend.append("shipment[delivery_mail]", price?.deliveryEmail || "");
       const keywords = ["fragile", "colis", "expédition"];
-
+  
       keywords.forEach((keyword, index) => {
         formDataToSend.append(`shipment[keywords][${index}]`, keyword);
-      });      formDataToSend.append("shipment[departure_city]", pickup?.city || "0");
+      });
+      formDataToSend.append("shipment[departure_city]", pickup?.city || "0");
       formDataToSend.append("shipment[arrival_city]", pickupEnd?.city || "0");
       formDataToSend.append("shipment[departure_location][latitude]", pickup?.lat || "0");
       formDataToSend.append("shipment[departure_location][longitude]", pickup?.lon || "0");
-      
+  
       formDataToSend.append("shipment[arrival_location][latitude]", pickupEnd?.lat || "0");
       formDataToSend.append("shipment[arrival_location][longitude]", pickupEnd?.lon || "0");
   
@@ -242,11 +246,20 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
         }
       }
   
+      const shipmentImage = localStorage.getItem("shipment-img");
+      if (shipmentImage) {
+        const response = await fetch(shipmentImage);
+        const blob = await response.blob();
+        formDataToSend.append("shipment[img]", blob, "shipment_image.png");
+      }
+  
       try {
         await DeliveriesAPI.createShipment(formDataToSend);
+        navigate("/office/shipments/create/finish");
       } catch (error) {
         console.error("Erreur lors de l'envoi du formulaire : ", error);
       }
+
   
       return;
     }

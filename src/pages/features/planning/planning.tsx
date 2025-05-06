@@ -83,7 +83,7 @@ export default function PlanningPage() {
         />
       </div>
       <SidebarRight
-        className="hidden lg:block rounded-lg"
+        className="hidden lg:block rounded-r-lg"
         style={{ width: "17rem" }}
         onDateChange={handleDateChange}
         onMonthChange={handleMonthChange}

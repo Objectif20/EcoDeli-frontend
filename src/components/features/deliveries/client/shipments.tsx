@@ -32,131 +32,69 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { z } from "zod";
-import FeedbackDialog from "../../utils/feedback-dialog";
 import { useTranslation } from 'react-i18next';
-import { useState } from "react";
 
-interface Delivery {
+interface ShipmentRequest {
   id: string;
-  deliveryman: {
-    id: string;
-    name: string;
-    photo: string;
-  };
-  departureDate: string;
-  arrivalDate: string;
+  name: string;
   departureCity: string;
   arrivalCity: string;
-  announcementName: string;
-  rate: number | null;
-  comment: string | null;
+  urgent: boolean;
+  nbColis: number;
+  nbLivraisons: number;
 }
 
-export const schema = z.object({
-  id: z.string(),
-  deliveryman: z.object({
-    id: z.string(),
-    name: z.string(),
-    photo: z.string(),
-  }),
-  departureDate: z.string(),
-  arrivalDate: z.string(),
-  departureCity: z.string(),
-  arrivalCity: z.string(),
-  announcementName: z.string(),
-  rate: z.number().nullable(),
-  comment: z.string().nullable(),
-});
-
-export const columns = (t: any): ColumnDef<z.infer<typeof schema>>[] => {
+export const columns = (t: any): ColumnDef<ShipmentRequest>[] => {
   const navigate = useNavigate();
 
   return [
     {
-      id: "deliveryman",
-      accessorKey: "deliveryman.name",
-      header: t('client.pages.office.delivery.deliveryHistory.table.deliveryman'),
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Avatar>
-            <AvatarImage src={row.original.deliveryman.photo} />
-            <AvatarFallback>{row.original.deliveryman.name[0]}</AvatarFallback>
-          </Avatar>
-          <div>
-            <span>{row.original.deliveryman.name}</span>
-          </div>
-        </div>
-      ),
-      enableHiding: false,
-    },
-    {
-      accessorKey: "departureDate",
-      header: t('client.pages.office.delivery.deliveryHistory.table.departureDate'),
-      cell: ({ row }) => {
-        const date = new Date(row.original.departureDate);
-        return date.toLocaleDateString("fr-FR");
-      },
-    },
-    {
-      accessorKey: "arrivalDate",
-      header: t('client.pages.office.delivery.deliveryHistory.table.arrivalDate'),
-      cell: ({ row }) => {
-        const date = new Date(row.original.arrivalDate);
-        return date.toLocaleDateString("fr-FR");
-      },
+      accessorKey: "name",
+      header: t('client.pages.office.shipment.shipmentHistory.table.name'),
+      cell: ({ row }) => row.original.name,
     },
     {
       accessorKey: "departureCity",
-      header: t('client.pages.office.delivery.deliveryHistory.table.departureCity'),
+      header: t('client.pages.office.shipment.shipmentHistory.table.departureCity'),
       cell: ({ row }) => row.original.departureCity,
     },
     {
       accessorKey: "arrivalCity",
-      header: t('client.pages.office.delivery.deliveryHistory.table.arrivalCity'),
+      header: t('client.pages.office.shipment.shipmentHistory.table.arrivalCity'),
       cell: ({ row }) => row.original.arrivalCity,
     },
     {
-      accessorKey: "announcementName",
-      header: t('client.pages.office.delivery.deliveryHistory.table.announcementName'),
-      cell: ({ row }) => row.original.announcementName,
+      accessorKey: "urgent",
+      header: t('client.pages.office.shipment.shipmentHistory.table.urgent'),
+      cell: ({ row }) => (row.original.urgent ? t('client.pages.office.shipment.shipmentHistory.table.yes') : t('client.pages.office.shipment.shipmentHistory.table.no')),
     },
     {
-      id: "feedback",
-      header: t('client.pages.office.delivery.deliveryHistory.table.feedback'),
-      cell: ({ row }) => {
-        const { rate, comment, id } = row.original;
-        const [hasFeedback, setHasFeedback] = useState(
-                 rate !== 0 && comment !== null && comment.trim() !== ""
-               );
-
-        return hasFeedback ? (
-          <span className="text-muted-foreground text-sm">
-            {t('client.pages.office.delivery.deliveryHistory.table.alreadyGiven')}
-          </span>
-        ) : (
-          <FeedbackDialog maxNote={5} id={id} onFeedbackSent={() => setHasFeedback(true)} serviceName="delivery" />
-        );
-      },
+      accessorKey: "nbColis",
+      header: t('client.pages.office.shipment.shipmentHistory.table.nbColis'),
+      cell: ({ row }) => row.original.nbColis,
+    },
+    {
+      accessorKey: "nbLivraisons",
+      header: t('client.pages.office.shipment.shipmentHistory.table.nbLivraisons'),
+      cell: ({ row }) => row.original.nbLivraisons,
     },
     {
       id: "actions",
-      header: t('client.pages.office.delivery.deliveryHistory.table.actions'),
+      header: t('client.pages.office.shipment.shipmentHistory.table.actions'),
       cell: ({ row }) => (
         <Button
           variant="outline"
           size="sm"
-          onClick={() => navigate(`/office/deliveries/public/${row.original.id}`)}
+          onClick={() => navigate(`/office/shipments/${row.original.id}`)}
         >
-          {t('client.pages.office.delivery.deliveryHistory.table.viewDetails')}
+          {t('client.pages.office.shipment.shipmentHistory.table.viewDetails')}
         </Button>
       ),
     },
   ];
 };
 
-export function DataTable({ data: initialData }: { data: Delivery[] }) {
+export function DataTable({ data: initialData }: { data: ShipmentRequest[] }) {
   const { t } = useTranslation();
   const [data, setData] = React.useState(initialData);
 
@@ -200,10 +138,10 @@ export function DataTable({ data: initialData }: { data: Delivery[] }) {
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
                 <span className="hidden lg:inline">
-                  {t('client.pages.office.delivery.deliveryHistory.table.columns')}
+                  {t('client.pages.office.shipment.shipmentHistory.table.columns')}
                 </span>
                 <span className="lg:hidden">
-                  {t('client.pages.office.delivery.deliveryHistory.table.columns')}
+                  {t('client.pages.office.shipment.shipmentHistory.table.columns')}
                 </span>
                 <ChevronDownIcon />
               </Button>

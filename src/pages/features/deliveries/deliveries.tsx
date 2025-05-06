@@ -35,11 +35,6 @@ export function DeliveriesPage() {
   return (
     <div className="w-full">
       <h1 className="text-2xl font-semibold mb-4">Livraisons en cours</h1>
-      <div className="flex justify-end mb-4">
-        <Button onClick={() => navigate("/office/deliveries/create")}>
-          Créer une demande de livraison
-        </Button>
-      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
         {deliveries.map((delivery) => (
           <div
@@ -70,7 +65,7 @@ export function DeliveriesPage() {
             </div>
             <Button
               className="mt-4"
-              onClick={() => navigate(`/office/deliveries/${delivery.id}`)}
+              onClick={() => navigate(`/office/deliveries/public/${delivery.id}`)}
             >
               Voir les détails
             </Button>

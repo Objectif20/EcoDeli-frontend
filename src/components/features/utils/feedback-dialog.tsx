@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { DialogClose } from "@radix-ui/react-dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { ServiceApi } from "@/api/service.api"
+import { DeliveriesAPI } from "@/api/deliveries.api"
 
 interface FeedbackDialogProps {
   maxNote: number
@@ -29,7 +30,7 @@ export default function FeedbackDialog({ maxNote, id, onFeedbackSent, serviceNam
   const handleSendFeedback = async () => {
     try {
       if (serviceName === "delivery") {
-        console.log("Envoi de l'avis pour la livraison")
+        await DeliveriesAPI.addReviewsAsClient(id, Number(note), comment)
       } else if (serviceName === "service") {
         await ServiceApi.addServiceReview(id, Number(note), comment)
       }

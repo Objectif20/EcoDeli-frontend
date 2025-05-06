@@ -1,40 +1,23 @@
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
-import { useTranslation } from "react-i18next";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  Map,
-  Package,
-  Euro,
-  Weight,
-  AlertCircle,
-  Landmark,
-  Calendar,
-  BadgeCheck,
-} from "lucide-react";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Polyline,
-  Popup,
-} from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-import markerIconPng from "leaflet/dist/images/marker-icon.png";
+"use client"
+
+import { useEffect } from "react"
+import { useDispatch } from "react-redux"
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
+import { useTranslation } from "react-i18next"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Separator } from "@/components/ui/separator"
+import { Map, Package, Euro, Weight, AlertCircle, Landmark, Calendar, Truck, Clock, ShoppingCart } from "lucide-react"
+import { MapContainer, TileLayer, Marker, Polyline, Popup } from "react-leaflet"
+import "leaflet/dist/leaflet.css"
+import L from "leaflet"
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
 
 const markerIcon = new L.Icon({
   iconUrl: markerIconPng,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
-});
+})
 
 const delivery = {
   departure: {
@@ -48,6 +31,8 @@ const delivery = {
   departure_date: "2023-10-01",
   arrival_date: "2023-10-03",
   status: "En cours",
+  total_price: 35,
+  cart_dropped: true,
   packages: [
     {
       id: "1",
@@ -56,9 +41,7 @@ const delivery = {
       estimated_price: 20,
       weight: 2,
       volume: 1,
-      picture: [
-        "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
-      ],
+      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
     },
     {
       id: "2",
@@ -67,77 +50,80 @@ const delivery = {
       estimated_price: 15,
       weight: 1,
       volume: 0.5,
-      picture: [
-        "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
-      ],
+      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
     },
   ],
-};
+}
 
-export default function DeliveryTransporterView() {
-  const { t } = useTranslation();
-  const dispatch = useDispatch();
+export default function DeliveryDetails() {
+  const { t } = useTranslation()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
         segments: [
-          t("client.pages.office.delivery.deliveryman.deliveryDetails.breadcrumb.home"),
-          t("client.pages.office.delivery.deliveryman.deliveryDetails.breadcrumb.deliveries"),
-          t("client.pages.office.delivery.deliveryman.deliveryDetails.breadcrumb.deliverymanView"),
+          t("client.pages.office.delivery.details.breadcrumb.home"),
+          t("client.pages.office.delivery.details.breadcrumb.deliveries"),
+          t("client.pages.office.delivery.details.breadcrumb.deliveryDetails"),
         ],
         links: ["/office/dashboard", "/office/deliveries"],
-      })
-    );
-  }, [dispatch, t]);
+      }),
+    )
+  }, [dispatch, t])
 
-  const formatDate = (dateString : string) => {
-    const date = new Date(dateString);
-    const monthNames = t("client.pages.office.delivery.deliveryman.deliveryDetails.months", { returnObjects: true }) as string[];
-    const month = monthNames[date.getMonth()];
-    const day = date.getDate();
-    const year = date.getFullYear();
-    return `${day} ${month} ${year}`;
-  };
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    const monthNames = t("client.pages.office.delivery.details.months", { returnObjects: true }) as string[]
+    const month = monthNames[date.getMonth()]
+    const day = date.getDate()
+    const year = date.getFullYear()
+    return `${day} ${month} ${year}`
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "en cours":
+        return "bg-amber-100 text-amber-800 border-amber-200"
+      case "livré":
+        return "bg-green-100 text-green-800 border-green-200"
+      case "annulé":
+        return "bg-red-100 text-red-800 border-red-200"
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200"
+    }
+  }
 
   return (
-    <div className="h-full">
-      <h1 className="text-center text-2xl font-semibold mb-4">
-        {t("client.pages.office.delivery.deliveryman.deliveryDetails.title")}
-      </h1>
+    <div className="container mx-auto px-4 py-6 max-w-7xl">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">Détails de la livraison</h1>
+          <p className="text-muted-foreground mt-1">
+            {delivery.departure.city} → {delivery.arrival.city}
+          </p>
+        </div>
+        <Badge className={`px-3 py-1.5 text-sm font-medium ${getStatusColor(delivery.status)}`}>
+          {delivery.status}
+        </Badge>
+      </div>
 
-      <Tabs defaultValue="map" className="w-full">
-        <TabsList className="flex justify-center h-auto rounded-none border-border bg-transparent p-0">
-          <TabsTrigger value="map" className="relative flex-col rounded-none px-4 py-2 text-xs after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary">
-            <Map size={16} className="mb-1.5 opacity-60" />
-            {t("client.pages.office.delivery.deliveryman.deliveryDetails.tabs.route")}
-          </TabsTrigger>
-          <TabsTrigger value="packages" className="relative flex-col rounded-none px-4 py-2 text-xs after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:after:bg-primary">
-            <Package size={16} className="mb-1.5 opacity-60" />
-            {t("client.pages.office.delivery.deliveryman.deliveryDetails.tabs.packages")}
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Carte */}
-        <TabsContent value="map" className="mt-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2 h-[500px]">
-              <MapContainer
-                center={[46.2, 4.5]}
-                zoom={6}
-                style={{ height: "100%", width: "100%", borderRadius: "0.5rem" }}
-              >
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <Card className="lg:col-span-2">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Map className="h-5 w-5" />
+              Itinéraire
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[400px] rounded-md overflow-hidden">
+              <MapContainer center={[46.2, 4.5]} zoom={6} style={{ height: "100%", width: "100%" }}>
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                <Marker
-                  position={delivery.departure.coordinates as L.LatLngTuple}
-                  icon={markerIcon}
-                >
+                <Marker position={delivery.departure.coordinates as L.LatLngTuple} icon={markerIcon}>
                   <Popup>Départ : {delivery.departure.city}</Popup>
                 </Marker>
-                <Marker
-                  position={delivery.arrival.coordinates as L.LatLngTuple}
-                  icon={markerIcon}
-                >
+                <Marker position={delivery.arrival.coordinates as L.LatLngTuple} icon={markerIcon}>
                   <Popup>Arrivée : {delivery.arrival.city}</Popup>
                 </Marker>
                 <Polyline
@@ -145,92 +131,135 @@ export default function DeliveryTransporterView() {
                     delivery.departure.coordinates as L.LatLngTuple,
                     delivery.arrival.coordinates as L.LatLngTuple,
                   ]}
-                  color="blue"
+                  color="#4CAF50"
+                  weight={4}
                 />
               </MapContainer>
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="space-y-2 p-4 border rounded-xl shadow-sm bg-white">
-              <h2 className="font-semibold text-lg">
-                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.title")}
-              </h2>
-              <p className="text-sm flex items-center gap-2">
-                <Landmark size={16} />
-                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.departure")} : <span className="font-medium">{delivery.departure.city}</span>
-              </p>
-              <p className="text-sm flex items-center gap-2">
-                <Landmark size={16} />
-                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.arrival")} : <span className="font-medium">{delivery.arrival.city}</span>
-              </p>
-              <p className="text-sm flex items-center gap-2">
-                <Calendar size={16} />
-                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.departureDate")} : <span className="font-medium">{formatDate(delivery.departure_date)}</span>
-              </p>
-              <p className="text-sm flex items-center gap-2">
-                <Calendar size={16} />
-                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.arrivalDate")} : <span className="font-medium">{formatDate(delivery.arrival_date)}</span>
-              </p>
-              <p className="text-sm flex items-center gap-2">
-                <BadgeCheck size={16} />
-                {t("client.pages.office.delivery.deliveryman.deliveryDetails.deliveryInfo.status")} : <span className="font-medium">{delivery.status}</span>
-              </p>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2">
+              <Truck className="h-5 w-5" />
+              Informations de livraison
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Landmark className="h-4 w-4" />
+                  <span>Départ</span>
+                </div>
+                <span className="font-medium">{delivery.departure.city}</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Landmark className="h-4 w-4" />
+                  <span>Arrivée</span>
+                </div>
+                <span className="font-medium">{delivery.arrival.city}</span>
+              </div>
+
+              <Separator />
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span>Date de départ</span>
+                </div>
+                <span className="font-medium">{formatDate(delivery.departure_date)}</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Calendar className="h-4 w-4" />
+                  <span>Date d'arrivée</span>
+                </div>
+                <span className="font-medium">{formatDate(delivery.arrival_date)}</span>
+              </div>
+
+              <Separator />
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Euro className="h-4 w-4" />
+                  <span>Prix total</span>
+                </div>
+                <span className="font-medium">{delivery.total_price} €</span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <ShoppingCart className="h-4 w-4" />
+                  <span>Lâcher de chariot</span>
+                </div>
+                <span className={`font-medium ${delivery.cart_dropped ? "text-green-600" : "text-red-500"}`}>
+                  {delivery.cart_dropped ? "Oui" : "Non"}
+                </span>
+              </div>
             </div>
-          </div>
-        </TabsContent>
+          </CardContent>
+        </Card>
+      </div>
 
-        {/* Colis */}
-        <TabsContent value="packages" className="mt-4">
+      <Card>
+        <CardHeader className="pb-2">
+          <CardTitle className="flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            Colis ({delivery.packages.length})
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {delivery.packages.map((item) => (
-              <Card key={item.id} className="overflow-hidden">
-                <img
-                  src={item.picture[0]}
-                  alt={item.name}
-                  className="w-full h-[180px] object-cover"
-                />
+              <Card key={item.id} className="overflow-hidden border shadow-sm">
+                <div className="aspect-video w-full overflow-hidden">
+                  <img
+                    src={item.picture[0] || "/placeholder.svg"}
+                    alt={item.name}
+                    className="w-full h-full object-cover transition-transform hover:scale-105"
+                  />
+                </div>
                 <CardContent className="p-4">
-                  <h2 className="text-lg font-semibold text-center mb-3">
-                    {item.name}
-                  </h2>
-                  <div className="grid grid-cols-2 gap-3 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Euro size={16} />
-                      {t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.price")}
-                      <span className="ml-auto font-medium text-foreground">
-                        {item.estimated_price} €
-                      </span>
+                  <h3 className="text-lg font-semibold mb-3">{item.name}</h3>
+
+                  <div className="grid grid-cols-2 gap-y-2 text-sm">
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Euro className="h-4 w-4" />
+                      <span>Prix</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Weight size={16} />
-                      {t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.weight")}
-                      <span className="ml-auto font-medium text-foreground">
-                        {item.weight} kg
-                      </span>
+                    <span className="text-right font-medium">{item.estimated_price} €</span>
+
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Weight className="h-4 w-4" />
+                      <span>Poids</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.volume")}
-                      <span className="ml-auto font-medium text-foreground">
-                        {item.volume} m³
-                      </span>
+                    <span className="text-right font-medium">{item.weight} kg</span>
+
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span>Volume</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <AlertCircle size={16} />
-                      {t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.fragile")}
-                      <span
-                        className={`ml-auto font-medium ${
-                          item.fragility ? "text-red-500" : "text-green-600"
-                        }`}
-                      >
-                        {item.fragility ? t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.yes") : t("client.pages.office.delivery.deliveryman.deliveryDetails.packageDetails.no")}
-                      </span>
+                    <span className="text-right font-medium">{item.volume} m³</span>
+
+                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                      <AlertCircle className="h-4 w-4" />
+                      <span>Fragile</span>
                     </div>
+                    <span className={`text-right font-medium ${item.fragility ? "text-red-500" : "text-green-600"}`}>
+                      {item.fragility ? "Oui" : "Non"}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
-        </TabsContent>
-      </Tabs>
+        </CardContent>
+      </Card>
     </div>
-  );
+  )
 }

@@ -58,11 +58,9 @@ export class RegisterApi {
     static async registerPrestataire(data: any): Promise<any> {
         const formData = new FormData();
         
-        // The problem is here - documents is an array of DocumentFile objects
-        // not File objects directly
+
         if (data.documents && Array.isArray(data.documents)) {
             data.documents.forEach((doc: { file: File, name: string, id: string }) => {
-                // Use the actual file from the document object
                 formData.append('documents', doc.file);
             });
         }
@@ -95,6 +93,20 @@ export class RegisterApi {
         } catch (error) {
             console.error("Error registering commercant:", error);
             throw error;
+        }
+    }
+
+    static async registerDeliveryPerson(data: FormData): Promise<any> {
+        try {
+            const response = await axiosInstance.post("/client/register/deliveryman", data, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error registering delivery person:", error);
+            throw new Error("Failed to register delivery person");
         }
     }
 }

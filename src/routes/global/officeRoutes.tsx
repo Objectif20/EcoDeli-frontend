@@ -21,9 +21,8 @@ import GeneralSettings from "@/pages/features/settings.tsx/general";
 import ProfileSettings from "@/pages/features/settings.tsx/profile";
 import ReportSettings from "@/pages/features/settings.tsx/reports";
 import SubscriptionSettings from "@/pages/features/settings.tsx/subscriptions";
-import { IntroDisclosureDemo } from "@/components/test";
+import { IntroDisclosureDemo } from "@/components/disclosure";
 import ProofsPage from "@/pages/features/documents/proofs";
-import DeliveryDetailsPage from "@/pages/features/deliveries/delivery-details";
 import RegisterDeliveryman from "@/pages/auth/register/deliveryman/register";
 import MyDeliveryHistoryPage from "@/pages/features/deliveries/deliveryman/history";
 import DeliveryTransporterView from "@/pages/features/deliveries/deliveryman/delivery-details";
@@ -37,27 +36,40 @@ import OngoingDeliveries from "@/pages/features/deliveries/deliveryman/ongoing-d
 import MyRoutes from "@/pages/features/deliveries/my-routes/my-routes";
 import ServicesHistory from "@/pages/features/services/services-history";
 import NotFoundPage from "@/pages/error/404";
+import SuccessDeliverymanPage from "@/pages/auth/register/deliveryman/success";
+import ShipmentSuccessCreatePage from "@/pages/features/deliveries/create/success";
+import { CreateDeliveryAsMerchantPage } from "@/pages/features/deliveries/create/createAsMerchant";
+import ShipmentsDetailsOfficePage from "@/pages/features/deliveries/shipment-details";
+import CurrentShipmentsPage from "@/pages/features/deliveries/shipments";
+import HistoryShipmentRequestsClientPage from "@/pages/features/deliveries/shipments-history";
 
 const OfficeRoute: React.FC = () => {
   return (
     <>
       <IntroDisclosureDemo />
       <Routes>
+
+      <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "DELIVERYMAN", "MERCHANT"]} />}>
+        <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
+      </Route>
         
       <Route element={<PrivateProfileRoutes requiredProfiles={["DELIVERYMAN"]} />}>
           <Route path="upcoming-deliveries" element={<OngoingDeliveries />} />
           <Route path="delivery-history" element={<MyDeliveryHistoryPage />} />
           <Route path="reviews-deliveryman" element={<ReviewDeliveryanPage />} />
-          <Route path="deliveries/public/:id" element={<DeliveryTransporterView />} />
           <Route path="my-vehicles" element={<VehicleListPage />} />
           <Route path="add-vehicle" element={<AddVehicle />} />
           <Route path="my-routes" element={<MyRoutes />} />
+          <Route path="registerSuccess" element={<SuccessDeliverymanPage />} />
         </Route>
         
         <Route element={<PrivateProfileRoutes requiredProfiles={["CLIENT", "MERCHANT"]} />}>
           <Route path="deliveries" element={<DeliveriesPage />} />
-          <Route path="deliveries/:id" element={<DeliveryDetailsPage />} />
-          <Route path="deliveries/create" element={<CreateDeliveryPage />} />
+          <Route path="shipments/:id" element={<ShipmentsDetailsOfficePage />} />
+          <Route path="shipments-history" element={<HistoryShipmentRequestsClientPage />} />
+          <Route path="shipments/" element={<CurrentShipmentsPage />} />
+          <Route path="shipments/create" element={<CreateDeliveryPage />} />
+          <Route path="shipments/create/finish" element={<ShipmentSuccessCreatePage />} />
           <Route path="reviews" element={<MyReviewsDeliveryPage />} />
           <Route path="location" element={<DeliveriesLocationPage />} />
           <Route path="planning" element={<PlanningPage />} />
@@ -72,12 +84,16 @@ const OfficeRoute: React.FC = () => {
           <Route path="/service/:id" element={<ServiceDetailsPageClient />} />
         </Route>
 
+        <Route element={<PrivateProfileRoutes requiredProfiles={["MERCHANT"]} />}>
+        <Route path="shipments/create-trolley" element={<CreateDeliveryAsMerchantPage />} />
+        <Route path="shipments/create-trolley/finish" element={<ShipmentSuccessCreatePage />} />
+        </Route>
+
         <Route element={<PrivateProfileRoutes requiredProfiles={["PROVIDER"]} />}>
           <Route path="my-services" element={<MyServicesList />} />
           <Route path="ads-history-provider" element={<ServicesHistory />} />
           <Route path="reviews-provider" element={<ReviewServicesPage />} />
           <Route path="planning-provider" element={<PlanningPage />} />
-          <Route path="billing-settings" element={<BillingSettings />} />
           <Route path="/services/create" element={<CreateService />} />
           <Route path="/services/success" element={<h1>Service Created Successfully</h1>} />
           <Route path="/services/:id" element={<ServiceDetailsPage />} />
@@ -87,7 +103,7 @@ const OfficeRoute: React.FC = () => {
         <Route path="proofs" element={<ProofsPage />} />
         <Route path="billing-settings" element={<BillingSettings />} />
         </Route>
-
+        
         <Route path="general-settings" element={<GeneralSettings />} />
         <Route path="profile" element={<ProfileSettings />} />
         <Route path="privacy" element={<PrivacySettings />} />

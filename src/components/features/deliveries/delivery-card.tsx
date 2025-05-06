@@ -7,6 +7,13 @@ import { Truck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 import { BarcodeScanner } from "@/components/barcodeScanner";
+import { DeliveriesAPI } from "@/api/deliveries.api";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 type DeliveryProps = {
   delivery: {
@@ -22,13 +29,15 @@ type DeliveryProps = {
     };
     progress: number;
   };
+  onUpdate: () => void;
 };
 
-export default function DeliveryCard({ delivery }: DeliveryProps) {
+export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
   const { t } = useTranslation();
   const [isMounted, setIsMounted] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const [scannedCode, setScannedCode] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState<string>("");
 
   useEffect(() => {
     setIsMounted(true);
@@ -37,6 +46,35 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
   const handleScanResult = (code: string) => {
     setScannedCode(code);
     setShowScanner(false);
+  };
+
+  const handleTakeDelivery = async () => {
+    if (scannedCode) {
+      try {
+        await DeliveriesAPI.takeDeliveryPackage(delivery.id, scannedCode);
+        onUpdate();
+      } catch (error) {
+        console.error("Error taking delivery package:", error);
+      }
+    }
+  };
+
+  const handleFinishDelivery = async () => {
+    try {
+      await DeliveriesAPI.finishedDelivery(delivery.id);
+      onUpdate();
+    } catch (error) {
+      console.error("Error finishing delivery:", error);
+    }
+  };
+
+  const handleValidateDelivery = async () => {
+    try {
+      await DeliveriesAPI.validateDeliveryWithCode(delivery.id, otpCode);
+      onUpdate();
+    } catch (error) {
+      console.error("Error validating delivery:", error);
+    }
   };
 
   const getBadgeColor = (status: string) => {
@@ -165,22 +203,54 @@ export default function DeliveryCard({ delivery }: DeliveryProps) {
                 </div>
               )}
               {scannedCode && (
-                <p className="mt-2 text-green-600 font-medium">
-                  ✅ Code scanné : {scannedCode}
-                </p>
+                <div className="mt-2">
+                  <p className="text-green-600 font-medium">
+                    ✅ Code scanné : {scannedCode}
+                  </p>
+                  <button
+                    onClick={handleTakeDelivery}
+                    className="bg-primary text-white px-4 py-2 rounded-md mt-2"
+                  >
+                    Prendre le colis
+                  </button>
+                </div>
               )}
             </div>
           )}
 
           {delivery.status === "taken" && (
             <div className="mt-8">
-                <button
-                  onClick={() => setShowScanner(true)}
-                  className="bg-primary text-white px-4 py-2 rounded-md"
-                >
-                  Valider la livraison
-                </button>
-              </div>
+              <button
+                onClick={handleFinishDelivery}
+                className="bg-primary text-white px-4 py-2 rounded-md"
+              >
+                Terminer la livraison
+              </button>
+            </div>
+          )}
+
+          {delivery.status === "finished" && (
+            <div className="mt-8">
+              <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode}>
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup>
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
+              <button
+                onClick={handleValidateDelivery}
+                className="bg-primary text-white px-4 py-2 rounded-md mt-2"
+              >
+                Valider la livraison
+              </button>
+            </div>
           )}
         </div>
       </CardContent>

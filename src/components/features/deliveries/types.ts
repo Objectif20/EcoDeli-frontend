@@ -35,9 +35,19 @@ export const priceChoiceSchema = z.object({
   deadline_date : z.string().min(0, "Date requise"),
   isPriorityShipping: z.boolean().default(false),
   shipmentName : z.string().min(0, "Nom de l'expédition requis"),
+  deliveryEmail : z.string().email("Email invalide"),
 })
 
+export const priceChoiceBisSchema = z.object({
+  price : z.string().min(0, "Prix requis"),
+  deadline_date : z.string().min(0, "Date requise"),
+  hour_date : z.string().min(0, "Heure requise"),
+  isPriorityShipping: z.boolean().default(false),
+  shipmentName : z.string().min(0, "Nom de l'expédition requis"),
+  deliveryEmail : z.string().email("Email invalide"),
+}) 
 export type PackagesFormValues = z.infer<typeof packagesSchema>;
 export type PickUpFormValues = z.infer<typeof pickupSchema>;
 export type PickUpEndFormValues = z.infer<typeof pickupEndSchema>;
 export type PriceChoiceFormValues = z.infer<typeof priceChoiceSchema>;
+export type PriceChoiceBisFormValues = z.infer<typeof priceChoiceBisSchema>;

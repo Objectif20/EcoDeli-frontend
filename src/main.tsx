@@ -6,6 +6,7 @@ import './i18n';
 import { ThemeProvider } from './components/theme-provider';
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from './components/ui/sonner';
+import OneSignalInit from './config/oneSignalInit';
 
 
 const rootElement = document.getElementById('root')!;
@@ -19,5 +20,6 @@ root.render(
     <Toaster />
     </TooltipProvider>
     </ThemeProvider>
+    <OneSignalInit />
   </Provider>
 );

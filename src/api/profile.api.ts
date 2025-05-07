@@ -151,4 +151,9 @@ export class ProfileAPI {
         return response.data;
       }
 
+      static async registerNotification(oneSignalId: string) {
+        const response = await axiosInstance.post("/client/profile/registerDevice", { oneSignalId });
+        return response.data;
+      }
+
 }

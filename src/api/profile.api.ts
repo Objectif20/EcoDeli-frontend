@@ -103,12 +103,16 @@ export class ProfileAPI {
         return response.data;
     }
 
-    static async createStripeAccount(accountToken: string): Promise<{ StripeAccountId: string }> {
-        const response = await axiosInstance.post<{ StripeAccountId: string }>(
-          "/client/profile/create-account",
-          {
-            accountToken,
-          }
+    static async createStripeAccount(): Promise<{ stripeAccountId: string, accountLinkUrl : string }> {
+        const response = await axiosInstance.post<{ stripeAccountId: string, accountLinkUrl : string }>(
+          "/client/profile/create-account"
+        );
+        return response.data;
+      }
+
+    static async updateStripeAccount(): Promise<{ accountLinkUrl : string }> {
+        const response = await axiosInstance.post<{ accountLinkUrl : string }>(
+          "/client/profile/update-account"
         );
         return response.data;
       }

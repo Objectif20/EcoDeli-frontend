@@ -94,11 +94,9 @@ const BillingSettings: React.FC = () => {
 
   const handleRequestPayment = async () => {
     try {
-      const response = await ProfileAPI.createPayment();
-      if (Number(response.status) >= 200 && Number(response.status) < 300) {
+        await ProfileAPI.createPayment();
         const billings = await ProfileAPI.getMyBillings();
         setBillingsData(billings);
-      }
     } catch (err) {
       console.error("Erreur lors de la demande de virement :", err);
     }

@@ -6,6 +6,7 @@ import { RootState } from "@/redux/store";
 import AvailabilitySettings from "@/components/features/settings/availibity-settings";
 import { useTranslation } from 'react-i18next';
 import DeliverymanSettings from "@/components/features/settings/deliveryman-settings";
+import MerchantSettings from "@/components/features/settings/merchant-settings";
 
 const ContactDetailsSettings: React.FC = () => {
   const dispatch = useDispatch();
@@ -62,6 +63,7 @@ const ContactDetailsSettings: React.FC = () => {
 
           {isProvider && <AvailabilitySettings />}
           {isDeliveryman && <DeliverymanSettings />}
+          {isMerchant && <MerchantSettings />}
         </div>
       </div>
     </div>

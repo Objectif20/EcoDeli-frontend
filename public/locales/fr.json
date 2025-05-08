@@ -1480,6 +1480,31 @@
             "yourCity": "Votre ville",
             "yourAddress": "Votre adresse",
             "yourPostalCode": "Votre code postal"
+          },
+          "merchant": {
+            "merchantSettings": "Paramètres du Marchand",
+            "modifyInfo": "Modifier vos informations",
+            "companyName": "Nom de l'Entreprise",
+            "companyNameRequired": "Le nom de l'entreprise est requis",
+            "siret": "SIRET",
+            "siretRequired": "Le SIRET est requis",
+            "address": "Adresse",
+            "addressRequired": "L'adresse est requise",
+            "postalCode": "Code Postal",
+            "postalCodeRequired": "Le code postal est requis",
+            "city": "Ville",
+            "cityRequired": "La ville est requise",
+            "country": "Pays",
+            "countryRequired": "Le pays est requis",
+            "phone": "Téléphone",
+            "phoneRequired": "Le téléphone est requis",
+            "updateInfo": "Mettre à Jour les Informations",
+            "yourCompanyName": "Votre nom d'entreprise",
+            "yourSiret": "Votre SIRET",
+            "yourAddress": "Votre adresse",
+            "yourPostalCode": "Votre code postal",
+            "yourCity": "Votre ville",
+            "yourPhone": "Votre téléphone"
           }
         },
         "planning": {

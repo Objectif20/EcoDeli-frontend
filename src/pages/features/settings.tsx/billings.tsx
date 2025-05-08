@@ -26,8 +26,7 @@ const BillingSettings: React.FC = () => {
   const isMerchant = user?.profile.includes("MERCHANT");
   const isDeliveryman = user?.profile.includes("DELIVERYMAN");
 
-  const hasBankDetails = true;
-  const balance = user?.balance || 2;
+  const balance = user?.balance || 0;
 
   const [stripeAccountValidity, setStripeAccountValidity] = useState({
     valid: false,
@@ -93,6 +92,18 @@ const BillingSettings: React.FC = () => {
     }
   };
 
+  const handleRequestPayment = async () => {
+    try {
+      const response = await ProfileAPI.createPayment();
+      if (Number(response.status) >= 200 && Number(response.status) < 300) {
+        const billings = await ProfileAPI.getMyBillings();
+        setBillingsData(billings);
+      }
+    } catch (err) {
+      console.error("Erreur lors de la demande de virement :", err);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-8">
       <div className="mx-auto grid w-full max-w-6xl gap-2">
@@ -123,8 +134,8 @@ const BillingSettings: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {(billingsData?.amount ?? balance) > 0 && hasBankDetails && (
-                  <Button>
+                {(billingsData?.amount ?? balance) > 0 && stripeAccountValidity.enabled && stripeAccountValidity.valid && !stripeAccountValidity.needs_id_card && (
+                  <Button onClick={handleRequestPayment}>
                     Demander un virement immédiat
                   </Button>
                 )}

@@ -176,4 +176,9 @@ export class ProfileAPI {
         return response.data;
       }
 
+      static async createPayment(){
+        const response = await axiosInstance.post<StripeIntent>("/client/profile/create-payment");
+        return response.data;
+      }
+
 }

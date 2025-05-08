@@ -1,17 +1,22 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 import { useTranslation } from "react-i18next"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Map, Package, Euro, Weight, AlertCircle, Landmark, Calendar, Truck, Clock, ShoppingCart } from "lucide-react"
+import {
+  Map, Package, Euro, Weight, AlertCircle, Landmark, Calendar,
+  Truck, Clock, ShoppingCart
+} from "lucide-react"
 import { MapContainer, TileLayer, Marker, Polyline, Popup } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import L from "leaflet"
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
+import { DeliveriesAPI, DeliveryDetailsPage } from "@/api/deliveries.api"
+import { useParams } from "react-router-dom"
 
 const markerIcon = new L.Icon({
   iconUrl: markerIconPng,
@@ -19,45 +24,15 @@ const markerIcon = new L.Icon({
   iconAnchor: [12, 41],
 })
 
-const delivery = {
-  departure: {
-    city: "Paris",
-    coordinates: [48.8566, 2.3522],
-  },
-  arrival: {
-    city: "Nice",
-    coordinates: [43.7102, 7.262],
-  },
-  departure_date: "2023-10-01",
-  arrival_date: "2023-10-03",
-  status: "En cours",
-  total_price: 35,
-  cart_dropped: true,
-  packages: [
-    {
-      id: "1",
-      name: "Package 1",
-      fragility: true,
-      estimated_price: 20,
-      weight: 2,
-      volume: 1,
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-    },
-    {
-      id: "2",
-      name: "Package 2",
-      fragility: false,
-      estimated_price: 15,
-      weight: 1,
-      volume: 0.5,
-      picture: ["https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg"],
-    },
-  ],
-}
-
 export default function DeliveryDetails() {
   const { t } = useTranslation()
   const dispatch = useDispatch()
+  const {id} = useParams()
+  const deliveryId = id ? id : null
+
+  const [delivery, setDelivery] = useState<DeliveryDetailsPage | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     dispatch(
@@ -68,31 +43,60 @@ export default function DeliveryDetails() {
           t("client.pages.office.delivery.details.breadcrumb.deliveryDetails"),
         ],
         links: ["/office/dashboard", "/office/deliveries"],
-      }),
+      })
     )
   }, [dispatch, t])
 
+  useEffect(() => {
+    const fetchDelivery = async () => {
+      try {
+        const data = await DeliveriesAPI.getDeliveryDetails(deliveryId as string)
+        setDelivery(data)
+      } catch (err) {
+        setError(true)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (deliveryId) {
+      fetchDelivery()
+    }
+  }, [deliveryId])
+
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    const monthNames = t("client.pages.office.delivery.details.months", { returnObjects: true }) as string[]
-    const month = monthNames[date.getMonth()]
-    const day = date.getDate()
-    const year = date.getFullYear()
-    return `${day} ${month} ${year}`
-  }
+    if (!dateString) {
+      return "Inconnu";
+    }
+  
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return "Inconnu";
+    }
+  
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "en cours":
-        return "bg-amber-100 text-amber-800 border-amber-200"
-      case "livré":
-        return "bg-green-100 text-green-800 border-green-200"
-      case "annulé":
-        return "bg-red-100 text-red-800 border-red-200"
+    switch (status) {
+      case "pending":
+        return "bg-amber-100 hover:bg-amber-100 text-amber-800 border-amber-200"
+      case "finished":
+        return "bg-green-100 hover:bg-green-100 text-green-800 border-green-200"
+      case "validated":
+        return "bg-blue-100 hover:bg-blue-100 text-blue-800 border-blue-200"
+      case "taken":
+        return "bg-purple-100 hover:bg-purple-100 text-purple-800 border-purple-200"
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
+        return "bg-gray-100 hover:bg-gray-100 text-gray-800 border-gray-200"
     }
   }
+
+  if (loading) return <p>Chargement...</p>
+  if (error || !delivery) return <p>Erreur lors du chargement de la livraison.</p>
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
@@ -104,7 +108,10 @@ export default function DeliveryDetails() {
           </p>
         </div>
         <Badge className={`px-3 py-1.5 text-sm font-medium ${getStatusColor(delivery.status)}`}>
-          {delivery.status}
+          {delivery.status === "pending" && t("client.pages.office.delivery.details.status.pending")}
+          {delivery.status === "finished" && t("client.pages.office.delivery.details.status.finished")}
+          {delivery.status === "validated" && t("client.pages.office.delivery.details.status.validated")}
+          {delivery.status === "taken" && t("client.pages.office.delivery.details.status.taken")}
         </Badge>
       </div>
 

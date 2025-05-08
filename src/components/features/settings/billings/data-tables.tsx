@@ -26,89 +26,112 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 
-export type Subscription = {
-  id: string
-  month: string
-  status: "ok" | "wait" | "cancelled"
-  name : string
-  invoiceLink: string
+export type Billing = {
+    id: string
+    date: string
+    type: "auto" | "not-auto"
+    invoiceLink: string
 }
 
-type SubscriptionDataProps = {
-    subscriptions: Subscription[];
+type BillingsDataTableProps = {
+    billings: Billing[];
   };
 
-export const columns: ColumnDef<Subscription>[] = [
-  {
-    accessorKey: "month",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="font-medium"
-        >
-          Mois
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
+export const columns: ColumnDef<Billing>[] = [
+    {
+        accessorKey: "date",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    className="font-medium"
+                >
+                    Date
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("date"));
+            const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1)
+                .toString()
+                .padStart(2, "0")}/${date.getFullYear()}`;
+            return <div className="font-medium">{formattedDate}</div>;
+        },
     },
-    cell: ({ row }) => <div className="font-medium">{row.getValue("month")}</div>,
-  },
-  {
-    accessorKey: "name",
-    header: () => <div className="text-left font-medium">Nom</div>,
-    cell: ({ row }) => <div className="text-left">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          className="font-medium"
-        >
-          Statut
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
+    {
+        accessorKey: "amount",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    className="font-medium"
+                >
+                    Montant
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => {
+            const amount = row.getValue("amount") as number
+            return <div className="font-medium">{amount} €</div>
+        }
     },
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string
+    {
+        accessorKey: "type",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    className="font-medium"
+                >
+                    Type
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            )
+        },
+        cell: ({ row }) => {
+            const type = row.getValue("type") as string
 
-      return (
-        <Badge variant="outline" className=" text-green-700 border-green-200">
-          {status === "ok" ? "Actif" : status === "wait" ? "En attente" : "Annulé"}
-        </Badge>
-      )
+            return (
+                <Badge variant="outline">
+                    {type === "auto" ? "Automatique" : "Manuel"}
+                </Badge>
+            )
+        },
+        filterFn: (row, id, value) => {
+            return value.includes(row.getValue(id))
+        },
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
+    {
+        id: "facture",
+        header: () => <div className="text-right font-medium">Facture</div>,
+        cell: ({ row }) => {
+            const invoiceLink = row.original.invoiceLink
+
+            return (
+                <div className="text-right">
+                    <a href={invoiceLink} target="_blank" rel="noopener noreferrer">
+                        <Button variant="outline" size="sm" className="text-primary hover:text-primary/85 hover:bg-background">
+                            Télécharger <Download className="ml-2 h-4 w-4" />
+                        </Button>
+                    </a>
+                </div>
+            )
+        },
     },
-  },
-  {
-    id: "facture",
-    header: () => <div className="text-right font-medium">Facture</div>,
-    cell: () => {
-      return (
-        <div className="text-right">
-          <Button variant="outline" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50">
-            Télécharger <Download className="ml-2 h-4 w-4" />
-          </Button>
-        </div>
-      )
-    },
-  },
 ]
 
-export const SubscriptionDataTable: React.FC<SubscriptionDataProps> = ({ subscriptions }) => {
-  const [sorting, setSorting] = React.useState<SortingState>([])  
+export const BillingsDataTable: React.FC<BillingsDataTableProps> = ({ billings }) => {
+    const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
 
   const table = useReactTable({
-    data: subscriptions,
+    data: billings,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -128,9 +151,9 @@ export const SubscriptionDataTable: React.FC<SubscriptionDataProps> = ({ subscri
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filtrer par mois"
-          value={(table.getColumn("month")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => table.getColumn("month")?.setFilterValue(event.target.value)}
+          placeholder="Filtrer par date"
+          value={(table.getColumn("date")?.getFilterValue() as string) ?? ""}
+          onChange={(event) => table.getColumn("date")?.setFilterValue(event.target.value)}
           className="max-w-xs"
         />
         <DropdownMenu>
@@ -151,10 +174,10 @@ export const SubscriptionDataTable: React.FC<SubscriptionDataProps> = ({ subscri
                     checked={column.getIsVisible()}
                     onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
-                    {column.id === "month"
-                      ? "Mois"
-                      : column.id === "status"
-                        ? "Statut"
+                    {column.id === "date"
+                      ? "Date"
+                      : column.id === "type"
+                        ? "Type"
                         : column.id === "facture"
                           ? "Facture"
                           : column.id}

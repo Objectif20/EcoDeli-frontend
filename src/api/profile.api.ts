@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import { Plan } from "./register.api";
 
 
 export interface CalendarEvent {
@@ -59,6 +60,29 @@ export interface Availability {
     evening_end_time: string | null;
   }
 
+
+  export interface BillingsData {
+    billings :  {
+        id: string
+        date: string
+        type: "auto" | "not-auto"
+        invoiceLink: string
+    }[],
+    amount : number
+  }
+
+  export interface UserSubscriptionData {
+    history : {
+      id: string
+      month: string
+      status: "ok" | "wait" | "cancelled"
+      name : string
+      invoiceLink: string
+    }[]
+    customer_stripe_id: boolean
+    plan : Plan;
+  }
+
 export class ProfileAPI {
     static async getMyPlanning(): Promise<CalendarEvent[]> {
         const response = await axiosInstance.get<CalendarEvent[]>("/client/planning");
@@ -103,12 +127,16 @@ export class ProfileAPI {
         return response.data;
     }
 
-    static async createStripeAccount(accountToken: string): Promise<{ StripeAccountId: string }> {
-        const response = await axiosInstance.post<{ StripeAccountId: string }>(
-          "/client/profile/create-account",
-          {
-            accountToken,
-          }
+    static async createStripeAccount(): Promise<{ stripeAccountId: string, accountLinkUrl : string }> {
+        const response = await axiosInstance.post<{ stripeAccountId: string, accountLinkUrl : string }>(
+          "/client/profile/create-account"
+        );
+        return response.data;
+      }
+
+    static async updateStripeAccount(): Promise<{ accountLinkUrl : string }> {
+        const response = await axiosInstance.post<{ accountLinkUrl : string }>(
+          "/client/profile/update-account"
         );
         return response.data;
       }
@@ -148,6 +176,26 @@ export class ProfileAPI {
 
       static async updateMyPassword() {
         const response = await axiosInstance.post("/client/profile/newPassword");
+        return response.data;
+      }
+
+      static async registerNotification(oneSignalId: string) {
+        const response = await axiosInstance.post("/client/profile/registerDevice", { oneSignalId });
+        return response.data;
+      }
+
+      static async getMyBillings(): Promise<BillingsData> {
+        const response = await axiosInstance.get<BillingsData>("/client/profile/billings");
+        return response.data;
+      }
+
+      static async createPayment(){
+        const response = await axiosInstance.post<StripeIntent>("/client/profile/create-payment");
+        return response.data;
+      }
+
+      static async getMySubscription(): Promise<UserSubscriptionData> {
+        const response = await axiosInstance.get<UserSubscriptionData>("/client/profile/my-subscription");
         return response.data;
       }
 

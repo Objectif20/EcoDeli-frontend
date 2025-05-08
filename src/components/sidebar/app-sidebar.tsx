@@ -207,7 +207,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               { title: t("client.components.sidebar.privacy"), url: "/office/privacy" },
               { title: t("client.components.sidebar.contactDetails"), url: "/office/contact-details" },
               ...((isMerchant || isClient) ? [{ title: t("client.components.sidebar.subscriptions"), url: "/office/subscriptions" }] : []),
-              ...(isProvider ? [{ title: t("client.components.sidebar.billingSettings"), url: "/office/billing-settings" }] : []),
+              ...((isProvider || isDeliveryman) ? [{ title: t("client.components.sidebar.billingSettings"), url: "/office/billing-settings" }] : []),
               { title: t("client.components.sidebar.reports"), url: "/office/reports" },
             ],
           },
@@ -245,6 +245,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <div className="mx-4">
               <Button className="w-full" onClick={() => navigate("/office/shipments/create")}>
                 {t("client.components.sidebar.createDeliveryRequest")}
+              </Button>
+            </div>
+          )}
+          {isMerchant && open &&(
+            <div className="mx-4">
+              <Button className="w-full" onClick={() => navigate("/office/shipments/create-trolley")}>
+                {t("client.components.sidebar.createTrolleyDrop")}
               </Button>
             </div>
           )}

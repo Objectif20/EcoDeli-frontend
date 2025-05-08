@@ -1883,6 +1883,7 @@
         "becomeDeliveryman": "Devenir Transporteur ?",
         "createDeliveryRequest": "Nouvelle demande de livraison",
         "activeShipments": "Annonces actives",
+        "createTrolleyDrop" : "Lâcher de chariot",
         "createService": "Nouvelle prestation",
         "becomeDeliverymanDescription": "Devenez transporteur et livrez vos colis en toute sécurité avec EcoDeli. Inscrivez-vous dès maintenant pour profiter de nos offres exclusives.",
         "close": "Fermer",
@@ -1939,6 +1940,52 @@
         "previousPage": "Page précédente",
         "nextPage": "Page suivante",
         "lastPage": "Dernière page"
+      }
+    },
+    "notif": {
+      "slidedown": {
+        "actionMessage": "Souhaitez-vous recevoir des notifications ?",
+        "acceptButton": "Oui",
+        "cancelMessage": "Non merci",
+        "confirmMessage": "Merci ! Vous êtes bien inscrit.",
+        "emailLabel": "Email",
+        "negativeUpdateButton": "Annuler",
+        "positiveUpdateButton": "Enregistrer",
+        "smsLabel": "Téléphone",
+        "updateMessage": "Mettez à jour vos préférences de notification"
+      },
+      "welcome": {
+        "title": "Bienvenue !",
+        "message": "Merci pour votre abonnement."
+      },
+      "dialog": {
+        "blocked": {
+          "message": "Les notifications sont bloquées. Veuillez les activer dans les paramètres de votre navigateur.",
+          "title": "Notifications bloquées"
+        },
+        "main": {
+          "button": {
+            "subscribe": "S'abonner",
+            "unsubscribe": "Se désabonner"
+          },
+          "title": "Gérer les notifications"
+        }
+      },
+      "message": {
+        "action": {
+          "resubscribed": "Vous êtes à nouveau abonné(e).",
+          "subscribed": "Abonnement réussi.",
+          "subscribing": "Abonnement en cours...",
+          "unsubscribed": "Vous êtes désabonné(e)."
+        },
+        "prenotify": "Cliquez ici pour activer les notifications."
+      },
+      "tip": {
+        "state": {
+          "blocked": "Notifications bloquées.",
+          "subscribed": "Notifications activées.",
+          "unsubscribed": "Notifications désactivées."
+        }
       }
     }
   }

@@ -3,23 +3,40 @@
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import type { RootState } from "@/redux/store";
 import type React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SubscriptionDataTable } from "@/components/features/settings/subscriptions/data-tables";
 import { useTranslation } from 'react-i18next';
+import { SubscriptionDialogWrapper } from "@/components/features/settings/subscriptions/dialog";
+import { Button } from "@/components/ui/button";
+import { ProfileAPI, UserSubscriptionData } from "@/api/profile.api";
+
 
 const SubscriptionSettings: React.FC = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
+  const [userSubscriptionData, setUserSubscriptionData] = useState<UserSubscriptionData | null>(null);
 
   const isProvider = user?.profile.includes("PROVIDER");
   const isClient = user?.profile.includes("CLIENT");
   const isMerchant = user?.profile.includes("MERCHANT");
   const isDeliveryman = user?.profile.includes("DELIVERYMAN");
+
+  const handlePlanChange = async (planId: number, paymentMethodId: string) => {
+    console.log(`Changing to plan ID: ${planId}`);
+    console.log(`Payment method ID: ${paymentMethodId}`);
+  
+    try {
+      const data = await ProfileAPI.getMySubscription();
+      setUserSubscriptionData(data);
+    } catch (error) {
+      console.error("Failed to fetch subscription data", error);
+    }
+  };
 
   useEffect(() => {
     dispatch(
@@ -29,6 +46,19 @@ const SubscriptionSettings: React.FC = () => {
       })
     );
   }, [dispatch, t]);
+
+  useEffect(() => {
+    const fetchSubscription = async () => {
+      try {
+        const data = await ProfileAPI.getMySubscription();
+        setUserSubscriptionData(data);
+      } catch (error) {
+        console.error("Failed to fetch subscription data", error);
+      }
+    };
+  
+    fetchSubscription();
+  }, []);
 
   return (
     <div className="flex flex-col gap-8">
@@ -53,32 +83,32 @@ const SubscriptionSettings: React.FC = () => {
           <h1 className="text-2xl font-semibold">{t('client.pages.office.settings.subscriptions.yourSubscription')}</h1>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xl">
-                  {t('client.pages.office.settings.subscriptions.currentSubscription')} <span className="text-primary">Starter</span>
-                </CardTitle>
-                <CardDescription className="text-3xl font-bold text-primary">
-                  9,99€ <span className="text-sm font-normal text-muted-foreground">/mois</span>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>{t('client.pages.office.settings.subscriptions.discountOnShipping')}</span>
-                    <span className="font-medium">5%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t('client.pages.office.settings.subscriptions.priorityShipping')}</span>
-                    <span className="font-medium">5%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>{t('client.pages.office.settings.subscriptions.permanentDiscount')}</span>
-                    <span className="font-medium">3%</span>
-                  </div>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xl">
+                {t('client.pages.office.settings.subscriptions.currentSubscription')} <span className="text-primary">{userSubscriptionData?.plan?.name}</span>
+              </CardTitle>
+              <CardDescription className="text-3xl font-bold text-primary">
+                {userSubscriptionData?.plan?.price} <span className="text-sm font-normal text-muted-foreground">/mois</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>{t('client.pages.office.settings.subscriptions.discountOnShipping')}</span>
+                  <span className="font-medium">{userSubscriptionData?.plan?.shipping_discount}</span>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex justify-between">
+                  <span>{t('client.pages.office.settings.subscriptions.priorityShipping')}</span>
+                  <span className="font-medium">{userSubscriptionData?.plan?.priority_shipping_percentage}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>{t('client.pages.office.settings.subscriptions.permanentDiscount')}</span>
+                  <span className="font-medium">{userSubscriptionData?.plan?.permanent_discount_percentage}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
             <Card>
               <CardHeader className="pb-2">
@@ -94,9 +124,11 @@ const SubscriptionSettings: React.FC = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-primary">•</span>
-                    <Link to="/office/change-subscription" className="text-primary hover:underline">
-                      {t('client.pages.office.settings.subscriptions.changePlan')}
-                    </Link>
+                    <SubscriptionDialogWrapper onPlanChange={handlePlanChange} stripe_account={userSubscriptionData?.customer_stripe_id || false} actualPlan={userSubscriptionData?.plan?.plan_id}>
+                        <Button variant="link" className="text-primary p-0 h-auto hover:underline">
+                          {t("client.pages.office.settings.subscriptions.changePlan")}
+                        </Button>
+                      </SubscriptionDialogWrapper>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-primary">•</span>
@@ -110,7 +142,7 @@ const SubscriptionSettings: React.FC = () => {
           </div>
 
           <div className="mt-6">
-            <SubscriptionDataTable />
+            <SubscriptionDataTable subscriptions={userSubscriptionData?.history || []} />
           </div>
         </div>
       </div>

@@ -84,7 +84,7 @@ const DeliveriesLocationPage = () => {
                     <strong>{t('client.pages.office.delivery.deliveriesLocation.deliveryman')}:</strong> {delivery.deliveryman.name}
                     <br />
                     <strong>{t('client.pages.office.delivery.deliveriesLocation.email')}:</strong> {delivery.deliveryman.email}
-                    <Button variant="link" onClick={() => navigate(`/office/deliveries/${delivery.id}`)}>
+                    <Button variant="link" onClick={() => navigate(`/office/deliveries/public/${delivery.id}`)}>
                       {t('client.pages.office.delivery.deliveriesLocation.accessDetails')}
                     </Button>
                   </div>

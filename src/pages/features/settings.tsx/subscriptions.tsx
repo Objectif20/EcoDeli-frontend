@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SubscriptionDataTable } from "@/components/features/settings/subscriptions/data-tables";
 import { useTranslation } from 'react-i18next';
-import { SubscriptionDialog } from "@/components/features/settings/subscriptions/dialog";
+import { SubscriptionDialogWrapper } from "@/components/features/settings/subscriptions/dialog";
 import { Button } from "@/components/ui/button";
 import { ProfileAPI, UserSubscriptionData } from "@/api/profile.api";
 
@@ -26,9 +26,17 @@ const SubscriptionSettings: React.FC = () => {
   const isMerchant = user?.profile.includes("MERCHANT");
   const isDeliveryman = user?.profile.includes("DELIVERYMAN");
 
-  const handlePlanChange = (planId: number) => {
-    console.log(`Changing to plan ID: ${planId}`)
-  }
+  const handlePlanChange = async (planId: number, paymentMethodId: string) => {
+    console.log(`Changing to plan ID: ${planId}`);
+    console.log(`Payment method ID: ${paymentMethodId}`);
+  
+    try {
+      const data = await ProfileAPI.getMySubscription();
+      setUserSubscriptionData(data);
+    } catch (error) {
+      console.error("Failed to fetch subscription data", error);
+    }
+  };
 
   useEffect(() => {
     dispatch(
@@ -116,11 +124,11 @@ const SubscriptionSettings: React.FC = () => {
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-primary">•</span>
-                    <SubscriptionDialog onPlanChange={handlePlanChange}>
+                    <SubscriptionDialogWrapper onPlanChange={handlePlanChange} stripe_account={userSubscriptionData?.customer_stripe_id || false} actualPlan={userSubscriptionData?.plan?.plan_id}>
                         <Button variant="link" className="text-primary p-0 h-auto hover:underline">
                           {t("client.pages.office.settings.subscriptions.changePlan")}
                         </Button>
-                      </SubscriptionDialog>
+                      </SubscriptionDialogWrapper>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-primary">•</span>

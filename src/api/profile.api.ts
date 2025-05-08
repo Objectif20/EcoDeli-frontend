@@ -79,7 +79,8 @@ export interface Availability {
       name : string
       invoiceLink: string
     }[]
-     plan : Plan;
+    customer_stripe_id: boolean
+    plan : Plan;
   }
 
 export class ProfileAPI {

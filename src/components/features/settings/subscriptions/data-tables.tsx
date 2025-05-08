@@ -26,14 +26,18 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 
-// Define the subscription data type
 export type Subscription = {
   id: string
   month: string
-  status: "Validée" | "En attente" | "Annulée"
+  status: "ok" | "wait" | "cancelled"
+  name : string
+  invoiceLink: string
 }
 
-// Define the columns for the subscription table
+type SubscriptionDataProps = {
+    subscriptions: Subscription[];
+  };
+
 export const columns: ColumnDef<Subscription>[] = [
   {
     accessorKey: "month",
@@ -50,6 +54,11 @@ export const columns: ColumnDef<Subscription>[] = [
       )
     },
     cell: ({ row }) => <div className="font-medium">{row.getValue("month")}</div>,
+  },
+  {
+    accessorKey: "name",
+    header: () => <div className="text-left font-medium">Nom</div>,
+    cell: ({ row }) => <div className="text-left">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "status",
@@ -70,7 +79,7 @@ export const columns: ColumnDef<Subscription>[] = [
 
       return (
         <Badge variant="outline" className=" text-green-700 border-green-200">
-          {status}
+          {status === "ok" ? "Actif" : status === "wait" ? "En attente" : "Annulé"}
         </Badge>
       )
     },
@@ -93,8 +102,8 @@ export const columns: ColumnDef<Subscription>[] = [
   },
 ]
 
-export function SubscriptionDataTable(subscriptions : Subscription[]) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+export const SubscriptionDataTable: React.FC<SubscriptionDataProps> = ({ subscriptions }) => {
+  const [sorting, setSorting] = React.useState<SortingState>([])  
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
 

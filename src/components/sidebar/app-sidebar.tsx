@@ -207,7 +207,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               { title: t("client.components.sidebar.privacy"), url: "/office/privacy" },
               { title: t("client.components.sidebar.contactDetails"), url: "/office/contact-details" },
               ...((isMerchant || isClient) ? [{ title: t("client.components.sidebar.subscriptions"), url: "/office/subscriptions" }] : []),
-              ...(isProvider ? [{ title: t("client.components.sidebar.billingSettings"), url: "/office/billing-settings" }] : []),
+              ...((isProvider || isDeliveryman) ? [{ title: t("client.components.sidebar.billingSettings"), url: "/office/billing-settings" }] : []),
               { title: t("client.components.sidebar.reports"), url: "/office/reports" },
             ],
           },

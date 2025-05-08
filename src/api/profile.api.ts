@@ -1,4 +1,5 @@
 import axiosInstance from "./axiosInstance";
+import { Plan } from "./register.api";
 
 
 export interface CalendarEvent {
@@ -68,6 +69,17 @@ export interface Availability {
         invoiceLink: string
     }[],
     amount : number
+  }
+
+  export interface UserSubscriptionData {
+    history : {
+      id: string
+      month: string
+      status: "ok" | "wait" | "cancelled"
+      name : string
+      invoiceLink: string
+    }[]
+     plan : Plan;
   }
 
 export class ProfileAPI {
@@ -178,6 +190,11 @@ export class ProfileAPI {
 
       static async createPayment(){
         const response = await axiosInstance.post<StripeIntent>("/client/profile/create-payment");
+        return response.data;
+      }
+
+      static async getMySubscription(): Promise<UserSubscriptionData> {
+        const response = await axiosInstance.get<UserSubscriptionData>("/client/profile/my-subscription");
         return response.data;
       }
 

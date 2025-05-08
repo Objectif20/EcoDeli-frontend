@@ -1459,6 +1459,27 @@
             "discoverPlans": "Découvrir les autres formules d'abonnements",
             "changePlan": "Changer de formule",
             "cancelSubscription": "Stopper votre abonnement"
+          },
+          "deliveryman": {
+            "deliverymanSettings": "Paramètres du Livreur",
+            "modifyInfo": "Modifier vos informations",
+            "professionalEmail": "Email Professionnel",
+            "invalidEmail": "Adresse email invalide",
+            "phoneNumber": "Numéro de Téléphone",
+            "phoneRequired": "Le numéro de téléphone est requis",
+            "country": "Pays",
+            "countryRequired": "Le pays est requis",
+            "city": "Ville",
+            "cityRequired": "La ville est requise",
+            "address": "Adresse",
+            "addressRequired": "L'adresse est requise",
+            "postalCode": "Code Postal",
+            "postalCodeRequired": "Le code postal est requis",
+            "updateInfo": "Mettre à Jour les Informations",
+            "yourPhoneNumber": "Votre numéro de téléphone",
+            "yourCity": "Votre ville",
+            "yourAddress": "Votre adresse",
+            "yourPostalCode": "Votre code postal"
           }
         },
         "planning": {

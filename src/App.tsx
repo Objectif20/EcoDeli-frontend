@@ -6,9 +6,11 @@ import { getAccessToken } from './api/auth.api';
 import { UserApi } from './api/user.api';
 import { Spinner } from './components/ui/spinner';
 import { AppDispatch } from './redux/store';
+import OneSignalInit from './config/oneSignalInit';
 
 function App() {
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
@@ -18,6 +20,7 @@ function App() {
 
         if (tokenResponse?.accessToken) {
           await dispatch(UserApi.getUserData());
+          setIsAuthenticated(true);
         }
       } catch (error) {
         console.error("Erreur lors de l'initialisation de l'application", error);
@@ -37,7 +40,12 @@ function App() {
     );
   }
 
-  return <AppRoutes />;
+  return (
+    <>
+      {isAuthenticated && <OneSignalInit />}
+      <AppRoutes />
+    </>
+  );
 }
 
 export default App;

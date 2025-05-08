@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { RootState } from "@/redux/store";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SubscriptionDataTable } from "@/components/features/settings/subscriptions/data-tables";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +14,8 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { ProfileAPI } from "@/api/profile.api";
+import { BillingsData, ProfileAPI } from "@/api/profile.api";
+import { BillingsDataTable } from "@/components/features/settings/billings/data-tables";
 
 const BillingSettings: React.FC = () => {
   const dispatch = useDispatch();
@@ -28,6 +28,7 @@ const BillingSettings: React.FC = () => {
 
   const hasBankDetails = true;
   const balance = user?.balance || 2;
+
   const [stripeAccountValidity, setStripeAccountValidity] = useState({
     valid: false,
     enabled: false,
@@ -35,11 +36,25 @@ const BillingSettings: React.FC = () => {
     url_complete: "",
   });
 
+  const [billingsData, setBillingsData] = useState<BillingsData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
   useEffect(() => {
     dispatch(setBreadcrumb({
       segments: ["Accueil", "Paramètres", "Facturations"],
       links: ["/office/dashboard"],
     }));
+
+    const fetchData = async () => {
+      try {
+        const billings = await ProfileAPI.getMyBillings();
+        setBillingsData(billings);
+      } catch (err) {
+        console.error("Erreur lors du chargement des facturations :", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
     const fetchStripeAccountValidity = async () => {
       const response = await ProfileAPI.getStripeAccountValidity();
@@ -59,6 +74,8 @@ const BillingSettings: React.FC = () => {
         });
       }
     };
+
+    fetchData();
     fetchStripeAccountValidity();
   }, [dispatch]);
 
@@ -102,11 +119,11 @@ const BillingSettings: React.FC = () => {
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">
-                  Solde actuel : <span>{balance}€</span>
+                  Solde actuel : <span>{billingsData?.amount ?? balance}€</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {balance > 0 && hasBankDetails && (
+                {(billingsData?.amount ?? balance) > 0 && hasBankDetails && (
                   <Button>
                     Demander un virement immédiat
                   </Button>
@@ -169,7 +186,11 @@ const BillingSettings: React.FC = () => {
           </div>
 
           <div className="mt-6">
-            <SubscriptionDataTable />
+            {!loading && billingsData ? (
+              <BillingsDataTable billings={billingsData.billings} />
+            ) : (
+              <p>Chargement des facturations...</p>
+            )}
           </div>
         </div>
       </div>

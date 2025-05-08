@@ -59,6 +59,17 @@ export interface Availability {
     evening_end_time: string | null;
   }
 
+
+  export interface BillingsData {
+    billings :  {
+        id: string
+        date: string
+        type: "auto" | "not-auto"
+        invoiceLink: string
+    }[],
+    amount : number
+  }
+
 export class ProfileAPI {
     static async getMyPlanning(): Promise<CalendarEvent[]> {
         const response = await axiosInstance.get<CalendarEvent[]>("/client/planning");
@@ -157,6 +168,11 @@ export class ProfileAPI {
 
       static async registerNotification(oneSignalId: string) {
         const response = await axiosInstance.post("/client/profile/registerDevice", { oneSignalId });
+        return response.data;
+      }
+
+      static async getMyBillings(): Promise<BillingsData> {
+        const response = await axiosInstance.get<BillingsData>("/client/profile/billings");
         return response.data;
       }
 

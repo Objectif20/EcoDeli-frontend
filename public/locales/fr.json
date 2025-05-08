@@ -1418,7 +1418,12 @@
             },
             "allDaysSelected": "Tous les jours de la semaine sont déjà sélectionnés.",
             "availabilityUpdated": "Disponibilités mises à jour !",
-            "save": "Enregistrer"
+            "save": "Enregistrer",
+            "scheduleDescription": "Définissez vos horaires de disponibilité pour chaque jour de la semaine",
+            "startTime": "Heure de début",
+            "endTime": "Heure de fin",
+            "errorFetchingAvailability": "Erreur lors de la récupération des disponibilités",
+            "errorUpdatingAvailability": "Erreur lors de la mise à jour des disponibilités"
           },
           "reports": {
             "title": "Signalements",
@@ -1502,6 +1507,34 @@
             "yourCompanyName": "Votre nom d'entreprise",
             "yourSiret": "Votre SIRET",
             "yourAddress": "Votre adresse",
+            "yourPostalCode": "Votre code postal",
+            "yourCity": "Votre ville",
+            "yourPhone": "Votre téléphone"
+          },
+          "provider": {
+            "providerSettings": "Paramètres du Fournisseur",
+            "modifyInfo": "Modifier vos informations",
+            "companyName": "Nom de l'Entreprise",
+            "companyNameRequired": "Le nom de l'entreprise est requis",
+            "siret": "SIRET",
+            "siretRequired": "Le SIRET est requis",
+            "address": "Adresse",
+            "addressRequired": "L'adresse est requise",
+            "serviceType": "Type de Service",
+            "serviceTypeRequired": "Le type de service est requis",
+            "postalCode": "Code Postal",
+            "postalCodeRequired": "Le code postal est requis",
+            "city": "Ville",
+            "cityRequired": "La ville est requise",
+            "country": "Pays",
+            "countryRequired": "Le pays est requis",
+            "phone": "Téléphone",
+            "phoneRequired": "Le téléphone est requis",
+            "updateInfo": "Mettre à Jour les Informations",
+            "yourCompanyName": "Votre nom d'entreprise",
+            "yourSiret": "Votre SIRET",
+            "yourAddress": "Votre adresse",
+            "yourServiceType": "Votre type de service",
             "yourPostalCode": "Votre code postal",
             "yourCity": "Votre ville",
             "yourPhone": "Votre téléphone"
@@ -1968,8 +2001,10 @@
         "providerProfileUnderReview": "Profil Prestataire en cours d'analyse",
         "providerProfileUnderReviewDescription": "Votre profil Prestataire est en cours d'analyse. Vous serez informé dès que le processus sera terminé.",
         "deliverymanProfileUnderReview": "Profil Transporteur en cours d'analyse",
-        "deliverymanProfileUnderReviewDescription": "Votre profil Transporteur est en cours d'analyse. Vous serez informé dès que le processus sera terminé."
+        "deliverymanProfileUnderReviewDescription": "Votre profil Transporteur est en cours d'analyse. Vous serez informé dès que le processus sera terminé.",
+        "availability" : "Disponibilités"
       },
+      
       "disclosure": {
         "completed": "(complété)",
         "previous": "Précédent",

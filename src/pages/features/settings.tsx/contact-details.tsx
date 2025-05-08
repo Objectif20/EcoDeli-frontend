@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { RootState } from "@/redux/store";
-import AvailabilitySettings from "@/components/features/settings/availibity-settings";
 import { useTranslation } from 'react-i18next';
 import DeliverymanSettings from "@/components/features/settings/deliveryman-settings";
 import MerchantSettings from "@/components/features/settings/merchant-settings";
+import ProviderSettings from "@/components/features/settings/provider-settings";
 
 const ContactDetailsSettings: React.FC = () => {
   const dispatch = useDispatch();
@@ -61,7 +61,7 @@ const ContactDetailsSettings: React.FC = () => {
             </p>
           </div>
 
-          {isProvider && <AvailabilitySettings />}
+          {isProvider && <ProviderSettings />}
           {isDeliveryman && <DeliverymanSettings />}
           {isMerchant && <MerchantSettings />}
         </div>

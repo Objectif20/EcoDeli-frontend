@@ -160,6 +160,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "/office/proofs",
               icon: FileText,
             },
+            {
+              title : t("client.components.sidebar.availability"),
+              url: "/office/availability",
+              icon: Calendar,
+            }
           ],
         }
       ] : []),

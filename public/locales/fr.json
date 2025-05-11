@@ -371,6 +371,35 @@
         }
       }
     },
+    "contracts": {
+      "deliveryman": {
+        "home": "Accueil",
+        "contratDeliverymen": "Contrats des livreurs",
+        "searchDeliveryman": "Rechercher un livreur",
+        "contratDate": "Date du contrat",
+        "noDeliverymenFound": "Aucun livreur trouvé",
+        "noContractSelected": "Aucun contrat sélectionné",
+        "selectDeliveryman": "Veuillez sélectionner un livreur pour voir son contrat"
+      },
+      "merchant": {
+        "home": "Accueil",
+        "contratMerchants": "Contrats des commerçants",
+        "searchMerchant": "Rechercher un commerçant",
+        "contratDate": "Date du contrat",
+        "noMerchantsFound": "Aucun commerçant trouvé",
+        "noContractSelected": "Aucun contrat sélectionné",
+        "selectMerchant": "Veuillez sélectionner un commerçant pour voir son contrat"
+      },
+      "provider": {
+        "home": "Accueil",
+        "contratPrestataires": "Contrats des prestataires",
+        "searchPrestataire": "Rechercher un prestataire",
+        "contratDate": "Date du contrat",
+        "noPrestatairesFound": "Aucun prestataire trouvé",
+        "noContractSelected": "Aucun contrat sélectionné",
+        "selectPrestataire": "Veuillez sélectionner un prestataire pour voir son contrat"
+      }
+    },
     "subscription": {
       "list": {
         "breadcrumb": {
@@ -410,7 +439,8 @@
           "small_package_permanent_discount": "Réduction permanente pour petits colis : {{discount}} €",
           "first_shipping_free": "Première livraison gratuite : {{free}}",
           "first_shipping_free_threshold": "Seuil pour la première livraison gratuite : {{threshold}} €",
-          "is_pro": "Formule professionnelle : {{isPro}}"
+          "is_pro": "Formule professionnelle : {{isPro}}",
+          "create_plan" : "Créer une formule d'abonnement"
         },
         "buttons": {
           "edit": "Modifier"
@@ -454,6 +484,48 @@
             "required": "Le champ est requis.",
             "valid_number": "Doit être un nombre valide.",
             "non_negative": "Doit être supérieur ou égal à 0."
+          }
+        }
+      },
+      "add": {
+        "breadcrumb": {
+          "home": "Accueil",
+          "subscriptions": "Abonnements",
+          "add": "Ajouter"
+        },
+        "page": {
+          "title": "Ajouter un plan d'abonnement",
+          "errors": {
+            "required": "Ce champ est requis.",
+            "valid_number": "Veuillez entrer un nombre valide.",
+            "non_negative": "Veuillez entrer un nombre non négatif."
+          },
+          "form": {
+            "name": "Nom",
+            "name_description": "Entrez le nom du plan d'abonnement.",
+            "price": "Prix",
+            "price_description": "Entrez le prix du plan.",
+            "priority_shipping": "Pourcentage de livraison prioritaire",
+            "priority_shipping_description": "Entrez le pourcentage de livraison prioritaire.",
+            "priority_months_offered": "Mois de priorité offerts",
+            "priority_months_offered_description": "Entrez le nombre de mois de priorité offerts.",
+            "max_insurance_coverage": "Couverture d'assurance maximale",
+            "max_insurance_coverage_description": "Entrez la couverture d'assurance maximale.",
+            "extra_insurance_price": "Prix de l'assurance supplémentaire",
+            "extra_insurance_price_description": "Entrez le prix de l'assurance supplémentaire.",
+            "shipping_discount": "Remise sur la livraison",
+            "shipping_discount_description": "Entrez la remise sur la livraison.",
+            "permanent_discount": "Remise permanente",
+            "permanent_discount_description": "Entrez la remise permanente.",
+            "small_package_permanent_discount": "Remise permanente pour petits colis",
+            "small_package_permanent_discount_description": "Entrez la remise permanente pour petits colis.",
+            "first_shipping_free": "Première livraison gratuite",
+            "first_shipping_free_description": "Cochez pour activer la première livraison gratuite.",
+            "first_shipping_free_threshold": "Seuil pour la première livraison gratuite",
+            "first_shipping_free_threshold_description": "Entrez le seuil pour la première livraison gratuite.",
+            "is_pro": "Est Pro",
+            "is_pro_description": "Cochez si c'est un plan Pro.",
+            "add_button": "Ajouter"
           }
         }
       }
@@ -501,8 +573,40 @@
           "provider": "Prestataire",
           "merchant": "Commerçant",
           "delivery": "Livreur",
-          "finance": "Finance"
+          "finance": "Finance",
+          "language": "Langue"
         }
+      }
+    },
+    "category": {
+      "title": "Catégories de véhicules",
+      "description": "Gérez les différentes catégories de véhicules disponibles.",
+      "addCategory": "Ajouter une catégorie",
+      "maxWeight": "Poids max",
+      "maxVolume": "Volume max",
+      "actions": "Actions",
+      "edit": "Modifier",
+      "name": "Nom",
+      "maxWeightKg": "Poids maximum (kg)",
+      "maxVolumeM3": "Volume maximum (m³)",
+      "saveChanges": "Enregistrer les modifications",
+      "addVehicleCategory": "Ajouter une catégorie de véhicule",
+      "createNewCategory": "Créez une nouvelle catégorie de véhicule en remplissant les informations ci-dessous.",
+      "placeholderName": "Camionnette, Camion, etc.",
+      "placeholderWeight": "1500",
+      "placeholderVolume": "8",
+      "adding": "Ajout en cours...",
+      "add": "Ajouter",
+      "editVehicleCategory": "Modifier la catégorie de véhicule",
+      "editCategoryInfo": "Modifiez les informations de la catégorie de véhicule.",
+      "error": {
+        "loading": "Erreur lors du chargement des catégories de véhicules:",
+        "adding": "Erreur lors de l'ajout de la catégorie de véhicule:",
+        "updating": "Erreur lors de la mise à jour de la catégorie de véhicule:",
+        "nameMinChars": "Le nom doit contenir au moins 2 caractères",
+        "weightPositive": "Le poids doit être un nombre positif",
+        "volumePositive": "Le volume doit être un nombre positif",
+        "uniqueName": "Le nom de la catégorie doit être unique"
       }
     }
   },
@@ -1418,7 +1522,12 @@
             },
             "allDaysSelected": "Tous les jours de la semaine sont déjà sélectionnés.",
             "availabilityUpdated": "Disponibilités mises à jour !",
-            "save": "Enregistrer"
+            "save": "Enregistrer",
+            "scheduleDescription": "Définissez vos horaires de disponibilité pour chaque jour de la semaine",
+            "startTime": "Heure de début",
+            "endTime": "Heure de fin",
+            "errorFetchingAvailability": "Erreur lors de la récupération des disponibilités",
+            "errorUpdatingAvailability": "Erreur lors de la mise à jour des disponibilités"
           },
           "reports": {
             "title": "Signalements",
@@ -1459,6 +1568,80 @@
             "discoverPlans": "Découvrir les autres formules d'abonnements",
             "changePlan": "Changer de formule",
             "cancelSubscription": "Stopper votre abonnement"
+          },
+          "deliveryman": {
+            "deliverymanSettings": "Paramètres du transporteur",
+            "modifyInfo": "Modifier vos informations",
+            "professionalEmail": "Email Professionnel",
+            "invalidEmail": "Adresse email invalide",
+            "phoneNumber": "Numéro de Téléphone",
+            "phoneRequired": "Le numéro de téléphone est requis",
+            "country": "Pays",
+            "countryRequired": "Le pays est requis",
+            "city": "Ville",
+            "cityRequired": "La ville est requise",
+            "address": "Adresse",
+            "addressRequired": "L'adresse est requise",
+            "postalCode": "Code Postal",
+            "postalCodeRequired": "Le code postal est requis",
+            "updateInfo": "Mettre à Jour les Informations",
+            "yourPhoneNumber": "Votre numéro de téléphone",
+            "yourCity": "Votre ville",
+            "yourAddress": "Votre adresse",
+            "yourPostalCode": "Votre code postal"
+          },
+          "merchant": {
+            "merchantSettings": "Paramètres du commerçant",
+            "modifyInfo": "Modifier vos informations",
+            "companyName": "Nom de l'Entreprise",
+            "companyNameRequired": "Le nom de l'entreprise est requis",
+            "siret": "SIRET",
+            "siretRequired": "Le SIRET est requis",
+            "address": "Adresse",
+            "addressRequired": "L'adresse est requise",
+            "postalCode": "Code Postal",
+            "postalCodeRequired": "Le code postal est requis",
+            "city": "Ville",
+            "cityRequired": "La ville est requise",
+            "country": "Pays",
+            "countryRequired": "Le pays est requis",
+            "phone": "Téléphone",
+            "phoneRequired": "Le téléphone est requis",
+            "updateInfo": "Mettre à Jour les Informations",
+            "yourCompanyName": "Votre nom d'entreprise",
+            "yourSiret": "Votre SIRET",
+            "yourAddress": "Votre adresse",
+            "yourPostalCode": "Votre code postal",
+            "yourCity": "Votre ville",
+            "yourPhone": "Votre téléphone"
+          },
+          "provider": {
+            "providerSettings": "Paramètres du Prestataire",
+            "modifyInfo": "Modifier vos informations",
+            "companyName": "Nom de l'Entreprise",
+            "companyNameRequired": "Le nom de l'entreprise est requis",
+            "siret": "SIRET",
+            "siretRequired": "Le SIRET est requis",
+            "address": "Adresse",
+            "addressRequired": "L'adresse est requise",
+            "serviceType": "Type de Service",
+            "serviceTypeRequired": "Le type de service est requis",
+            "postalCode": "Code Postal",
+            "postalCodeRequired": "Le code postal est requis",
+            "city": "Ville",
+            "cityRequired": "La ville est requise",
+            "country": "Pays",
+            "countryRequired": "Le pays est requis",
+            "phone": "Téléphone",
+            "phoneRequired": "Le téléphone est requis",
+            "updateInfo": "Mettre à Jour les Informations",
+            "yourCompanyName": "Votre nom d'entreprise",
+            "yourSiret": "Votre SIRET",
+            "yourAddress": "Votre adresse",
+            "yourServiceType": "Votre type de service",
+            "yourPostalCode": "Votre code postal",
+            "yourCity": "Votre ville",
+            "yourPhone": "Votre téléphone"
           }
         },
         "planning": {
@@ -1922,7 +2105,11 @@
         "providerProfileUnderReview": "Profil Prestataire en cours d'analyse",
         "providerProfileUnderReviewDescription": "Votre profil Prestataire est en cours d'analyse. Vous serez informé dès que le processus sera terminé.",
         "deliverymanProfileUnderReview": "Profil Transporteur en cours d'analyse",
-        "deliverymanProfileUnderReviewDescription": "Votre profil Transporteur est en cours d'analyse. Vous serez informé dès que le processus sera terminé."
+        "deliverymanProfileUnderReviewDescription": "Votre profil Transporteur est en cours d'analyse. Vous serez informé dès que le processus sera terminé.",
+        "availability" : "Disponibilités",
+        "services" : "Mes prestations",
+        "stripeValidationRequired" : "Demande de livraison impossible",
+        "validateNow" : "Renseigner mes coordonnées bancaires"
       },
       "disclosure": {
         "completed": "(complété)",
@@ -1986,6 +2173,11 @@
           "subscribed": "Notifications activées.",
           "unsubscribed": "Notifications désactivées."
         }
+      }
+    },
+    "client": {
+      "common": {
+        "search": "Rechercher"
       }
     }
   }

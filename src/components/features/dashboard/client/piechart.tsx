@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { TrendingUp } from "lucide-react"
-import { Label, Pie, PieChart } from "recharts"
+import { Label, Pie, PieChart, Cell } from "recharts"
 
 import {
   Card,
@@ -18,45 +18,44 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { DashboardApi, packages } from "@/api/dashboard.api"
 
-const chartData = [
-  { size: "S", packages: 275, fill: "var(--color-S)" },
-  { size: "M", packages: 200, fill: "var(--color-M)" },
-  { size: "L", packages: 287, fill: "var(--color-L)" },
-  { size: "XL", packages: 173, fill: "var(--color-XL)" },
-  { size: "XXL", packages: 190, fill: "var(--color-XXL)" },
-]
+const chartColors: Record<string, string> = {
+  S: "hsl(var(--chart-1))",
+  M: "hsl(var(--chart-2))",
+  L: "hsl(var(--chart-3))",
+  XL: "hsl(var(--chart-4))",
+  XXL: "hsl(var(--chart-5))",
+}
 
-const chartConfig = {
-  packages: {
-    label: "Packages",
-  },
-  S: {
-    label: "S",
-    color: "hsl(var(--chart-1))",
-  },
-  M: {
-    label: "M",
-    color: "hsl(var(--chart-2))",
-  },
-  L: {
-    label: "L",
-    color: "hsl(var(--chart-3))",
-  },
-  XL: {
-    label: "XL",
-    color: "hsl(var(--chart-4))",
-  },
-  XXL: {
-    label: "XXL",
-    color: "hsl(var(--chart-5))",
-  },
-} satisfies ChartConfig
+const chartConfig: ChartConfig = {
+  packages: { label: "Packages" },
+  S: { label: "S", color: chartColors.S },
+  M: { label: "M", color: chartColors.M },
+  L: { label: "L", color: chartColors.L },
+  XL: { label: "XL", color: chartColors.XL },
+  XXL: { label: "XXL", color: chartColors.XXL },
+}
 
 export function PackageStats() {
-  const totalPackages = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.packages, 0)
+  const [data, setData] = React.useState<packages[]>([])
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await DashboardApi.getPackages()
+        setData(res)
+      } catch (err) {
+        console.error("Erreur de chargement des colis:", err)
+      }
+    }
+    fetchData()
   }, [])
+
+  const totalPackages = React.useMemo(
+    () => data.reduce((acc, curr) => acc + curr.packages, 0),
+    [data]
+  )
 
   return (
     <Card className="flex flex-col h-full">
@@ -75,12 +74,18 @@ export function PackageStats() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={chartData}
+              data={data}
               dataKey="packages"
               nameKey="size"
               innerRadius={60}
               strokeWidth={5}
             >
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={chartColors[entry.size] || "hsl(var(--chart-fallback))"}
+                />
+              ))}
               <Label
                 content={({ viewBox }) => {
                   if (viewBox && "cx" in viewBox && "cy" in viewBox) {

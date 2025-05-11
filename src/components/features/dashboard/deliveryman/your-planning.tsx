@@ -3,18 +3,26 @@
 import * as React from "react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar } from "@/components/ui/calendar"
+import { DashboardApi, events as myEvents } from "@/api/dashboard.api"
 
 export default function YourPlanning() {
   const [dateRange, setDateRange] = React.useState<Date | undefined>(undefined)
+  const [events, setEvents] = React.useState<myEvents[]>([])
 
-  const events = [
-    { date: new Date(2025, 3, 25), label: "Event 1" },
-    { date: new Date(2025, 3, 28), label: "Event 2" },
-    { date: new Date(2025, 4, 30), label: "Event 3" },
-  ]
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const fetchedEvents = await DashboardApi.getMyNextEvent()
+        setEvents(fetchedEvents)
+      } catch (error) {
+        console.error("Failed to fetch events:", error)
+      }
+    }
+
+    fetchEvents()
+  }, []) 
 
   const handleDateSelect = (date: Date | undefined) => {
     setDateRange(date)
@@ -45,7 +53,6 @@ export default function YourPlanning() {
               eventDay:
                 "relative after:absolute after:w-2 after:h-2 after:bg-primary after:rounded-full after:bottom-1 after:left-1/2 after:-translate-x-1/2",
             }}
-            
           />
         </div>
       </CardContent>

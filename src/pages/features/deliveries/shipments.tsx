@@ -4,15 +4,16 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { MapPin, Package } from "lucide-react"
+import { MapPin, MessageCircleWarning, Package } from "lucide-react"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { Progress } from "@/components/ui/progress"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Link } from "react-router-dom"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 import { DeliveriesAPI, ShipmentListItem } from "@/api/deliveries.api"
+import { RootState } from "@/redux/store"
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -38,6 +39,9 @@ export default function ShipmentsListPage() {
   const [shipments, setShipments] = useState<ShipmentListItem[]>([])
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
+
+  const user = useSelector((state: RootState) => state.user.user);
+  const isStripeValidate = user?.customer_stripe_id;
 
   useEffect(() => {
     dispatch(
@@ -94,7 +98,17 @@ export default function ShipmentsListPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Demandes de livraison</h1>
-
+      {!isStripeValidate && (
+          <div className="mb-4">
+            <p className="text-sm flex items-center text-underline">
+              <MessageCircleWarning className="mr-2" />
+              Vos demandes de livraison ne pourront pas apparaître tant que vous n'avez pas renseigné vos coordonnées bancaires pour les futurs prélèvements. &nbsp;
+              <Link to="/office/subscriptions" className="underline text-sm text-primary">
+                  Renseigner mes coordonnées bancaires
+                </Link>
+            </p>
+          </div>
+        )}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {shipments.map((shipment) => (
           <Card key={shipment.id} className="overflow-hidden hover:shadow-lg transition-shadow">

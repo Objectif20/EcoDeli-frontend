@@ -83,6 +83,20 @@ export interface Availability {
     plan : Plan;
   }
 
+
+  export interface CommonSettingsForm {
+    company_name?: string;
+    siret?: string;
+    address: string;
+    service_type?: string;
+    postal_code: string;
+    city: string;
+    country: string;
+    phone?: string;
+    professional_email?: string;
+    phone_number?: string;
+  }
+
 export class ProfileAPI {
     static async getMyPlanning(): Promise<CalendarEvent[]> {
         const response = await axiosInstance.get<CalendarEvent[]>("/client/planning");
@@ -197,6 +211,28 @@ export class ProfileAPI {
       static async getMySubscription(): Promise<UserSubscriptionData> {
         const response = await axiosInstance.get<UserSubscriptionData>("/client/profile/my-subscription");
         return response.data;
+      }
+
+      static async updateMySubscription(planId: number, paymentMethodId?: string): Promise<any> {
+
+        const response = await axiosInstance.patch("/client/profile/subscription", {
+          planId,
+          paymentMethodId,
+        });
+        return response.data;
+      }
+
+      static async getCommonSettings() : Promise<CommonSettingsForm> {
+        const response = await axiosInstance.get<CommonSettingsForm>("/client/profile/professionnal");
+        return response.data;
+      }
+
+      static async updateCommonSettings(data: CommonSettingsForm) : Promise<void> {
+        await axiosInstance.patch("/client/profile/professionnal", data);
+      }
+
+      static async updateBankData(paymentMethodId: string) : Promise<void> {
+        await axiosInstance.patch("/client/profile/bank-data", { paymentMethodId });
       }
 
 }

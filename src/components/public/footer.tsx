@@ -1,6 +1,8 @@
 import { Separator } from "@/components/ui/separator";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import LanguageSelector from "../language-selector";
+
 
 const Footer01Page = () => {
   const { t } = useTranslation();
@@ -48,14 +50,17 @@ const Footer01Page = () => {
       <footer className="border-t">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-12 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 gap-x-8 gap-y-10">
-            <div className="col-span-full xl:col-span-2">
-              <h4 className="text-2xl font-bold">
-                {t("client.components.footer.ecodeli")}
-              </h4>
-              <p className="mt-4 text-muted-foreground">
-                {t("client.components.footer.description")}
-              </p>
+          <div className="col-span-full xl:col-span-2">
+            <h4 className="text-2xl font-bold">
+              {t("client.components.footer.ecodeli")}
+            </h4>
+            <p className="mt-4 text-muted-foreground">
+              {t("client.components.footer.description")}
+            </p>
+            <div className="mt-6">
+              <LanguageSelector mode="text" className="w-60" />
             </div>
+          </div>
 
             {footerSections.map(({ title, links }) => (
               <div key={title}>

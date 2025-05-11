@@ -14,6 +14,7 @@ export interface User {
   updgradablePlan?: boolean | false;
   planName?: string;
   validateProfile?: boolean | false;
+  customer_stripe_id : boolean | false;
 }
 
 export interface UserState {

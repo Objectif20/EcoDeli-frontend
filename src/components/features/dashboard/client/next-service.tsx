@@ -1,19 +1,36 @@
 "use client"
 
+import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useNavigate } from "react-router-dom"
+import { DashboardApi } from "@/api/dashboard.api"
+
+interface NextService {
+  title: string
+  date: string
+  image: string
+}
 
 export default function NextService() {
   const navigate = useNavigate()
+  const [nextService, setNextService] = React.useState<NextService | null>(null)
+  const [loading, setLoading] = React.useState(true)
 
-  const hasNextService = true
-
-  const nextService = {
-    title: "Promenade de votre chien",
-    date: "Sam 12 janvier 2025, 14h30",
-    image: "https://letsenhance.io/static/73136da51c245e80edc6ccfe44888a99/1015f/MainBefore.jpg",
-  }
+  React.useEffect(() => {
+    const fetchNextService = async () => {
+      try {
+        const res = await DashboardApi.getNextServiceAsClient()
+        setNextService(res)
+      } catch (err) {
+        console.error("Erreur lors du chargement de la prochaine prestation :", err)
+        setNextService(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchNextService()
+  }, [])
 
   return (
     <Card className="h-full flex flex-col justify-between">
@@ -21,7 +38,11 @@ export default function NextService() {
         <CardTitle className="text-base font-medium">Prochaine prestation</CardTitle>
       </CardHeader>
 
-      {hasNextService ? (
+      {loading ? (
+        <CardContent>
+          <p className="text-sm text-muted-foreground">Chargement en cours...</p>
+        </CardContent>
+      ) : nextService ? (
         <>
           <CardContent className="flex flex-col items-center gap-2">
             <div className="w-full overflow-hidden rounded-lg">

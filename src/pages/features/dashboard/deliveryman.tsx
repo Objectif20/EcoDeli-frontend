@@ -13,27 +13,27 @@ export default function DeliveryManDashboard() {
         <h1 className="text-2xl font-bold mb-6">Bienvenue sur votre espace transporteur, Frédéric</h1>
 
         <div className="grid grid-cols-6 lg:grid-cols-12 gap-4 w-full">
-          <div className="col-span-6 lg:col-span-3 bg-blue-500 rounded-xl">
+          <div className="col-span-6 lg:col-span-3  rounded-xl">
           <CurrentBalance />          </div>
-          <div className="col-span-6 lg:col-span-3 bg-red-500 rounded-xl">
+          <div className="col-span-6 lg:col-span-3  rounded-xl">
           <Meteo />          </div>
-          <div className="col-span-6 lg:col-span-3 bg-yellow-500 rounded-xl">
+          <div className="col-span-6 lg:col-span-3 rounded-xl">
           <CompletedDeliveries />          </div>
-          <div className="col-span-6 lg:col-span-3 bg-purple-500 rounded-xl">
+          <div className="col-span-6 lg:col-span-3  rounded-xl">
             <NearDeliveries />
           </div>
   
-          <div className="col-span-6 lg:col-span-4 bg-pink-500 rounded-xl">
+          <div className="col-span-6 lg:col-span-4  rounded-xl">
             <DeliveryDistribution />
           </div>
-          <div className="col-span-6 lg:col-span-8 bg-indigo-500 rounded-xl">
+          <div className="col-span-6 lg:col-span-8  rounded-xl">
             <PackageMap />
           </div>
   
-          <div className="col-span-6 lg:col-span-4 bg-orange-500 rounded-xl">
+          <div className="col-span-6 lg:col-span-4  rounded-xl">
           <YourPlanning />
           </div>
-          <div className="col-span-6 lg:col-span-8 bg-teal-500 rounded-xl">
+          <div className="col-span-6 lg:col-span-8  rounded-xl">
             <NextDelivery />
           </div>
           </div>

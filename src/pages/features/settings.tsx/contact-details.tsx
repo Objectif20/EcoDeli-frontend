@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { RootState } from "@/redux/store";
-import AvailabilitySettings from "@/components/features/settings/availibity-settings";
 import { useTranslation } from 'react-i18next';
+import DeliverymanSettings from "@/components/features/settings/deliveryman-settings";
+import MerchantSettings from "@/components/features/settings/merchant-settings";
+import ProviderSettings from "@/components/features/settings/provider-settings";
 
 const ContactDetailsSettings: React.FC = () => {
   const dispatch = useDispatch();
@@ -27,14 +29,11 @@ const ContactDetailsSettings: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-8">
-      {/* Header */}
       <div className="mx-auto grid w-full max-w-6xl gap-2">
         <h1 className="text-3xl font-semibold">{t('client.pages.office.settings.contactDetails.title')}</h1>
       </div>
 
-      {/* Layout */}
       <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-        {/* Sidebar */}
         <nav className="grid gap-4 text-sm text-muted-foreground">
           <Link to="/office/general-settings">{t('client.pages.office.settings.contactDetails.generalSettings')}</Link>
           <Link to="/office/profile">{t('client.pages.office.settings.contactDetails.profile')}</Link>
@@ -54,17 +53,11 @@ const ContactDetailsSettings: React.FC = () => {
           <Link to="/office/reports">{t('client.pages.office.settings.contactDetails.reports')}</Link>
         </nav>
 
-        {/* Main Content */}
         <div className="grid gap-6">
-          <div className="space-y-1">
-            <h2 className="text-xl font-medium">{t('client.pages.office.settings.contactDetails.contactInfo')}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t('client.pages.office.settings.contactDetails.manageContact')}
-            </p>
-          </div>
 
-          {/* Section Planning : seulement pour les providers */}
-          {isProvider && <AvailabilitySettings />}
+          {isProvider && <ProviderSettings />}
+          {isDeliveryman && <DeliverymanSettings />}
+          {isMerchant && <MerchantSettings />}
         </div>
       </div>
     </div>

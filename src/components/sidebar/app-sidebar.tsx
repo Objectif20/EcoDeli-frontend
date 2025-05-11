@@ -40,6 +40,7 @@ import {
 import { RootState } from "@/redux/store";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
+import { NavLanguage } from "./nav-language";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useTranslation();
@@ -160,6 +161,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "/office/proofs",
               icon: FileText,
             },
+            {
+              title : t("client.components.sidebar.availability"),
+              url: "/office/availability",
+              icon: Calendar,
+            }
           ],
         }
       ] : []),
@@ -327,6 +333,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </InfoCard>
       )}
       <SidebarFooter>
+        <NavLanguage />
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />

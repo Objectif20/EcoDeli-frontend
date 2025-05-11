@@ -146,7 +146,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               url: "#",
               icon: ShoppingCart,
               items: [
-                { title: t("client.components.sidebar.activeAds"), url: "/office/my-services" },
+                { title: t("client.components.sidebar.services"), url: "/office/my-services" },
                 { title: t("client.components.sidebar.history"), url: "/office/ads-history-provider" },
                 { title: t("client.components.sidebar.reviews"), url: "/office/reviews-provider" },
               ],
@@ -263,7 +263,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           )}
           {isProviderValidated && open && (
             <div className="mx-4">
-              <Button className="w-full" onClick={() => navigate("/office/create-service")}>
+              <Button className="w-full" onClick={() => navigate("/office/services/create")}>
                 {t("client.components.sidebar.createService")}
               </Button>
             </div>

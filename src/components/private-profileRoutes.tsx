@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { UserApi } from '@/api/user.api';
 import { RootState } from '../redux/store';
+import ForbiddenPage from '@/pages/error/403';
 
 interface PrivateProfileRoutesProps {
   requiredProfiles: string[];
@@ -27,7 +28,7 @@ const PrivateProfileRoutes: React.FC<PrivateProfileRoutesProps> = ({ requiredPro
 
   if (!hasAccess) {
     console.error('Access denied: insufficient permissions');
-    return null;
+    return <ForbiddenPage />;
   }
 
   return <Outlet />;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import LocationSelector from "@/components/ui/location-input";
+import { ProfileAPI } from "@/api/profile.api";
 
 const MerchantSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -33,6 +34,27 @@ const MerchantSettings: React.FC = () => {
       phone: "",
     },
   });
+
+  useEffect(() => {
+    const fetchCommonSettings = async () => {
+      try {
+        const settings = await ProfileAPI.getCommonSettings();
+        form.reset({
+          company_name: settings.company_name || "",
+          siret: settings.siret || "",
+          address: settings.address || "",
+          postal_code: settings.postal_code || "",
+          city: settings.city || "",
+          country: settings.country || "",
+          phone: settings.phone || "",
+        });
+      } catch (error) {
+        console.error("Failed to fetch common settings:", error);
+      }
+    };
+
+    fetchCommonSettings();
+  }, [form]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);

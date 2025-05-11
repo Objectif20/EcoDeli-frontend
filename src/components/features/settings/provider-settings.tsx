@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import LocationSelector from "@/components/ui/location-input";
+import { ProfileAPI } from "@/api/profile.api";
 
 const ProviderSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -36,9 +37,21 @@ const ProviderSettings: React.FC = () => {
     },
   });
 
+  useEffect(() => {
+    const fetchCommonSettings = async () => {
+      try {
+        const settings = await ProfileAPI.getCommonSettings();
+        form.reset(settings);
+      } catch (error) {
+        console.error("Failed to fetch common settings:", error);
+      }
+    };
+
+    fetchCommonSettings();
+  }, [form]);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    // Handle form submission logic here
   }
 
   return (

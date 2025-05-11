@@ -53,9 +53,13 @@ const DeliverymanSettings: React.FC = () => {
     fetchCommonSettings();
   }, [form]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    // Handle form submission logic here
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await ProfileAPI.updateCommonSettings(values);
+      await ProfileAPI.getCommonSettings();
+    } catch (error) {
+      console.error("Failed to update settings:", error);
+    }
   }
 
   return (

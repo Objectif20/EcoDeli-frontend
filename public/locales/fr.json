@@ -1570,7 +1570,7 @@
             "cancelSubscription": "Stopper votre abonnement"
           },
           "deliveryman": {
-            "deliverymanSettings": "Paramètres du Livreur",
+            "deliverymanSettings": "Paramètres du transporteur",
             "modifyInfo": "Modifier vos informations",
             "professionalEmail": "Email Professionnel",
             "invalidEmail": "Adresse email invalide",
@@ -1591,7 +1591,7 @@
             "yourPostalCode": "Votre code postal"
           },
           "merchant": {
-            "merchantSettings": "Paramètres du Marchand",
+            "merchantSettings": "Paramètres du commerçant",
             "modifyInfo": "Modifier vos informations",
             "companyName": "Nom de l'Entreprise",
             "companyNameRequired": "Le nom de l'entreprise est requis",
@@ -1616,7 +1616,7 @@
             "yourPhone": "Votre téléphone"
           },
           "provider": {
-            "providerSettings": "Paramètres du Fournisseur",
+            "providerSettings": "Paramètres du Prestataire",
             "modifyInfo": "Modifier vos informations",
             "companyName": "Nom de l'Entreprise",
             "companyNameRequired": "Le nom de l'entreprise est requis",

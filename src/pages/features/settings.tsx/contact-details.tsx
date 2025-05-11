@@ -54,12 +54,6 @@ const ContactDetailsSettings: React.FC = () => {
         </nav>
 
         <div className="grid gap-6">
-          <div className="space-y-1">
-            <h2 className="text-xl font-medium">{t('client.pages.office.settings.contactDetails.contactInfo')}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t('client.pages.office.settings.contactDetails.manageContact')}
-            </p>
-          </div>
 
           {isProvider && <ProviderSettings />}
           {isDeliveryman && <DeliverymanSettings />}

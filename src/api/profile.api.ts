@@ -227,4 +227,8 @@ export class ProfileAPI {
         return response.data;
       }
 
+      static async updateCommonSettings(data: CommonSettingsForm) : Promise<void> {
+        await axiosInstance.patch("/client/profile/professionnal", data);
+      }
+
 }

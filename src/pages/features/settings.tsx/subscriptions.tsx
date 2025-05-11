@@ -26,15 +26,19 @@ const SubscriptionSettings: React.FC = () => {
   const isMerchant = user?.profile.includes("MERCHANT");
   const isDeliveryman = user?.profile.includes("DELIVERYMAN");
 
-  const handlePlanChange = async (planId: number, paymentMethodId: string) => {
-    console.log(`Changing to plan ID: ${planId}`);
-    console.log(`Payment method ID: ${paymentMethodId}`);
+  const handlePlanChange = async (planId: number, paymentMethodId?: string) => {
   
     try {
-      const data = await ProfileAPI.getMySubscription();
-      setUserSubscriptionData(data);
+      if (userSubscriptionData?.customer_stripe_id) {
+        await ProfileAPI.updateMySubscription(planId);
+      } else {
+        await ProfileAPI.updateMySubscription(planId, paymentMethodId);
+      }
+  
+      const updatedData = await ProfileAPI.getMySubscription();
+      setUserSubscriptionData(updatedData);
     } catch (error) {
-      console.error("Failed to fetch subscription data", error);
+      console.error("Échec du changement de plan", error);
     }
   };
 

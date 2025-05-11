@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -41,7 +42,7 @@ function SubscriptionDialog({
 }: SubscriptionDialogProps) {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
-  const [open, setOpen] = useState(false);
+  const [_, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const stripe = useStripe();
@@ -97,8 +98,7 @@ function SubscriptionDialog({
         setIsProcessing(false);
       } else {
         if (selectedPlan && onPlanChange) {
-
-          onPlanChange(selectedPlan.plan_id, paymentMethod.id);
+          await onPlanChange(selectedPlan.plan_id, paymentMethod.id);
           setOpen(false);
         }
       }
@@ -114,13 +114,13 @@ function SubscriptionDialog({
     style: {
       base: {
         fontSize: "16px",
-        color: "#424770",
+        color: "#000",
         "::placeholder": {
-          color: "#aab7c4",
+          color: "#aab7b7",
         },
       },
       invalid: {
-        color: "#9e2146",
+        color: "hsl(var(--destructive))",
       },
     },
   };
@@ -128,13 +128,13 @@ function SubscriptionDialog({
   const filteredPlans = plans.filter(plan => plan.plan_id !== actualPlan);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Changer de formule</DialogTitle>
           <DialogDescription>
-            Trouver l'abonnement qui vous correspond
+            Trouvez l'abonnement qui vous correspond
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -155,41 +155,32 @@ function SubscriptionDialog({
               </SelectContent>
             </Select>
           </div>
-
+  
           {selectedPlan && (
             <div className="bg-muted p-3 rounded-md">
               <h4 className="font-medium mb-2">{selectedPlan.name}</h4>
               <ul className="space-y-1 text-sm">
                 <li className="flex justify-between">
                   <span>Prix :</span>
-                  <span className="font-medium">
-                    {selectedPlan.price}€ / mois
-                  </span>
+                  <span className="font-medium">{selectedPlan.price}€ / mois</span>
                 </li>
                 <li className="flex justify-between">
                   <span>Réduction sur les petits colis :</span>
-                  <span className="font-medium">
-                    {selectedPlan.shipping_discount}%
-                  </span>
+                  <span className="font-medium">{selectedPlan.shipping_discount}%</span>
                 </li>
                 <li className="flex justify-between">
-                  <span>Réduction permanentes :</span>
-                  <span className="font-medium">
-                    {selectedPlan.permanent_discount}%
-                  </span>
+                  <span>Réductions permanentes :</span>
+                  <span className="font-medium">{selectedPlan.permanent_discount}%</span>
                 </li>
               </ul>
             </div>
           )}
-
+  
           {!stripe_account && (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label
-                  htmlFor="cardNumber"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Card Number
+                <label htmlFor="cardNumber" className="block text-sm font-medium text-foreground">
+                  Numéro de carte
                 </label>
                 <div className="mt-1 p-2 border rounded-md">
                   <CardNumberElement
@@ -200,11 +191,8 @@ function SubscriptionDialog({
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label
-                    htmlFor="cardExpiry"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Expiration
+                  <label htmlFor="cardExpiry" className="block text-sm font-medium text-foreground">
+                    Date d'expiration
                   </label>
                   <div className="mt-1 p-2 border rounded-md">
                     <CardExpiryElement
@@ -214,11 +202,8 @@ function SubscriptionDialog({
                   </div>
                 </div>
                 <div>
-                  <label
-                    htmlFor="cardCvc"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    CVC
+                  <label htmlFor="cardCvc" className="block text-sm font-medium text-foreground">
+                    Code de sécurité
                   </label>
                   <div className="mt-1 p-2 border rounded-md">
                     <CardCvcElement
@@ -229,27 +214,41 @@ function SubscriptionDialog({
                 </div>
               </div>
               {error && <div className="text-red-500 text-sm">{error}</div>}
-              <Button type="submit" disabled={!stripe || isProcessing}>
-                {isProcessing ? "Processing..." : "Confirm Subscription"}
-              </Button>
+              <div className="flex justify-end gap-2 pt-4">
+                <DialogClose asChild>
+                  <Button variant="outline" type="button">
+                    Annuler
+                  </Button>
+                </DialogClose>
+                <DialogClose asChild>
+                  <Button type="submit" disabled={!stripe || isProcessing}>
+                    {isProcessing ? "Traitement..." : "Valider"}
+                  </Button>
+                </DialogClose>
+              </div>
             </form>
           )}
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Annuler
-          </Button>
+  
           {stripe_account && (
-            <Button
-              onClick={() =>
-                selectedPlan &&
-                onPlanChange &&
-                onPlanChange(selectedPlan.plan_id, "")
-              }
-              disabled={!selectedPlan}
-            >
-              Changer d'abonnement
-            </Button>
+            <div className="flex justify-end gap-2">
+              <DialogClose asChild>
+                <Button variant="outline">
+                  Annuler
+                </Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button
+                  onClick={() =>
+                    selectedPlan &&
+                    onPlanChange &&
+                    onPlanChange(selectedPlan.plan_id, "")
+                  }
+                  disabled={!selectedPlan}
+                >
+                  Valider
+                </Button>
+              </DialogClose>
+            </div>
           )}
         </div>
       </DialogContent>

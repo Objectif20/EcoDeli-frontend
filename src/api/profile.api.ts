@@ -199,4 +199,14 @@ export class ProfileAPI {
         return response.data;
       }
 
+      static async updateMySubscription(planId: number, paymentMethodId?: string): Promise<any> {
+
+        const response = await axiosInstance.patch("/client/profile/subscription", {
+          planId,
+          paymentMethodId,
+        });
+        return response.data;
+
+      }
+
 }

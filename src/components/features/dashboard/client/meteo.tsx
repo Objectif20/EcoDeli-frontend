@@ -1,16 +1,33 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { MapPin, Sun, Cloud, CloudRain, CloudSnow } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useState } from "react"
+import { DashboardApi } from "@/api/dashboard.api"
 
 export default function Meteo() {
-  const [weather] = useState({
-    city: "Paris",
-    temperature: 13,
-    condition: "sunny",
-    date: new Date(),
-  })
+  const [weather, setWeather] = useState<null | {
+    city: string
+    temperature: number
+    condition: string
+    date: Date
+  }>(null)
+
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        const data = await DashboardApi.getWeather()
+        setWeather({
+          ...data,
+          date: new Date(data.date),
+        })
+      } catch (error) {
+        console.error("Erreur lors du chargement de la météo:", error)
+      }
+    }
+
+    fetchWeather()
+  }, [])
 
   const getWeatherIcon = (condition: string) => {
     switch (condition) {
@@ -25,6 +42,14 @@ export default function Meteo() {
       default:
         return <Sun className="h-8 w-8 text-yellow-500" />
     }
+  }
+
+  if (!weather) {
+    return (
+      <Card className="h-full flex items-center justify-center">
+        <span className="text-sm text-muted-foreground">Chargement...</span>
+      </Card>
+    )
   }
 
   const formattedDate = new Intl.DateTimeFormat("fr-FR", {

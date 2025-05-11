@@ -1,63 +1,45 @@
 "use client"
 
+import * as React from "react"
 import { Calendar } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-
-const upcomingServices = [
-  {
-    id: "1",
-    client: {
-      name: "Nathalie P.",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "NP",
-    },
-    service: "Promenade de votre chien",
-    date: "12/03/2025",
-  },
-  {
-    id: "2",
-    client: {
-      name: "Thomas R.",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "TR",
-    },
-    service: "Livraison de colis",
-    date: "14/03/2025",
-  },
-  {
-    id: "3",
-    client: {
-      name: "Sophie M.",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "SM",
-    },
-    service: "Courses alimentaires",
-    date: "15/03/2025",
-  },
-  {
-    id: "4",
-    client: {
-      name: "Jean D.",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "JD",
-    },
-    service: "Promenade de votre chien",
-    date: "18/03/2025",
-  },
-  {
-    id: "5",
-    client: {
-      name: "Marie L.",
-      avatar: "/placeholder.svg?height=40&width=40",
-      initials: "ML",
-    },
-    service: "Livraison de repas",
-    date: "20/03/2025",
-  },
-]
+import { DashboardApi, upcomingService as service } from "@/api/dashboard.api"
 
 export default function NextServicesProvider() {
+  const [upcomingServices, setUpcomingServices] = React.useState<service[]>([])
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchUpcomingServices = async () => {
+      try {
+        const data = await DashboardApi.getUpcomingServices()
+        setUpcomingServices(data)
+      } catch (err) {
+        console.error("Erreur lors du chargement des services à venir :", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchUpcomingServices()
+  }, [])
+
+  if (loading) {
+    return (
+      <Card className="h-full flex flex-col">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Prochaines prestations à réaliser
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Chargement...</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>

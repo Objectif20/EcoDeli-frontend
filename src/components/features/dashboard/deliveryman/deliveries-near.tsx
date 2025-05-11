@@ -1,12 +1,53 @@
 "use client"
 
+import * as React from "react"
 import { PackageSearch } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DashboardApi, nearDeliveries } from "@/api/dashboard.api"
+
 
 export default function NearDeliveries() {
-  const deliveries = {
-    count: 12,
-    period: "mars",
+  const [deliveries, setDeliveries] = React.useState<nearDeliveries | null>(null)
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchNearDeliveries = async () => {
+      try {
+        const data = await DashboardApi.getNearDeliveries()
+        setDeliveries(data)
+      } catch (err) {
+        console.error("Erreur lors du chargement des livraisons proches :", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchNearDeliveries()
+  }, [])
+
+  if (loading) {
+    return (
+      <Card className="h-full flex flex-col">
+        <CardHeader>
+          <CardTitle className="text-base font-medium">Colis près de chez vous</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Chargement...</p>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (!deliveries) {
+    return (
+      <Card className="h-full flex flex-col">
+        <CardHeader>
+          <CardTitle className="text-base font-medium">Colis près de chez vous</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Aucune livraison proche à afficher.</p>
+        </CardContent>
+      </Card>
+    )
   }
 
   return (

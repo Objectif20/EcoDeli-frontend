@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts"
 
@@ -17,16 +18,10 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = [
-  { month: "Janvier", packages: 186 },
-  { month: "Février", packages: 305 },
-  { month: "Mars", packages: 237 },
-  { month: "Avril", packages: 73 },
-  { month: "Mai", packages: 209 },
-  { month: "Juin", packages: 214 },
-]
+import { DashboardApi, NumberOfDeliveries } from "@/api/dashboard.api"
 
-const chartConfig = {
+
+const chartConfig: ChartConfig = {
   packages: {
     label: "Nombre de colis",
     color: "hsl(var(--chart-1))",
@@ -34,9 +29,24 @@ const chartConfig = {
   label: {
     color: "hsl(var(--background))",
   },
-} satisfies ChartConfig
+}
 
 export function NumberDeliveries() {
+  const [data, setData] = useState<NumberOfDeliveries[]>([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const deliveries = await DashboardApi.getNumberOfDeliveries()
+        setData(deliveries)
+      } catch (err) {
+        console.error("Erreur lors de la récupération des livraisons :", err)
+      }
+    }
+
+    fetchData()
+  }, [])
+
   return (
     <Card>
       <CardHeader>
@@ -47,11 +57,9 @@ export function NumberDeliveries() {
         <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={chartData}
+            data={data}
             layout="vertical"
-            margin={{
-              right: 16,
-            }}
+            margin={{ right: 16 }}
           >
             <CartesianGrid horizontal={false} />
             <YAxis

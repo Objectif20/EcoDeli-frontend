@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { TrendingUp } from "lucide-react"
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 
@@ -17,24 +18,31 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+import { co2Saved, DashboardApi } from "@/api/dashboard.api"
 
-const chartData = [
-  { month: "January", co2Saved: 150 },
-  { month: "February", co2Saved: 200 },
-  { month: "March", co2Saved: 180 },
-  { month: "April", co2Saved: 220 },
-  { month: "May", co2Saved: 210 },
-  { month: "June", co2Saved: 230 },
-]
-
-const chartConfig = {
+const chartConfig: ChartConfig = {
   co2Saved: {
     label: "CO2 Évité (kg)",
     color: "hsl(var(--chart-1))",
   },
-} satisfies ChartConfig
+}
 
 export function Co2Chart() {
+  const [data, setData] = useState<co2Saved[]>([])
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await DashboardApi.getCo2Saved()
+        setData(result)
+      } catch (err) {
+        console.error("Erreur lors du chargement du CO2 évité :", err)
+      }
+    }
+
+    fetchData()
+  }, [])
+
   return (
     <Card className="h-full">
       <CardHeader>
@@ -45,11 +53,8 @@ export function Co2Chart() {
         <ChartContainer config={chartConfig}>
           <LineChart
             accessibilityLayer
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
+            data={data}
+            margin={{ left: 12, right: 12 }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
@@ -68,12 +73,8 @@ export function Co2Chart() {
               type="natural"
               stroke="var(--color-co2Saved)"
               strokeWidth={2}
-              dot={{
-                fill: "var(--color-co2Saved)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
+              dot={{ fill: "var(--color-co2Saved)" }}
+              activeDot={{ r: 6 }}
             />
           </LineChart>
         </ChartContainer>

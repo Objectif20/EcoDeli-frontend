@@ -1,39 +1,58 @@
 "use client"
 
+import * as React from "react"
 import { MapPin, Package, Truck, Clock, Calendar, BarChart } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { DashboardApi, NextDelivery as NextDeliveryProps } from "@/api/dashboard.api"
 
-interface NextDeliveryProps {
-  origin: string
-  destination: string
-  date: Date
-  status?: "wait" | "take" | "going" | "finished"
-  trackingNumber?: string
-  carrier?: string
-  weight?: string
-  estimatedTime?: string
-}
+export default function NextDelivery() {
+  const [delivery, setDelivery] = React.useState<NextDeliveryProps | null>(null)
 
-export default function NextDelivery({
-  origin = "Paris",
-  destination = "Marseille",
-  date = new Date(2025, 1, 12, 14, 30),
-  status = "take",
-  trackingNumber = "FR7589214563",
-  carrier = "Chronopost",
-  weight = "3.5 kg",
-  estimatedTime = "2 jours",
-}: Partial<NextDeliveryProps>) {
+  
+  React.useEffect(() => {
+    const fetchNextDelivery = async () => {
+      try {
+        const data = await DashboardApi.getNextDelivery()
+        setDelivery(data)
+      } catch (error) {
+        console.error("Erreur lors de la récupération de la livraison :", error)
+      }
+    }
+
+    fetchNextDelivery()
+  }, [])
+
+  if (!delivery) {
+    return <div>Chargement...</div> 
+  }
+
+  const {
+    origin,
+    destination,
+    date, 
+    status,
+    trackingNumber,
+    carrier,
+    weight,
+    estimatedTime,
+  } = delivery
+
+  const parsedDate = new Date(date)
+  
+  if (isNaN(parsedDate.getTime())) {
+    console.error("Date invalide reçue : ", date)
+    return <div>Erreur de date.</div>
+  }
+
   const formattedDate = new Intl.DateTimeFormat("fr-FR", {
     day: "numeric",
     month: "long",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(date)
-
+  }).format(parsedDate)
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -56,7 +75,7 @@ export default function NextDelivery({
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg font-bold">Suivi de livraison</CardTitle>
           <Badge variant="outline" className="capitalize font-medium">
-            <span className={`mr-2 w-2 h-2 rounded-full ${getStatusColor(status)}`}></span>
+            <span className={`mr-2 w-2 h-2 rounded-full ${getStatusColor(status || "wait")}`}></span>
             {status === "wait" ? "En attente" : 
              status === "take" ? "Prise en charge" : 
              status === "going" ? "En cours de livraison" : 

@@ -1,39 +1,52 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { Truck } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import PackageIcon from "@/assets/illustrations/package.svg"
-
-import { useEffect } from "react"
 import L from "leaflet"
 
-const deliveryData = {
-  delivery: {
-    id: "#A7EHDK7",
-    from: "Paris",
-    to: "Marseille",
-    status: "En cours de livraison",
-    pickupDate: "12 mai 2025",
-    estimatedDeliveryDate: "14 mai 2025",
-    coordinates: {
-      origin: [48.8566, 2.3522], 
-      destination: [43.2965, 5.3698], 
-      current: [45.764043, 4.835659], 
-    },
-  },
-}
+import PackageIcon from "@/assets/illustrations/package.svg?url"
+import { DashboardApi } from "@/api/dashboard.api"
 
 export default function LastDelivery() {
-  const { delivery } = deliveryData
+  const [delivery, setDelivery] = useState<null | any>(null) 
+  const [loading, setLoading] = useState(true)
+
+  const customPackageIcon = new L.Icon({
+    iconUrl: PackageIcon,
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32],
+  })
 
   useEffect(() => {
-    L.Icon.Default.mergeOptions({
-      iconUrl: PackageIcon
-    })
+
+    const fetchDelivery = async () => {
+      try {
+        const data = await DashboardApi.getLastDelivery()
+        setDelivery(data.delivery)
+      } catch (err) {
+        console.error("Erreur lors de la récupération de la livraison :", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchDelivery()
   }, [])
+
+  if (loading) {
+    return (
+      <Card className="rounded-xl shadow-lg border bg-background">
+        <CardHeader className="text-center">
+          <CardTitle className="text-xl font-semibold text-foreground">Chargement...</CardTitle>
+        </CardHeader>
+      </Card>
+    )
+  }
 
   if (!delivery) {
     return (
@@ -71,10 +84,10 @@ export default function LastDelivery() {
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              <Marker position={delivery.coordinates.origin as [number, number]}>
+              <Marker position={delivery.coordinates.origin as [number, number]} icon={customPackageIcon}>
                 <Popup>Départ: {delivery.from}</Popup>
               </Marker>
-              <Marker position={delivery.coordinates.destination as [number, number]}>
+              <Marker position={delivery.coordinates.destination as [number, number]} icon={customPackageIcon}>
                 <Popup>Arrivée: {delivery.to}</Popup>
               </Marker>
             </MapContainer>
@@ -112,7 +125,7 @@ export default function LastDelivery() {
                 <span className="text-xl font-semibold">{delivery.to}</span>
                 <div className="flex items-center mt-2 justify-end">
                   <div className="text-sm text-foreground mr-2 text-right">
-                    Date d'arrivé estimé pour le :<div className="font-semibold">{delivery.estimatedDeliveryDate}</div>
+                    Date d'arrivée estimée :<div className="font-semibold">{delivery.estimatedDeliveryDate}</div>
                   </div>
                   <div className=" w-4 h-4 rounded-full"></div>
                 </div>

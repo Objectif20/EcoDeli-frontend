@@ -18,14 +18,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-
-const chartData = [
-  { size: "S", packages: 275 },
-  { size: "M", packages: 200 },
-  { size: "L", packages: 287 },
-  { size: "XL", packages: 173 },
-  { size: "XXL", packages: 190 },
-]
+import { DashboardApi, packages } from "@/api/dashboard.api"
 
 const chartColors: Record<string, string> = {
   S: "hsl(var(--chart-1))",
@@ -35,21 +28,34 @@ const chartColors: Record<string, string> = {
   XXL: "hsl(var(--chart-5))",
 }
 
-const chartConfig = {
-  packages: {
-    label: "Packages",
-  },
+const chartConfig: ChartConfig = {
+  packages: { label: "Packages" },
   S: { label: "S", color: chartColors.S },
   M: { label: "M", color: chartColors.M },
   L: { label: "L", color: chartColors.L },
   XL: { label: "XL", color: chartColors.XL },
   XXL: { label: "XXL", color: chartColors.XXL },
-} satisfies ChartConfig
+}
 
 export function PackageStats() {
-  const totalPackages = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.packages, 0)
+  const [data, setData] = React.useState<packages[]>([])
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await DashboardApi.getPackages()
+        setData(res)
+      } catch (err) {
+        console.error("Erreur de chargement des colis:", err)
+      }
+    }
+    fetchData()
   }, [])
+
+  const totalPackages = React.useMemo(
+    () => data.reduce((acc, curr) => acc + curr.packages, 0),
+    [data]
+  )
 
   return (
     <Card className="flex flex-col h-full">
@@ -68,14 +74,17 @@ export function PackageStats() {
               content={<ChartTooltipContent hideLabel />}
             />
             <Pie
-              data={chartData}
+              data={data}
               dataKey="packages"
               nameKey="size"
               innerRadius={60}
               strokeWidth={5}
             >
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={chartColors[entry.size]} />
+              {data.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={chartColors[entry.size] || "hsl(var(--chart-fallback))"}
+                />
               ))}
               <Label
                 content={({ viewBox }) => {

@@ -13,13 +13,14 @@ import { useTranslation } from 'react-i18next';
 import { SubscriptionDialogWrapper } from "@/components/features/settings/subscriptions/dialog";
 import { Button } from "@/components/ui/button";
 import { ProfileAPI, UserSubscriptionData } from "@/api/profile.api";
-
+import { RegisterApi, Plan } from "@/api/register.api";
 
 const SubscriptionSettings: React.FC = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
   const [userSubscriptionData, setUserSubscriptionData] = useState<UserSubscriptionData | null>(null);
+  const [plans, setPlans] = useState<Plan[]>([]);
 
   const isProvider = user?.profile.includes("PROVIDER");
   const isClient = user?.profile.includes("CLIENT");
@@ -27,18 +28,40 @@ const SubscriptionSettings: React.FC = () => {
   const isDeliveryman = user?.profile.includes("DELIVERYMAN");
 
   const handlePlanChange = async (planId: number, paymentMethodId?: string) => {
-  
     try {
       if (userSubscriptionData?.customer_stripe_id) {
         await ProfileAPI.updateMySubscription(planId);
       } else {
         await ProfileAPI.updateMySubscription(planId, paymentMethodId);
       }
-  
+
       const updatedData = await ProfileAPI.getMySubscription();
       setUserSubscriptionData(updatedData);
     } catch (error) {
       console.error("Échec du changement de plan", error);
+    }
+  };
+
+  const fetchPlans = async () => {
+    try {
+      const response = await RegisterApi.getPlan();
+      const mockPlans: Plan[] = await response;
+      setPlans(mockPlans);
+    } catch (error) {
+      console.error("Error fetching plans:", error);
+    }
+  };
+
+  const updateToFreePlan = async () => {
+    const freePlan = plans.find(plan => Number(plan.price) === 0);
+    if (freePlan) {
+      try {
+        await ProfileAPI.updateMySubscription(freePlan.plan_id);
+        const updatedData = await ProfileAPI.getMySubscription();
+        setUserSubscriptionData(updatedData);
+      } catch (error) {
+        console.error("Failed to update to free plan", error);
+      }
     }
   };
 
@@ -60,8 +83,9 @@ const SubscriptionSettings: React.FC = () => {
         console.error("Failed to fetch subscription data", error);
       }
     };
-  
+
     fetchSubscription();
+    fetchPlans();
   }, []);
 
   return (
@@ -87,32 +111,32 @@ const SubscriptionSettings: React.FC = () => {
           <h1 className="text-2xl font-semibold">{t('client.pages.office.settings.subscriptions.yourSubscription')}</h1>
 
           <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xl">
-                {t('client.pages.office.settings.subscriptions.currentSubscription')} <span className="text-primary">{userSubscriptionData?.plan?.name}</span>
-              </CardTitle>
-              <CardDescription className="text-3xl font-bold text-primary">
-                {userSubscriptionData?.plan?.price} <span className="text-sm font-normal text-muted-foreground">/mois</span>
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span>{t('client.pages.office.settings.subscriptions.discountOnShipping')}</span>
-                  <span className="font-medium">{userSubscriptionData?.plan?.shipping_discount}</span>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xl">
+                  {t('client.pages.office.settings.subscriptions.currentSubscription')} <span className="text-primary">{userSubscriptionData?.plan?.name}</span>
+                </CardTitle>
+                <CardDescription className="text-3xl font-bold text-primary">
+                  {userSubscriptionData?.plan?.price} <span className="text-sm font-normal text-muted-foreground">/mois</span>
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span>{t('client.pages.office.settings.subscriptions.discountOnShipping')}</span>
+                    <span className="font-medium">{userSubscriptionData?.plan?.shipping_discount}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>{t('client.pages.office.settings.subscriptions.priorityShipping')}</span>
+                    <span className="font-medium">{userSubscriptionData?.plan?.priority_shipping_percentage}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>{t('client.pages.office.settings.subscriptions.permanentDiscount')}</span>
+                    <span className="font-medium">{userSubscriptionData?.plan?.permanent_discount_percentage}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span>{t('client.pages.office.settings.subscriptions.priorityShipping')}</span>
-                  <span className="font-medium">{userSubscriptionData?.plan?.priority_shipping_percentage}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>{t('client.pages.office.settings.subscriptions.permanentDiscount')}</span>
-                  <span className="font-medium">{userSubscriptionData?.plan?.permanent_discount_percentage}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
             <Card>
               <CardHeader className="pb-2">
@@ -122,23 +146,19 @@ const SubscriptionSettings: React.FC = () => {
                 <ul className="space-y-2 text-sm">
                   <li className="flex items-center gap-2">
                     <span className="text-primary">•</span>
-                    <Link to="/office/subscription-plans" className="text-primary hover:underline">
-                      {t('client.pages.office.settings.subscriptions.discoverPlans')}
-                    </Link>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="text-primary">•</span>
                     <SubscriptionDialogWrapper onPlanChange={handlePlanChange} stripe_account={userSubscriptionData?.customer_stripe_id || false} actualPlan={userSubscriptionData?.plan?.plan_id}>
-                        <Button variant="link" className="text-primary p-0 h-auto hover:underline">
-                          {t("client.pages.office.settings.subscriptions.changePlan")}
-                        </Button>
-                      </SubscriptionDialogWrapper>
+                      <Button variant="link" className="text-primary p-0 h-auto hover:underline">
+                        {t("client.pages.office.settings.subscriptions.changePlan")}
+                      </Button>
+                    </SubscriptionDialogWrapper>
                   </li>
                   <li className="flex items-center gap-2">
                     <span className="text-primary">•</span>
-                    <Link to="/office/cancel-subscription" className="text-primary hover:underline">
-                      {t('client.pages.office.settings.subscriptions.cancelSubscription')}
-                    </Link>
+                    {Number(userSubscriptionData?.plan?.price ?? 0) > 0 && (
+                      <Button onClick={updateToFreePlan} variant={"link"} className="text-primary p-0 h-auto hover:underline">
+                        {t('client.pages.office.settings.subscriptions.cancelSubscription')}
+                      </Button>
+                    )}
                   </li>
                 </ul>
               </CardContent>

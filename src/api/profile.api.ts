@@ -231,4 +231,8 @@ export class ProfileAPI {
         await axiosInstance.patch("/client/profile/professionnal", data);
       }
 
+      static async updateBankData(paymentMethodId: string) : Promise<void> {
+        await axiosInstance.patch("/client/profile/bank-data", { paymentMethodId });
+      }
+
 }

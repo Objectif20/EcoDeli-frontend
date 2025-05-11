@@ -2107,7 +2107,9 @@
         "deliverymanProfileUnderReview": "Profil Transporteur en cours d'analyse",
         "deliverymanProfileUnderReviewDescription": "Votre profil Transporteur est en cours d'analyse. Vous serez informé dès que le processus sera terminé.",
         "availability" : "Disponibilités",
-        "services" : "Mes prestations"
+        "services" : "Mes prestations",
+        "stripeValidationRequired" : "Demande de livraison impossible",
+        "validateNow" : "Renseigner mes coordonnées bancaires"
       },
       "disclosure": {
         "completed": "(complété)",

@@ -10,7 +10,7 @@ type Carrier = {
   id: string
   name: string
   rating: number
-  status: "en cours" | "stoppée" | "terminée"
+  status: "going" | "stop" | "finished"
   avatar: string
 }
 
@@ -20,33 +20,33 @@ export default function DeliveryCarriers() {
       id: "1",
       name: "Nathalie P.",
       rating: 5,
-      status: "en cours",
+      status: "going",
       avatar: "/placeholder.svg?height=40&width=40",
     },
     {
       id: "2",
       name: "Rémy T.",
       rating: 3,
-      status: "stoppée",
+      status: "stop",
       avatar: "/placeholder.svg?height=40&width=40",
     },
     {
       id: "3",
       name: "Quentin D.",
       rating: 4,
-      status: "terminée",
+      status: "finished",
       avatar: "/placeholder.svg?height=40&width=40",
     },
   ]
 
   const getStatusBadge = (status: Carrier["status"]) => {
     switch (status) {
-      case "en cours":
-        return <Badge className="bg-green-500 hover:bg-green-600">En cours</Badge>
-      case "stoppée":
-        return <Badge className="bg-orange-500 hover:bg-orange-600">Stoppée</Badge>
-      case "terminée":
-        return <Badge className="bg-blue-500 hover:bg-blue-600">Terminée</Badge>
+      case "going":
+        return <Badge className="bg-green-500 hover:bg-green-600">going</Badge>
+      case "stop":
+        return <Badge className="bg-orange-500 hover:bg-orange-600">stop</Badge>
+      case "finished":
+        return <Badge className="bg-blue-500 hover:bg-blue-600">finished</Badge>
     }
   }
 

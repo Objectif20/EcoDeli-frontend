@@ -7,23 +7,19 @@ import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
 const revenueData = [
-  { month: "Janvier", particuliers: 250, commercants: 150 },
-  { month: "Février", particuliers: 380, commercants: 220 },
-  { month: "Mars", particuliers: 300, commercants: 180 },
-  { month: "Avril", particuliers: 200, commercants: 120 },
-  { month: "Mai", particuliers: 280, commercants: 160 },
-  { month: "Juin", particuliers: 320, commercants: 180 },
+  { month: "Janvier", particuliers: 250 },
+  { month: "Février", particuliers: 380 },
+  { month: "Mars", particuliers: 300 },
+  { month: "Avril", particuliers: 200 },
+  { month: "Mai", particuliers: 280 },
+  { month: "Juin", particuliers: 320 },
 ]
 
 const chartConfig = {
   particuliers: {
     label: "Particuliers",
     color: "hsl(var(--chart-1))",
-  },
-  commercants: {
-    label: "Commerçants",
-    color: "hsl(var(--chart-2))",
-  },
+  }
 } satisfies ChartConfig
 
 
@@ -50,7 +46,6 @@ export default function MonthlyRevenue() {
               content={<ChartTooltipContent indicator="dashed" />}
             />
             <Bar dataKey="particuliers" fill="var(--color-particuliers)" radius={4} />
-            <Bar dataKey="commercants" fill="var(--color-commercants)" radius={4} />
           </BarChart>
         </ChartContainer>
       </CardContent>

@@ -42,7 +42,6 @@ export default function MerchantDashboard() {
           </div>
           <div className="col-span-6 lg:col-span-4 bg-orange-500  rounded-xl">
                 <PackageStats />
-
           </div>
         </div>
       </div>

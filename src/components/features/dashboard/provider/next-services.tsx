@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 const upcomingServices = [
   {
-    id: 1,
+    id: "1",
     client: {
       name: "Nathalie P.",
       avatar: "/placeholder.svg?height=40&width=40",
@@ -16,7 +16,7 @@ const upcomingServices = [
     date: "12/03/2025",
   },
   {
-    id: 2,
+    id: "2",
     client: {
       name: "Thomas R.",
       avatar: "/placeholder.svg?height=40&width=40",
@@ -26,7 +26,7 @@ const upcomingServices = [
     date: "14/03/2025",
   },
   {
-    id: 3,
+    id: "3",
     client: {
       name: "Sophie M.",
       avatar: "/placeholder.svg?height=40&width=40",
@@ -36,7 +36,7 @@ const upcomingServices = [
     date: "15/03/2025",
   },
   {
-    id: 4,
+    id: "4",
     client: {
       name: "Jean D.",
       avatar: "/placeholder.svg?height=40&width=40",
@@ -46,7 +46,7 @@ const upcomingServices = [
     date: "18/03/2025",
   },
   {
-    id: 5,
+    id: "5",
     client: {
       name: "Marie L.",
       avatar: "/placeholder.svg?height=40&width=40",

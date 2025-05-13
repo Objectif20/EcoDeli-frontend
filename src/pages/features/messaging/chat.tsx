@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/chat/chat-bubble';
 import { ChatInput } from '@/components/ui/chat/chat-input';
 import { ChatMessageList } from '@/components/ui/chat/chat-message-list';
-import { Send, ChevronLeft, Download, Contact } from 'lucide-react';
+import { Send, ChevronLeft, File, Download, Contact } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -22,8 +22,6 @@ import { useTranslation } from 'react-i18next';
 import { RootState } from '@/redux/store';
 import { useNavigate } from 'react-router-dom';
 import DeliveryNegotiateDialog from './delivery-negociate';
-import { useMediaQuery } from '@/hooks/use-media-query';
-import { DeliverymanApi } from '@/api/deliveryman.api';
 
 interface Contact {
   user_id: string;
@@ -61,16 +59,14 @@ const ChatPage = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [showContacts, setShowContacts] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isEligible, setIsEligible] = useState(false);
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const messageListRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const user = useSelector((state: RootState) => state.user.user);
-  const isMobile = useMediaQuery("(max-width: 768px)");
+
   const myUserId = user?.user_id || '';
   const navigate = useNavigate();
-  const isClient = user?.profile.includes("CLIENT");
 
   const scrollToBottom = () => {
     if (bottomRef.current) {
@@ -93,25 +89,32 @@ const ChatPage = () => {
     });
 
     socket.on('receiveMessage', (message: Message) => {
+      console.log('Received message:', message);
+    
       setMessages(prevMessages => {
         const contactId = message.senderId === myUserId ? message.receiverId : message.senderId;
+    
         const contactMessages = prevMessages[contactId] || [];
+    
         const existingMessageIndex = contactMessages.findIndex(msg => msg._id === message._id);
+    
         let updatedContactMessages;
-
+    
         if (existingMessageIndex !== -1) {
+          console.log('Message already exists, updating it:', message);
           updatedContactMessages = [...contactMessages];
           updatedContactMessages[existingMessageIndex] = message;
         } else {
+          console.log('Adding new message:', message);
           updatedContactMessages = [...contactMessages, message];
         }
-
+    
         return {
           ...prevMessages,
           [contactId]: updatedContactMessages,
         };
       });
-
+    
       scrollToBottom();
     });
 
@@ -121,6 +124,7 @@ const ChatPage = () => {
           ...prevMessages,
           [selectedContact]: receivedMessages,
         }));
+        console.log('Messages history:', receivedMessages);
         scrollToBottom();
       }
     });
@@ -140,29 +144,18 @@ const ChatPage = () => {
 
   useEffect(() => {
     const handleConnect = () => {
+      console.log('🔌 Connected to socket:', socket.id);
       if (myUserId) {
         socket.emit('clientConnected', myUserId);
       }
     };
-
+  
     socket.on('connect', handleConnect);
-
+  
     return () => {
       socket.off('connect', handleConnect);
     };
   }, [myUserId]);
-
-  useEffect(() => {
-    const checkEligibility = async () => {
-      if (selectedContact) {
-        const contact = contacts.find(contact => contact.user_id === selectedContact);
-        const eligible = await isUserEligibleForDelivery(contact);
-        setIsEligible(eligible);
-      }
-    };
-
-    checkEligibility();
-  }, [selectedContact, contacts]);
 
   const filteredContacts = contacts.filter(contact =>
     contact.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -170,17 +163,6 @@ const ChatPage = () => {
   );
 
   const selectedContactInfo = contacts.find(contact => contact.user_id === selectedContact);
-
-  const isUserEligibleForDelivery = async (contact: Contact | undefined): Promise<boolean> => {
-    try {
-      const response = await DeliverymanApi.isDeliverymanElligibleToTakeDeliveries(contact?.user_id || "");
-      console.log("Eligibility response:", response);
-      return response;
-    } catch (error) {
-      console.error("Error checking delivery eligibility:", error);
-      return false;
-    }
-  };
 
   const handleSendMessage = (messageContent: string) => {
     if (!selectedContact) return;
@@ -278,105 +260,102 @@ const ChatPage = () => {
       <div className={`flex-1 mb-8 ${showContacts && window.innerWidth <= 768 ? 'hidden' : ''}`}>
         {selectedContact ? (
           <>
-            <div className="flex items-center p-4 border-b shrink-0">
-              {isMobile && (
-                <Button onClick={handleBackClick} variant="ghost" size="icon" className="mr-2">
-                  <ChevronLeft className="h-5 w-5" />
+            <div className="flex items-center mb-4">
+              {window.innerWidth <= 768 && (
+          <Button onClick={handleBackClick} className="mr-2" variant={"ghost"}>
+            <ChevronLeft className="size-4" />
+          </Button>
+              )}
+              <Avatar>
+          <AvatarImage src={selectedContactInfo?.photo} alt={selectedContactInfo?.first_name} />
+          <AvatarFallback>{selectedContactInfo?.first_name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="ml-2">
+          <h1 className="text-xl font-semibold">{selectedContactInfo?.first_name} {selectedContactInfo?.last_name}</h1>
+          <p className="text-gray-600">{selectedContactInfo?.online ? t("client.pages.office.chat.online") : t("client.pages.office.chat.offline")}</p>
+              </div>
+              <DeliveryNegotiateDialog deliveryman_user_id={selectedContactInfo?.user_id || ""} />
+            </div>
+            <ScrollArea className="flex-1" style={{ height: `calc(100% - 48px)` }}>
+              <ChatMessageList ref={messageListRef}>
+          {messages[selectedContact]?.map((msg) => (
+            <ChatBubble key={msg._id} variant={msg.senderId === selectedContact ? 'received' : 'sent'}>
+              {msg.senderId !== myUserId && (
+                <ChatBubbleAvatar src={selectedContactInfo?.photo} />
+              )}
+              <ChatBubbleMessage isLoading={msg.isLoading}>
+                {msg.fileUrl ? (
+            <div>
+              {getFileType(msg.fileUrl) === 'image' ? (
+                <img src={msg.fileUrl} alt="File" className="max-w-full h-auto" style={{ maxHeight: '300px' }} />
+              ) : (
+                <Button onClick={() => msg.fileUrl && navigate(msg.fileUrl)} className="flex items-center">
+                  <Download className="mr-2" />
+                  Télécharger un document
                 </Button>
               )}
-              <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={selectedContactInfo?.photo || "/placeholder.svg"}
-                  alt={selectedContactInfo?.first_name}
-                />
-                <AvatarFallback>{selectedContactInfo?.first_name?.charAt(0) || "U"}</AvatarFallback>
-              </Avatar>
-              <div className="ml-3 flex-1">
-                <h1 className="font-medium">
-                  {selectedContactInfo?.first_name} {selectedContactInfo?.last_name}
-                </h1>
-                <p className="text-xs text-muted-foreground">
-                  {selectedContactInfo?.online
-                    ? t("client.pages.office.chat.online")
-                    : t("client.pages.office.chat.offline")}
-                </p>
-              </div>
-              {isClient && isEligible && (
-                <DeliveryNegotiateDialog deliveryman_user_id={selectedContactInfo?.user_id || ""} />
-              )}
             </div>
-            <ScrollArea className="flex-1" style={{ height: `calc(100% - 75px)` }}>
-              <ChatMessageList ref={messageListRef}>
-                {messages[selectedContact]?.map((msg) => (
-                  <ChatBubble key={msg._id} variant={msg.senderId === selectedContact ? 'received' : 'sent'}>
-                    {msg.senderId !== myUserId && (
-                      <ChatBubbleAvatar src={selectedContactInfo?.photo} />
-                    )}
-                    <ChatBubbleMessage isLoading={msg.isLoading}>
-                      {msg.fileUrl ? (
-                        <div>
-                          {getFileType(msg.fileUrl) === 'image' ? (
-                            <img src={msg.fileUrl} alt="File" className="max-w-full h-auto" style={{ maxHeight: '300px' }} />
-                          ) : (
-                            <Button onClick={() => msg.fileUrl && navigate(msg.fileUrl)} className="flex items-center">
-                              <Download className="mr-2" />
-                              Télécharger un document
-                            </Button>
-                          )}
-                        </div>
-                      ) : (
-                        msg.content
-                      )}
-                    </ChatBubbleMessage>
-                  </ChatBubble>
-                ))}
-                <div ref={bottomRef}></div>
+                ) : (
+            msg.content
+                )}
+              </ChatBubbleMessage>
+            </ChatBubble>
+          ))}
+          <div ref={bottomRef}></div>
               </ChatMessageList>
             </ScrollArea>
             <form
               className="flex relative gap-2 mt-4"
               onSubmit={(e) => {
-                e.preventDefault();
-                const input = (e.target as HTMLFormElement).elements.namedItem('chatInput') as HTMLInputElement;
-                handleSendMessage(input.value);
-                input.value = '';
+          e.preventDefault();
+          const input = (e.target as HTMLFormElement).elements.namedItem('chatInput') as HTMLInputElement;
+          handleSendMessage(input.value);
+          input.value = '';
               }}
             >
               <ChatInput
-                name="chatInput"
-                className="min-h-12 bg-background shadow-none mr-12"
-                placeholder={t("client.pages.office.chat.typeMessage")}
-              />
-              <input
-                type="file"
-                id="fileInput"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    setSelectedFile(file);
-                    handleFileUpload();
-                  }
-                }}
+          name="chatInput"
+          className="min-h-12 bg-background shadow-none"
+          placeholder={t("client.pages.office.chat.typeMessage")}
               />
               <Button
-                className="absolute top-1/2 right-2 transform size-8 -translate-y-1/2"
-                size="icon"
-                type="submit"
+          className="absolute top-1/2 right-12 transform size-8 -translate-y-1/2"
+          size="icon"
+          type="button"
+          onClick={() => document.getElementById('fileInput')?.click()}
               >
-                <Send className="size-4" />
+          <File className="size-4" />
+              </Button>
+              <input
+          type="file"
+          id="fileInput"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              setSelectedFile(file);
+              handleFileUpload();
+            }
+          }}
+              />
+              <Button
+          className="absolute top-1/2 right-2 transform size-8 -translate-y-1/2"
+          size="icon"
+          type="submit"
+              >
+          <Send className="size-4" />
               </Button>
             </form>
           </>
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="flex min-h-[70svh] flex-col items-center justify-center py-16 text-center">
-              <Contact
-                size={32}
-                className="text-muted-foreground/50 mb-2"
-              />
-              <h3 className="text-lg font-medium">{t("client.pages.office.chat.selectContact")}</h3>
-            </div>
+            <Contact
+              size={32}
+              className="text-muted-foreground/50 mb-2"
+            />
+            <h3 className="text-lg font-medium">{t("client.pages.office.chat.selectContact")}</h3>
+          </div>
           </div>
         )}
       </div>

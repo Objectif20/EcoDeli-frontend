@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -25,6 +26,7 @@ import { DeliverymanApi } from "@/api/deliveryman.api"
 import { useNavigate, useParams } from "react-router-dom"
 
 export default function DeliveryDetailsPage() {
+  const { t } = useTranslation()
   const [_, setActiveTab] = useState("overview")
   const [delivery, setDelivery] = useState<Shipment>()
   const [isDeliveryman, setIsDeliveryman] = useState(false)
@@ -41,7 +43,7 @@ export default function DeliveryDetailsPage() {
         const data = await DeliveriesAPI.getShipmentDetailsById(id)
         setDelivery(data)
       } catch (error) {
-        console.error("Erreur de chargement de la livraison:", error)
+        console.error(t("client.pages.public.deliveries-details.loadingError"), error)
       }
     }
 
@@ -50,27 +52,25 @@ export default function DeliveryDetailsPage() {
         const eligible = await DeliverymanApi.isDeliverymanAvailableForThisDeliveries(id)
         setIsDeliveryman(eligible)
       } catch (error) {
-        console.error("Erreur d'éligibilité:", error)
+        console.error(t("client.pages.public.deliveries-details.eligibilityError"), error)
       }
     }
 
     fetchShipment()
     checkEligibility()
-  }, [id])
+  }, [id, t])
 
-  if (!id) return <div>Erreur : ID de livraison manquant</div>
-  if (!delivery) return <div>Chargement...</div>
+  if (!id) return <div>{t("client.pages.public.deliveries-details.missingId")}</div>
+  if (!delivery) return <div>{t("client.pages.public.deliveries-details.loading")}</div>
 
   const lastStep = delivery.steps[delivery.steps.length - 1]
   let progress = 0
 
-  // Nouvelle logique de progression selon les IDs des étapes
   if (lastStep?.id === -1) {
-    progress = 0 // Aucune étape
+    progress = 0
   } else if (lastStep?.id === 0 || lastStep?.id === 1000) {
-    progress = 100 // Livraison complète
+    progress = 100
   } else if (lastStep?.id >= 1 && lastStep?.id <= 999) {
-    // Trouver l'étape avec le plus grand ID entre 1 et 999
     const maxStepId = Math.max(
       ...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id),
     )
@@ -81,10 +81,10 @@ export default function DeliveryDetailsPage() {
   const handleBook = async () => {
     try {
       await DeliveriesAPI.bookShipment(id)
-      toast.success("Réservation réussie !")
+      toast.success(t("client.pages.public.deliveries-details.bookSuccess"))
       setIsBooked(true)
     } catch (error) {
-      console.error("Erreur de réservation:", error)
+      console.error(t("client.pages.public.deliveries-details.bookError"), error)
     }
   }
 
@@ -94,7 +94,7 @@ export default function DeliveryDetailsPage() {
       navigate("/office/messaging")
       setIsBooked(true)
     } catch (error) {
-      console.error("Erreur de négociation:", error)
+      console.error(t("client.pages.public.deliveries-details.negotiationError"), error)
     }
   }
 
@@ -104,17 +104,17 @@ export default function DeliveryDetailsPage() {
         <CardHeader className="bg-gradient-to-r from-primary to-primary/90 text-foreground rounded-t-lg py-8">
           <div>
             <CardTitle className="text-2xl md:text-3xl font-bold flex items-center">
-              {delivery.details.name}
-              {delivery.details.urgent && <Badge className="ml-2 bg-red-500 text-white border-none">URGENT</Badge>}
+              {t("client.pages.public.deliveries-details.title", { name: delivery.details.name })}
+              {delivery.details.urgent && <Badge className="ml-2 bg-red-500 text-white border-none">{t("client.pages.public.deliveries-details.urgent")}</Badge>}
             </CardTitle>
             <CardDescription className="text-primary-foreground/90 mt-1">
-              Référence N°{delivery.details.id}
+              {t("client.pages.public.deliveries-details.reference", { id: delivery.details.id })}
             </CardDescription>
             {(delivery.details.departure_date || delivery.details.arrival_date) && (
               <div className="flex flex-wrap gap-x-6 gap-y-2 mt-3 text-sm text-primary-foreground/80">
                 {delivery.details.departure_date && (
                   <div className="flex items-center gap-2">
-                    <span>Départ prévu:</span>
+                    <span>{t("client.pages.public.deliveries-details.departureDate")}</span>
                     <span className="font-medium">
                       {new Date(delivery.details.departure_date).toLocaleDateString("fr-FR")}
                     </span>
@@ -122,7 +122,7 @@ export default function DeliveryDetailsPage() {
                 )}
                 {delivery.details.arrival_date && (
                   <div className="flex items-center gap-2">
-                    <span>Arrivée prévue:</span>
+                    <span>{t("client.pages.public.deliveries-details.arrivalDate")}</span>
                     <span className="font-medium">
                       {new Date(delivery.details.arrival_date).toLocaleDateString("fr-FR")}
                     </span>
@@ -141,7 +141,7 @@ export default function DeliveryDetailsPage() {
                     <div className="w-2 h-2 rounded-full bg-background"></div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Départ</p>
+                    <p className="text-sm font-medium">{t("client.pages.public.deliveries-details.departure")}</p>
                     <h3 className="text-lg font-semibold">{delivery.details.departure.city}</h3>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ export default function DeliveryDetailsPage() {
                     <MapPin className="w-3 h-3 text-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Arrivée</p>
+                    <p className="text-sm font-medium">{t("client.pages.public.deliveries-details.arrival")}</p>
                     <h3 className="text-lg font-semibold">{delivery.details.arrival.city}</h3>
                   </div>
                 </div>
@@ -159,23 +159,23 @@ export default function DeliveryDetailsPage() {
             <div className="space-y-6">
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium">Progression</span>
+                  <span className="text-sm font-medium">{t("client.pages.public.deliveries-details.progress")}</span>
                   <span className="text-sm font-medium">{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
                 <p className="text-xs text-muted-foreground">
                   {lastStep?.id === -1
-                    ? "Aucune étape pour le moment"
+                    ? t("client.pages.public.deliveries-details.noSteps")
                     : lastStep?.id === 0
-                      ? "Livraison entièrement prise en charge"
+                      ? t("client.pages.public.deliveries-details.fullCoverage")
                       : lastStep?.id === 1000
-                        ? "Dernière étape en cours"
+                        ? t("client.pages.public.deliveries-details.remainingCoverage")
                         : `${delivery.steps.length} étape${delivery.steps.length > 1 ? "s" : ""} sur ${Math.max(...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id)) + 1}`}
                 </p>
               </div>
               <div className="bg-background p-4 rounded-lg">
                 <div className="flex justify-between">
-                  <span className="font-medium">Prix proposé</span>
+                  <span className="font-medium">{t("client.pages.public.deliveries-details.proposedPrice")}</span>
                   <span className="text-xl font-bold">{delivery.details.initial_price} €</span>
                 </div>
               </div>
@@ -183,47 +183,46 @@ export default function DeliveryDetailsPage() {
                 <div className="space-y-2">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <Button className="w-full">Prendre la livraison</Button>
+                      <Button className="w-full">{t("client.pages.public.deliveries-details.takeDelivery")}</Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Prise en charge complète</DialogTitle>
-                        <DialogDescription>Souhaitez-vous prendre en charge toute la livraison ?</DialogDescription>
+                        <DialogTitle>{t("client.pages.public.deliveries-details.fullDelivery")}</DialogTitle>
+                        <DialogDescription>{t("client.pages.public.deliveries-details.fullDelivery")}</DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
                         <DialogClose asChild>
-                          <Button onClick={handleBook}>Oui</Button>
+                          <Button onClick={handleBook}>{t("client.pages.public.deliveries-details.yes")}</Button>
                         </DialogClose>
                         <DialogClose asChild>
-                          <Button variant="outline">Non</Button>
+                          <Button variant="outline">{t("client.pages.public.deliveries-details.no")}</Button>
                         </DialogClose>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
 
-                  { delivery.details.trolleydrop === false && ( 
-                    
+                  { delivery.details.trolleydrop === false && (
+
                     <Dialog>
                     <DialogTrigger asChild>
-                      <Button className="w-full">Prise en charge partielle</Button>
+                      <Button className="w-full">{t("client.pages.public.deliveries-details.partialDelivery")}</Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Livraison partielle</DialogTitle>
-                        <DialogDescription>Vous serez redirigé vers la messagerie pour en discuter.</DialogDescription>
+                        <DialogTitle>{t("client.pages.public.deliveries-details.partialDelivery")}</DialogTitle>
+                        <DialogDescription>{t("client.pages.public.deliveries-details.partialDeliveryMessage")}</DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
                         <DialogClose asChild>
-                          <Button onClick={handlePartialBook}>Oui</Button>
+                          <Button onClick={handlePartialBook}>{t("client.pages.public.deliveries-details.yes")}</Button>
                         </DialogClose>
                         <DialogClose asChild>
-                          <Button variant="outline">Non</Button>
+                          <Button variant="outline">{t("client.pages.public.deliveries-details.no")}</Button>
                         </DialogClose>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
-                  
-                  
+
                   )}
 
                 </div>
@@ -235,21 +234,21 @@ export default function DeliveryDetailsPage() {
 
       <Tabs defaultValue="overview" onValueChange={setActiveTab} className="w-full mt-6">
         <TabsList className="grid grid-cols-2 mb-6">
-          <TabsTrigger value="overview">Aperçu</TabsTrigger>
-          <TabsTrigger value="packages">Colis ({delivery.package.length})</TabsTrigger>
+          <TabsTrigger value="overview">{t("client.pages.public.deliveries-details.overview")}</TabsTrigger>
+          <TabsTrigger value="packages">{t("client.pages.public.deliveries-details.packages", { count: delivery.package.length })}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Informations complémentaires</CardTitle>
+              <CardTitle className="text-xl">{t("client.pages.public.deliveries-details.additionalInfo")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p>{delivery.details.complementary_info}</p>
               <Separator className="my-6" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">État de la livraison</h3>
+                  <h3 className="text-lg font-semibold mb-4">{t("client.pages.public.deliveries-details.deliveryStatus")}</h3>
                   <Card className="border-none shadow-md bg-gradient-to-br from-background to-muted">
                     <CardContent className="pt-6">
                       <div className="flex items-start gap-4">
@@ -267,17 +266,17 @@ export default function DeliveryDetailsPage() {
                               variant="outline"
                               className={delivery.details.urgent ? "bg-red-50 text-red-700 border-red-200" : "hidden"}
                             >
-                              URGENT
+                              {t("client.pages.public.deliveries-details.urgent")}
                             </Badge>
                           </div>
                           <p className="text-sm text-foreground mt-1">
                             {lastStep?.id === -1
-                              ? "Aucune étape pour le moment"
+                              ? t("client.pages.public.deliveries-details.noSteps")
                               : lastStep?.id === 0
-                                ? "Le transporteur assure toute la distance"
+                                ? t("client.pages.public.deliveries-details.fullCoverage")
                                 : lastStep?.id === 1000
-                                  ? "Le transporteur assure le reste de la distance"
-                                  : "Le transporteur assure une partie de la distance"}
+                                  ? t("client.pages.public.deliveries-details.remainingCoverage")
+                                  : t("client.pages.public.deliveries-details.partialCoverage")}
                           </p>
                           {lastStep?.date && (
                             <p className="text-xs text-muted-foreground mt-1">
@@ -296,7 +295,7 @@ export default function DeliveryDetailsPage() {
                   </Card>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Aperçu des colis</h3>
+                  <h3 className="text-lg font-semibold mb-4">{t("client.pages.public.deliveries-details.packageOverview")}</h3>
                   <div className="space-y-3">
                     {delivery.package.slice(0, 2).map((pkg) => (
                       <div
@@ -323,7 +322,7 @@ export default function DeliveryDetailsPage() {
                             )}
                             {pkg.fragility && (
                               <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
-                                <AlertTriangle className="w-3 h-3 mr-1" /> Fragile
+                                <AlertTriangle className="w-3 h-3 mr-1" /> {t("client.pages.public.deliveries-details.fragile")}
                               </Badge>
                             )}
                           </div>
@@ -334,11 +333,11 @@ export default function DeliveryDetailsPage() {
                 </div>
               </div>
               <div className="col-span-1 md:col-span-2 mt-6">
-                <h3 className="text-lg font-semibold mb-4">Détails de l'expédition</h3>
+                <h3 className="text-lg font-semibold mb-4">{t("client.pages.public.deliveries-details.shippingDetails")}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">Statut</span>
+                      <span className="text-sm text-muted-foreground">{t("client.pages.public.deliveries-details.statut")}</span>
                       <Badge
                         className={`w-fit mt-2 ${
                           delivery.details.status === "pending"
@@ -349,18 +348,18 @@ export default function DeliveryDetailsPage() {
                         }`}
                       >
                         {delivery.details.status === "pending"
-                          ? "En attente"
+                          ? t("client.pages.public.deliveries-details.status.pending")
                           : delivery.details.status === "In Progress"
-                            ? "En cours"
+                            ? t("client.pages.public.deliveries-details.status.inProgress")
                             : delivery.details.finished
-                              ? "Terminée"
+                              ? t("client.pages.public.deliveries-details.status.finished")
                               : delivery.details.status}
                       </Badge>
                     </div>
                   </Card>
                   <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">Distance</span>
+                      <span className="text-sm text-muted-foreground">{t("client.pages.public.deliveries-details.distance")}</span>
                       <span className="font-medium mt-2">
                         {Math.round(
                           Math.sqrt(
@@ -380,7 +379,7 @@ export default function DeliveryDetailsPage() {
                   </Card>
                   <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">Poids total</span>
+                      <span className="text-sm text-muted-foreground">{t("client.pages.public.deliveries-details.totalWeight")}</span>
                       <span className="font-medium mt-2">
                         {delivery.package.reduce((total, pkg) => total + pkg.weight, 0)} kg
                       </span>
@@ -395,8 +394,8 @@ export default function DeliveryDetailsPage() {
         <TabsContent value="packages">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Détails des colis</CardTitle>
-              <CardDescription>{delivery.package.length} colis pour cette livraison</CardDescription>
+              <CardTitle className="text-xl">{t("client.pages.public.deliveries-details.packageDetails")}</CardTitle>
+              <CardDescription>{delivery.package.length} {t("client.pages.public.deliveries-details.packages", { count: delivery.package.length })}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -413,17 +412,17 @@ export default function DeliveryDetailsPage() {
                           <h3 className="text-lg font-semibold">{pkg.name}</h3>
                           {pkg.fragility && (
                             <Badge className="border-none">
-                              <AlertTriangle className="w-3 h-3 mr-1" /> Fragile
+                              <AlertTriangle className="w-3 h-3 mr-1" /> {t("client.pages.public.deliveries-details.fragile")}
                             </Badge>
                           )}
                         </div>
                         <div className="grid grid-cols-2 gap-4 mt-4">
                           <div>
-                            <p className="text-sm text-foreground">Poids</p>
+                            <p className="text-sm text-foreground">{t("client.pages.public.deliveries-details.weight")}</p>
                             <p className="font-medium">{pkg.weight} kg</p>
                           </div>
                           <div>
-                            <p className="text-sm text-foreground">Volume</p>
+                            <p className="text-sm text-foreground">{t("client.pages.public.deliveries-details.volume")}</p>
                             <p className="font-medium">{pkg.volume} m³</p>
                           </div>
                         </div>

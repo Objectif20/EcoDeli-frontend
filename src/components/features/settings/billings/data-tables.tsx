@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { useTranslation } from "react-i18next"
 
 export type Billing = {
     id: string
@@ -37,98 +38,104 @@ type BillingsDataTableProps = {
     billings: Billing[];
   };
 
-export const columns: ColumnDef<Billing>[] = [
-    {
-        accessorKey: "date",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    className="font-medium"
-                >
-                    Date
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => {
-            const date = new Date(row.getValue("date"));
-            const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1)
-                .toString()
-                .padStart(2, "0")}/${date.getFullYear()}`;
-            return <div className="font-medium">{formattedDate}</div>;
-        },
-    },
-    {
-        accessorKey: "amount",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    className="font-medium"
-                >
-                    Montant
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => {
-            const amount = row.getValue("amount") as number
-            return <div className="font-medium">{amount} €</div>
-        }
-    },
-    {
-        accessorKey: "type",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    className="font-medium"
-                >
-                    Type
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            )
-        },
-        cell: ({ row }) => {
-            const type = row.getValue("type") as string
 
-            return (
-                <Badge variant="outline">
-                    {type === "auto" ? "Automatique" : "Manuel"}
-                </Badge>
-            )
-        },
-        filterFn: (row, id, value) => {
-            return value.includes(row.getValue(id))
-        },
-    },
-    {
-        id: "facture",
-        header: () => <div className="text-right font-medium">Facture</div>,
-        cell: ({ row }) => {
-            const invoiceLink = row.original.invoiceLink
-
-            return (
-                <div className="text-right">
-                    <a href={invoiceLink} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="text-primary hover:text-primary/85 hover:bg-background">
-                            Télécharger <Download className="ml-2 h-4 w-4" />
-                        </Button>
-                    </a>
-                </div>
-            )
-        },
-    },
-]
 
 export const BillingsDataTable: React.FC<BillingsDataTableProps> = ({ billings }) => {
-    const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
+  const { t } = useTranslation();
+
+  const columns: ColumnDef<Billing>[] = [
+      {
+          accessorKey: "date",
+          header: ({ column }) => {
+              return (
+                  <Button
+                      variant="ghost"
+                      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                      className="font-medium"
+                  >
+                      {t("client.pages.office.settings.billings.table.columns.date")}
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+              )
+          },
+          cell: ({ row }) => {
+              const date = new Date(row.getValue("date"));
+              const formattedDate = `${date.getDate().toString().padStart(2, "0")}/${(date.getMonth() + 1)
+                  .toString()
+                  .padStart(2, "0")}/${date.getFullYear()}`;
+              return <div className="font-medium">{formattedDate}</div>;
+          },
+      },
+      {
+          accessorKey: "amount",
+          header: ({ column }) => {
+              return (
+                  <Button
+                      variant="ghost"
+                      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                      className="font-medium"
+                  >
+                      {t("client.pages.office.settings.billings.table.columns.amount")}
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+              )
+          },
+          cell: ({ row }) => {
+              const amount = row.getValue("amount") as number
+              return <div className="font-medium">{amount} €</div>
+          }
+      },
+      {
+          accessorKey: "type",
+          header: ({ column }) => {
+              return (
+                  <Button
+                      variant="ghost"
+                      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                      className="font-medium"
+                  >
+                      {t("client.pages.office.settings.billings.table.columns.type")}
+
+                      <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+              )
+          },
+          cell: ({ row }) => {
+              const type = row.getValue("type") as string
+
+              return (
+                <Badge variant="outline">
+                  {type === "auto"
+                    ? t("client.pages.office.settings.billings.table.type.auto")
+                    : t("client.pages.office.settings.billings.table.type.manual")}
+                </Badge>
+              )
+          },
+          filterFn: (row, id, value) => {
+              return value.includes(row.getValue(id))
+          },
+      },
+      {
+          id: "facture",
+          header: () => <div className="text-right font-medium">{t("client.pages.office.settings.billings.table.columns.invoice")}</div>,
+          cell: ({ row }) => {
+              const invoiceLink = row.original.invoiceLink
+
+              return (
+                  <div className="text-right">
+                      <a href={invoiceLink} target="_blank" rel="noopener noreferrer">
+                          <Button variant="outline" size="sm" className="text-primary hover:text-primary/85 hover:bg-background">
+                              {t("client.pages.office.settings.billings.table.download")} <Download className="ml-2 h-4 w-4" />
+                          </Button>
+                      </a>
+                  </div>
+              )
+          },
+      },
+  ]
 
   const table = useReactTable({
     data: billings,
@@ -151,7 +158,7 @@ export const BillingsDataTable: React.FC<BillingsDataTableProps> = ({ billings }
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filtrer par date"
+          placeholder={t("client.pages.office.settings.billings.table.filter")}
           value={(table.getColumn("date")?.getFilterValue() as string) ?? ""}
           onChange={(event) => table.getColumn("date")?.setFilterValue(event.target.value)}
           className="max-w-xs"
@@ -159,7 +166,7 @@ export const BillingsDataTable: React.FC<BillingsDataTableProps> = ({ billings }
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Colonnes <ChevronDown className="ml-2 h-4 w-4" />
+              {t("client.pages.office.settings.billings.table.columns.invoice")} <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -175,12 +182,14 @@ export const BillingsDataTable: React.FC<BillingsDataTableProps> = ({ billings }
                     onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
                     {column.id === "date"
-                      ? "Date"
+                      ? t('client.pages.office.settings.billings.table.columns.date')
                       : column.id === "type"
-                        ? "Type"
+                        ? t('client.pages.office.settings.billings.table.columns.type')
                         : column.id === "facture"
-                          ? "Facture"
-                          : column.id}
+                          ? t('client.pages.office.settings.billings.table.columns.invoice')
+                          : column.id === "amount"
+                            ? t('client.pages.office.settings.billings.table.columns.amount')
+                            : column.id}
                   </DropdownMenuCheckboxItem>
                 )
               })}
@@ -214,7 +223,7 @@ export const BillingsDataTable: React.FC<BillingsDataTableProps> = ({ billings }
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  Aucun résultat.
+                    {t("client.pages.office.settings.billings.table.noResults")}
                 </TableCell>
               </TableRow>
             )}
@@ -229,10 +238,10 @@ export const BillingsDataTable: React.FC<BillingsDataTableProps> = ({ billings }
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Précédent
+            {t("client.pages.office.settings.billings.table.previous")}
           </Button>
           <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            Suivant
+            {t("client.pages.office.settings.billings.table.next")}
           </Button>
         </div>
       </div>

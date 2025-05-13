@@ -13,11 +13,14 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { BillingsData, ProfileAPI } from "@/api/profile.api";
 import { BillingsDataTable } from "@/components/features/settings/billings/data-tables";
+import { useTranslation } from "react-i18next";
 
 const BillingSettings: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
 
@@ -40,7 +43,11 @@ const BillingSettings: React.FC = () => {
 
   useEffect(() => {
     dispatch(setBreadcrumb({
-      segments: ["Accueil", "Paramètres", "Facturations"],
+      segments: [
+        t("client.pages.office.settings.billings.breadcrumb.home"),
+        t("client.pages.office.settings.billings.breadcrumb.settings"),
+        t("client.pages.office.settings.billings.breadcrumb.billings")
+      ],
       links: ["/office/dashboard"],
     }));
 
@@ -76,7 +83,7 @@ const BillingSettings: React.FC = () => {
 
     fetchData();
     fetchStripeAccountValidity();
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   const handleConfigureAccount = async () => {
     const { accountLinkUrl } = await ProfileAPI.createStripeAccount();
@@ -94,9 +101,9 @@ const BillingSettings: React.FC = () => {
 
   const handleRequestPayment = async () => {
     try {
-        await ProfileAPI.createPayment();
-        const billings = await ProfileAPI.getMyBillings();
-        setBillingsData(billings);
+      await ProfileAPI.createPayment();
+      const billings = await ProfileAPI.getMyBillings();
+      setBillingsData(billings);
     } catch (err) {
       console.error("Erreur lors de la demande de virement :", err);
     }
@@ -105,36 +112,38 @@ const BillingSettings: React.FC = () => {
   return (
     <div className="flex flex-col gap-8">
       <div className="mx-auto grid w-full max-w-6xl gap-2">
-        <h1 className="text-3xl font-semibold">Facturations</h1>
+        <h1 className="text-3xl font-semibold">{t("client.pages.office.settings.billings.title")}</h1>
       </div>
       <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
         <nav className="grid gap-4 text-sm text-muted-foreground">
-          <Link to="/office/general-settings">Paramètres généraux</Link>
-          <Link to="/office/profile">Profil</Link>
-          <Link to="/office/privacy">Confidentialité</Link>
-          <Link to="/office/contact-details">Coordonnées</Link>
+          <Link to="/office/general-settings">{t("client.pages.office.settings.billings.nav.general")}</Link>
+          <Link to="/office/profile">{t("client.pages.office.settings.billings.nav.profile")}</Link>
+          <Link to="/office/privacy">{t("client.pages.office.settings.billings.nav.privacy")}</Link>
+          <Link to="/office/contact-details">{t("client.pages.office.settings.billings.nav.contact")}</Link>
           {(isMerchant || isClient) && (
-            <Link to="/office/subscriptions">Abonnements</Link>
+            <Link to="/office/subscriptions">{t("client.pages.office.settings.billings.nav.subscriptions")}</Link>
           )}
           {(isProvider || isDeliveryman) && (
-            <Link to="/office/billing-settings" className="font-semibold text-primary active-link">Facturations</Link>
+            <Link to="/office/billing-settings" className="font-semibold text-primary active-link">
+              {t("client.pages.office.settings.billings.nav.billings")}
+            </Link>
           )}
-          <Link to="/office/reports">Signalements</Link>
+          <Link to="/office/reports">{t("client.pages.office.settings.billings.nav.reports")}</Link>
         </nav>
         <div className="grid gap-6">
-          <h1 className="text-2xl font-semibold">Votre solde</h1>
+          <h1 className="text-2xl font-semibold">{t("client.pages.office.settings.billings.balance.title")}</h1>
 
           <div className="grid gap-6 md:grid-cols-2">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">
-                  Solde actuel : <span>{billingsData?.amount ?? balance}€</span>
+                  {t("client.pages.office.settings.billings.balance.current")}: <span>{billingsData?.amount ?? balance}€</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 {(billingsData?.amount ?? balance) > 0 && stripeAccountValidity.enabled && stripeAccountValidity.valid && !stripeAccountValidity.needs_id_card && (
                   <Button onClick={handleRequestPayment}>
-                    Demander un virement immédiat
+                    {t("client.pages.office.settings.billings.balance.requestPayment")}
                   </Button>
                 )}
               </CardContent>
@@ -144,8 +153,8 @@ const BillingSettings: React.FC = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">
                   {stripeAccountValidity.valid && stripeAccountValidity.enabled
-                    ? "Votre compte Stripe est valide"
-                    : "Mettre à jour vos coordonnées bancaires"}
+                    ? t("client.pages.office.settings.billings.stripe.valid")
+                    : t("client.pages.office.settings.billings.stripe.update")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -153,19 +162,21 @@ const BillingSettings: React.FC = () => {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button>
-                        Mettre à jour mon compte pour virement
+                        {t("client.pages.office.settings.billings.stripe.update")}
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Redirection vers Stripe</DialogTitle>
+                        <DialogTitle>{t("client.pages.office.settings.billings.stripe.dialog.title")}</DialogTitle>
                         <DialogDescription>
-                          Vous allez être redirigé vers la plateforme Stripe pour mettre à jour votre compte.
+                          {t("client.pages.office.settings.billings.stripe.dialog.description")}
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
-                        <Button variant="outline" onClick={() => console.log("No clicked")}>Non</Button>
-                        <Button onClick={handleUpdateAccount}>Oui</Button>
+                        <DialogClose>
+                          <Button variant="outline">{t("client.pages.office.settings.billings.stripe.dialog.no")}</Button>
+                        </DialogClose>
+                        <Button onClick={handleUpdateAccount}>{t("client.pages.office.settings.billings.stripe.dialog.yes")}</Button>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
@@ -173,19 +184,21 @@ const BillingSettings: React.FC = () => {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button>
-                        Configurer mon compte Stripe
+                        {t("client.pages.office.settings.billings.stripe.configureButton")}
                       </Button>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Redirection vers Stripe</DialogTitle>
+                        <DialogTitle>{t("client.pages.office.settings.billings.stripe.dialog.title")}</DialogTitle>
                         <DialogDescription>
-                          Vous allez être redirigé vers la plateforme Stripe pour créer votre compte.
+                          {t("client.pages.office.settings.billings.stripe.dialog.description")}
                         </DialogDescription>
                       </DialogHeader>
                       <DialogFooter>
-                        <Button variant="outline" onClick={() => console.log("No clicked")}>Non</Button>
-                        <Button onClick={handleConfigureAccount}>Oui</Button>
+                        <DialogClose>
+                          <Button variant="outline">{t("client.pages.office.settings.billings.stripe.dialog.no")}</Button>
+                        </DialogClose>
+                      <Button onClick={handleConfigureAccount}>{t("client.pages.office.settings.billings.stripe.dialog.yes")}</Button>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
@@ -198,7 +211,7 @@ const BillingSettings: React.FC = () => {
             {!loading && billingsData ? (
               <BillingsDataTable billings={billingsData.billings} />
             ) : (
-              <p>Chargement des facturations...</p>
+              <p>{t("client.pages.office.settings.billings.loading")}</p>
             )}
           </div>
         </div>

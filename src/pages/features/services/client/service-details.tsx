@@ -32,7 +32,7 @@ export default function ServiceDetailsPageClient() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Mes prestations", service?.name || "Détails de la prestation"],
+        segments: [t("client.pages.public.services.accueil"), t("client.pages.public.services.myServices"), service?.name || t("client.pages.public.services.service-details")],
         links: ["/office/dashboard", "/office/my-services"],
       })
     );

@@ -103,7 +103,7 @@ export const SectionOne: React.FC<SectionOneProps> = React.memo(
           })}
           aria-label={label}
         >
-          <Element className={className}>{t(`wysiwyg.format.${label.toLowerCase()}`)}</Element>
+          {React.createElement(Element, { className }, t(`wysiwyg.format.${label.toLowerCase()}`))}
           <ShortcutKey keys={shortcuts} />
         </DropdownMenuItem>
       ),

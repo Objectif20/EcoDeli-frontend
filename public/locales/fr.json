@@ -2824,5 +2824,13 @@
     "selectAll": "(Tout sélectionner)",
     "reset": "Réinitialiser",
     "close": "Fermer"
+  },
+  "game" : {
+    "score" : "Score : ",
+    "boxes" : "Colis : ",
+    "resultTitle" : "Voici vos résultats !",
+    "retryButton" : "Réessayer",
+    "title" : "Game Over",
+    "back" : "Retour sur Ecodeli"
   }
 }

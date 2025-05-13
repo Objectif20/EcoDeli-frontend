@@ -1,4 +1,5 @@
 import {PublicLayout, PublicNavbar} from "@/components/public/public-layout";
+import Game from "@/features/ecoquest/game/Game";
 import NotFoundPage from "@/pages/error/404";
 import AccessibilityPage from "@/pages/public/accessibility";
 import BecomeDeliverymanPage from "@/pages/public/become-deliveryman";
@@ -39,6 +40,7 @@ export default function PublicRoutes() {
                 <Route path="/deliveries/:id" element={<DeliveriesDetails />} />
                 <Route path="/services" element={<ServicesPage />} />
             </Route>
+            <Route path="/game" element={<Game />} />
             <Route path="/*" element={<NotFoundPage />} />
         </Routes>
     );

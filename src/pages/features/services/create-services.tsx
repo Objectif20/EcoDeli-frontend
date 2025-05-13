@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { useTranslation } from 'react-i18next';
 
 import { Button } from "@/components/ui/button";
 import {
@@ -27,22 +28,22 @@ import { Label } from "@/components/ui/label";
 import { Tag, TagInput } from "emblor"
 import { useId } from "react";
 
-
-
-const FormSchema = z.object({
-  service_type: z.string().min(1, "Type de service requis"),
-  name: z.string().min(2, "Nom requis"),
-  description: z.string().min(10, "Description trop courte"),
-  city: z.string().min(1, "Ville requise"),
-  price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Prix invalide"),
-  duration_minute: z.string().regex(/^\d+$/, "Durée invalide"),
-  keywords: z.string().optional(),
-  acceptTerms: z.boolean().refine(val => val === true, {
-    message: "Vous devez accepter les conditions.",
-  }),
-});
-
 export default function CreateService() {
+  const { t } = useTranslation();
+
+  const FormSchema = z.object({
+    service_type: z.string().min(1, t("client.pages.office.services.create.error.serviceTypeRequired")),
+    name: z.string().min(2, t("client.pages.office.services.create.error.nameRequired")),
+    description: z.string().min(10, t("client.pages.office.services.create.error.descriptionTooShort")),
+    city: z.string().min(1, t("client.pages.office.services.create.error.cityRequired")),
+    price: z.string().regex(/^\d+(\.\d{1,2})?$/, t("client.pages.office.services.create.error.invalidPrice")),
+    duration_minute: z.string().regex(/^\d+$/, t("client.pages.office.services.create.error.invalidDuration")),
+    keywords: z.string().optional(),
+    acceptTerms: z.boolean().refine(val => val === true, {
+      message: t("client.pages.office.services.create.error.acceptTermsRequired"),
+    }),
+  });
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -61,21 +62,19 @@ export default function CreateService() {
   const [activeTagIndex, setActiveTagIndex] = useState<number | null>(null);
   const id = useId();
 
-
   const [images, setImages] = useState<File[]>([]);
   const [imageError, setImageError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  
-    useEffect(() => {
-      dispatch(
-        setBreadcrumb({
-          segments: ["Accueil", "Mes prestations", "Créer une prestation"],
-          links: ["/office/dashboard", "/office/my-services"],
-        })
-      );
-    }, [dispatch]);
+  useEffect(() => {
+    dispatch(
+      setBreadcrumb({
+        segments: [t("client.pages.office.services.create.breadcrumbHome"), t("client.pages.office.services.create.breadcrumbMyServices"), t("client.pages.office.services.create.breadcrumbCreateService")],
+        links: ["/office/dashboard", "/office/my-services"],
+      })
+    );
+  }, [dispatch, t]);
 
   const onDrop = (acceptedFiles: File[]) => {
     setImages(prev => [...prev, ...acceptedFiles].slice(0, 5));
@@ -94,10 +93,10 @@ export default function CreateService() {
 
   function onSubmit(data: any) {
     if (images.length === 0) {
-      setImageError("Vous devez ajouter au moins une image.");
+      setImageError(t("client.pages.office.services.create.error.imageRequired"));
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("service_type", data.service_type);
     formData.append("name", data.name);
@@ -114,25 +113,24 @@ export default function CreateService() {
     formData.append("available", "true");
     formData.append("validated", "false");
 
-  
     images.forEach((image, index) => {
       formData.append(`image${index + 1}`, image);
     });
-  
+
     ServiceApi.createService(formData)
       .then(() => {
         navigate("/office/services/success");
       })
       .catch(error => {
-        console.error("Erreur lors de la création du service:", error);
+        console.error(t("client.pages.office.services.create.error.serviceCreationError"), error);
       });
   }
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-2">Créer une nouvelle prestation</h1>
+      <h1 className="text-2xl font-bold mb-2">{t("client.pages.office.services.create.title")}</h1>
       <p className="mb-6">
-        Remplissez les informations ci-dessous pour proposer votre prestation sur notre plateforme.
+        {t("client.pages.office.services.create.description")}
       </p>
 
       <Form {...form}>
@@ -140,7 +138,7 @@ export default function CreateService() {
 
           <FormField control={form.control} name="service_type" render={({ field }) => (
             <FormItem>
-              <FormLabel>Type de service</FormLabel>
+              <FormLabel>{t("client.pages.office.services.create.serviceType")}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -150,7 +148,7 @@ export default function CreateService() {
 
           <FormField control={form.control} name="name" render={({ field }) => (
             <FormItem>
-              <FormLabel>Nom de la prestation</FormLabel>
+              <FormLabel>{t("client.pages.office.services.create.serviceName")}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -160,7 +158,7 @@ export default function CreateService() {
 
           <FormField control={form.control} name="description" render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{t("client.pages.office.services.create.serviceDescription")}</FormLabel>
               <FormControl>
                 <Textarea {...field} />
               </FormControl>
@@ -170,7 +168,7 @@ export default function CreateService() {
 
           <FormField control={form.control} name="city" render={({ field }) => (
             <FormItem>
-              <FormLabel>Ville</FormLabel>
+              <FormLabel>{t("client.pages.office.services.create.city")}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -180,7 +178,7 @@ export default function CreateService() {
 
           <FormField control={form.control} name="price" render={({ field }) => (
             <FormItem>
-              <FormLabel>Prix</FormLabel>
+              <FormLabel>{t("client.pages.office.services.create.price")}</FormLabel>
               <FormControl>
                 <Input type="number" step="0.01" {...field} />
               </FormControl>
@@ -190,7 +188,7 @@ export default function CreateService() {
 
           <FormField control={form.control} name="duration_minute" render={({ field }) => (
             <FormItem>
-              <FormLabel>Durée (en minutes)</FormLabel>
+              <FormLabel>{t("client.pages.office.services.create.duration")}</FormLabel>
               <FormControl>
                 <Input type="number" {...field} />
               </FormControl>
@@ -199,12 +197,12 @@ export default function CreateService() {
           )} />
 
         <div className="space-y-2">
-            <Label htmlFor={id}>Mots-clés</Label>
+            <Label htmlFor={id}>{t("client.pages.office.services.create.keywords")}</Label>
             <TagInput
               id={id}
               tags={keywords}
               setTags={setKeywords}
-              placeholder="Ajoutez un mot-clé"
+              placeholder={t("client.pages.office.services.create.addKeywords")}
               styleClasses={{
                 tagList: { container: "gap-1" },
                 input:
@@ -227,7 +225,7 @@ export default function CreateService() {
               <FormControl>
                 <Checkbox checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
-              <FormLabel>J'accepte qu'EcoDeli analyse ma prestation</FormLabel>
+              <FormLabel>{t("client.pages.office.services.create.acceptTerms")}</FormLabel>
               <FormMessage />
             </FormItem>
           )} />
@@ -235,7 +233,7 @@ export default function CreateService() {
           <div className="w-full flex flex-col items-center gap-4 border p-4 rounded-lg">
             <div {...getRootProps()} className={`w-full border-2 border-dashed p-4 ${isDragActive ? 'ring-2 ring-blue-500' : ''}`}>
               <input {...getInputProps()} />
-              <Button type="button" variant="outline" className="w-full">Ajouter des images</Button>
+              <Button type="button" variant="outline" className="w-full">{t("client.pages.office.services.create.addImages")}</Button>
             </div>
             {imageError && <p className="text-red-500 text-sm">{imageError}</p>}
             <div className="flex gap-2 overflow-auto">
@@ -250,7 +248,7 @@ export default function CreateService() {
             </div>
           </div>
 
-          <Button type="submit" className="w-full">Envoyer ma demande de prestation</Button>
+          <Button type="submit" className="w-full">{t("client.pages.office.services.create.submit")}</Button>
         </form>
       </Form>
     </div>

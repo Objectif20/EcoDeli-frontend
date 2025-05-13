@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { MapPin, Star, Clock, Calendar, MessageSquare, ChevronRight, Euro } from "lucide-react"
 
-
 export default function ServiceDetailsPage() {
   const { t } = useTranslation()
   const { id } = useParams()
@@ -34,11 +33,11 @@ export default function ServiceDetailsPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Mes prestations", service?.name || "Détails de la prestation"],
+        segments: [t("client.pages.office.services.services-details.breadcrumbHome"), t("client.pages.office.services.services-details.breadcrumbMyServices"), service?.name || t("client.pages.office.services.services-details.serviceDetails")],
         links: ["/office/dashboard", "/office/my-services"],
       }),
     )
-  }, [dispatch, service])
+  }, [dispatch, service, t])
 
   if (!service) {
     return (
@@ -46,8 +45,8 @@ export default function ServiceDetailsPage() {
         <Card className="max-w-md w-full p-6 text-center">
           <div className="flex flex-col items-center space-y-4">
             <Calendar className="h-12 w-12 text-muted-foreground" />
-            <h3 className="text-xl font-semibold">{t("client.pages.public.services.selectService")}</h3>
-            <p className="text-muted-foreground">{t("client.pages.public.services.selectServiceDescription")}</p>
+            <h3 className="text-xl font-semibold">{t("client.pages.office.services.services-details.selectService")}</h3>
+            <p className="text-muted-foreground">{t("client.pages.office.services.services-details.selectServiceDescription")}</p>
           </div>
         </Card>
       </div>
@@ -101,7 +100,7 @@ export default function ServiceDetailsPage() {
               </Avatar>
               <div>
                 <h3 className="font-semibold text-lg">
-                  {t("client.pages.public.services.proposedBy", { name: service.author?.name })}
+                  {t("client.pages.office.services.services-details.proposedBy", { name: service.author?.name })}
                 </h3>
                 <div className="flex items-center text-muted-foreground">
                   <Star className="w-4 h-4 text-yellow-500 mr-1.5" />
@@ -112,13 +111,13 @@ export default function ServiceDetailsPage() {
           </div>
 
           <div className="p-6 md:p-8 border-b">
-            <h3 className="font-semibold text-xl mb-4">{t("client.pages.public.services.description")}</h3>
+            <h3 className="font-semibold text-xl mb-4">{t("client.pages.office.services.services-details.description")}</h3>
             <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{service.description}</p>
           </div>
 
           <div className="p-6 md:p-8">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-semibold text-xl">{t("client.pages.public.services.customerReviews")}</h3>
+              <h3 className="font-semibold text-xl">{t("client.pages.office.services.services-details.customerReviews")}</h3>
               <Badge variant="outline" className="px-2.5 py-1">
                 <MessageSquare className="w-3.5 h-3.5 mr-1.5" />
                 {(service.comments?.flat() || []).length}
@@ -176,7 +175,7 @@ export default function ServiceDetailsPage() {
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-20" />
-                <p>Aucun avis pour le moment</p>
+                <p>{t("client.pages.office.services.services-details.noReviews")}</p>
               </div>
             )}
           </div>

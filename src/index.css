@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @layer base {
   :root {
     --background: 37.50 36.36% 95.69%;
@@ -188,4 +189,19 @@
 .dark .sidebar .accent {
   background-color: var(--sidebar-accent);
   color: var(--sidebar-accent-foreground);
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+.game {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.icone {
+  font-family: "Press Start 2P", cursive !important;
 }

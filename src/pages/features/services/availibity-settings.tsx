@@ -23,7 +23,6 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 
-const dayLabels = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 
 const timeStringToDate = (time: string): Date => {
   const [hours, minutes, seconds] = time.split(":").map(Number)
@@ -39,6 +38,9 @@ const AvailabilitySettings: React.FC = () => {
   const { t } = useTranslation()
   const [availabilities, setAvailabilities] = useState<Availability[]>([])
   const [isLoading, setIsLoading] = useState(false)
+
+  const dayLabels = [t("client.pages.office.settings.contactDetails.days.0"), t("client.pages.office.settings.contactDetails.days.1"), t("client.pages.office.settings.contactDetails.days.2"), t("client.pages.office.settings.contactDetails.days.3"), t("client.pages.office.settings.contactDetails.days.4"), t("client.pages.office.settings.contactDetails.days.5"), t("client.pages.office.settings.contactDetails.days.6")]
+
 
   useEffect(() => {
     const fetchAvailabilities = async () => {
@@ -61,7 +63,7 @@ const AvailabilitySettings: React.FC = () => {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Mes disponibilités"],
+        segments: [t("client.pages.office.settings.contactDetails.breadCrumb_accueil"), t("client.pages.office.settings.contactDetails.breadCrumb_disponibility")],
         links: ["/office/dashboard"],
       }),
     )
@@ -179,9 +181,9 @@ const AvailabilitySettings: React.FC = () => {
         <Card className="border-dashed border-2 p-8 text-center">
           <div className="flex flex-col items-center justify-center space-y-3">
             <Calendar className="h-12 w-12 text-muted-foreground" />
-            <h3 className="text-lg font-medium">Aucune disponibilité définie</h3>
+            <h3 className="text-lg font-medium">{t("client.pages.office.settings.contactDetails.noDisponibility")}</h3>
             <p className="text-sm text-muted-foreground max-w-md">
-              Ajoutez des jours de disponibilité pour permettre aux clients de prendre rendez-vous avec vous.
+                {t("client.pages.office.settings.contactDetails.noDisponibility")}
             </p>
             <Button onClick={handleAddDay} className="mt-2">
               <Plus className="mr-2 h-4 w-4" />
@@ -327,7 +329,7 @@ const AvailabilitySettings: React.FC = () => {
       {availabilities.length > 0 && (
         <div className="flex justify-end mt-6">
           <Button onClick={handleSave} disabled={isLoading} className="px-6 transition-all hover:shadow-md" size="lg">
-            {isLoading ? "Enregistrement..." : t("client.pages.office.settings.contactDetails.save")}
+            {isLoading ? t("client.pages.office.settings.contactDetails.loading") : t("client.pages.office.settings.contactDetails.save")}
           </Button>
         </div>
       )}

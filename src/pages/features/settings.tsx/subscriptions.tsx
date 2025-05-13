@@ -56,7 +56,7 @@ const SubscriptionSettings: React.FC = () => {
       const updatedData = await ProfileAPI.getMySubscription();
       setUserSubscriptionData(updatedData);
     } catch (error) {
-      console.error("Échec du changement de plan", error);
+      console.error(t("client.pages.office.settings.subscriptions.planChangeError"), error);
     }
   };
 
@@ -66,7 +66,7 @@ const SubscriptionSettings: React.FC = () => {
       const mockPlans: Plan[] = await response;
       setPlans(mockPlans);
     } catch (error) {
-      console.error("Error fetching plans:", error);
+      console.error(t("client.pages.office.settings.subscriptions.fetchPlansError"), error);
     }
   };
 
@@ -78,7 +78,7 @@ const SubscriptionSettings: React.FC = () => {
         const updatedData = await ProfileAPI.getMySubscription();
         setUserSubscriptionData(updatedData);
       } catch (error) {
-        console.error("Failed to update to free plan", error);
+        console.error(t("client.pages.office.settings.subscriptions.freePlanUpdateError"), error);
       }
     }
   };
@@ -98,7 +98,7 @@ const SubscriptionSettings: React.FC = () => {
         const data = await ProfileAPI.getMySubscription();
         setUserSubscriptionData(data);
       } catch (error) {
-        console.error("Failed to fetch subscription data", error);
+        console.error(t("client.pages.office.settings.subscriptions.fetchSubscriptionError"), error);
       }
     };
 
@@ -111,11 +111,11 @@ const SubscriptionSettings: React.FC = () => {
       <div className="mx-auto w-full max-w-6xl gap-2">
         <h1 className="text-3xl font-semibold">{t('client.pages.office.settings.subscriptions.title')}</h1>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-          <div className="flex sm:ml-auto"> {/* Ajout d'un wrapper pour faire l'alignement à droite */}
+          <div className="flex sm:ml-auto">
             <BankDetailsDialogWrapper customerStripeId={typeof userSubscriptionData?.customer_stripe_id === 'string' ? userSubscriptionData.customer_stripe_id : null}>
-              <Button>
-                Mettre à jour mes informations bancaires
-              </Button>
+              <p>
+                {t('client.pages.office.settings.subscriptions.updateBankDetails')}
+              </p>
             </BankDetailsDialogWrapper>
           </div>
         </div>
@@ -211,6 +211,7 @@ function BankDetailsDialog({ children, customerStripeId }: BankDetailsDialogProp
   const [error, setError] = useState<string | null>(null);
   const stripe = useStripe();
   const elements = useElements();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,7 +225,7 @@ function BankDetailsDialog({ children, customerStripeId }: BankDetailsDialogProp
 
     const cardNumber = elements.getElement(CardNumberElement);
     if (!cardNumber) {
-      setError("Card details are unavailable.");
+      setError(t("client.pages.office.settings.subscriptions.cardDetailsError"));
       setIsProcessing(false);
       return;
     }
@@ -235,14 +236,14 @@ function BankDetailsDialog({ children, customerStripeId }: BankDetailsDialogProp
         card: cardNumber,
       });
       if (error) {
-        setError(error.message || "An unknown error occurred.");
+        setError(error.message || t("client.pages.office.settings.subscriptions.unknownError"));
         setIsProcessing(false);
       } else {
         await ProfileAPI.updateBankData(paymentMethod.id);
         setIsProcessing(false);
       }
     } catch (err) {
-      setError("An error occurred while processing the payment.");
+      setError(t("client.pages.office.settings.subscriptions.paymentProcessingError"));
       console.error(err);
       setIsProcessing(false);
     }
@@ -268,15 +269,15 @@ function BankDetailsDialog({ children, customerStripeId }: BankDetailsDialogProp
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{customerStripeId ? "Mettre à jour les coordonnées bancaires" : "Ajouter des coordonnées bancaires"}</DialogTitle>
+          <DialogTitle>{customerStripeId ? t('client.pages.office.settings.subscriptions.updateBankDetails') : t('client.pages.office.settings.subscriptions.addBankDetails')}</DialogTitle>
           <DialogDescription>
-            {customerStripeId ? "Mettez à jour vos coordonnées bancaires pour les futures transactions." : "Ajoutez vos coordonnées bancaires pour pouvoir effectuer des transactions."}
+            {customerStripeId ? t('client.pages.office.settings.subscriptions.updateBankDetailsDescription') : t('client.pages.office.settings.subscriptions.addBankDetailsDescription')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="cardNumber" className="block text-sm font-medium text-foreground">
-              Numéro de carte
+              {t('client.pages.office.settings.subscriptions.cardNumber')}
             </label>
             <div className="mt-1 p-2 border rounded-md">
               <CardNumberElement id="cardNumber" options={cardElementOptions} />
@@ -285,7 +286,7 @@ function BankDetailsDialog({ children, customerStripeId }: BankDetailsDialogProp
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="cardExpiry" className="block text-sm font-medium text-foreground">
-                Date d'expiration
+                {t('client.pages.office.settings.subscriptions.expiryDate')}
               </label>
               <div className="mt-1 p-2 border rounded-md">
                 <CardExpiryElement id="cardExpiry" options={cardElementOptions} />
@@ -293,7 +294,7 @@ function BankDetailsDialog({ children, customerStripeId }: BankDetailsDialogProp
             </div>
             <div>
               <label htmlFor="cardCvc" className="block text-sm font-medium text-foreground">
-                CVC
+                {t('client.pages.office.settings.subscriptions.cvc')}
               </label>
               <div className="mt-1 p-2 border rounded-md">
                 <CardCvcElement id="cardCvc" options={cardElementOptions} />
@@ -304,14 +305,13 @@ function BankDetailsDialog({ children, customerStripeId }: BankDetailsDialogProp
           <div className="flex justify-end gap-2 pt-4">
             <DialogClose asChild>
               <Button variant="outline" type="button">
-                Annuler
+                {t('client.pages.office.settings.subscriptions.cancel')}
               </Button>
             </DialogClose>
             <DialogClose asChild>
-
-            <Button type="submit" disabled={!stripe || isProcessing}>
-              {isProcessing ? "Traitement..." : "Soumettre"}
-            </Button>
+              <Button type="submit" disabled={!stripe || isProcessing}>
+                {isProcessing ? t('client.pages.office.settings.subscriptions.processing') : t('client.pages.office.settings.subscriptions.submit')}
+              </Button>
             </DialogClose>
           </div>
         </form>

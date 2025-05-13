@@ -24,6 +24,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { UserApi } from "@/api/user.api";
+import { useTranslation } from 'react-i18next';
 
 interface Document {
   id: string;
@@ -53,6 +54,7 @@ const getIconByExtension = (extension: string) => {
 };
 
 export default function ProofsPage() {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [documents, setDocuments] = useState<Document[]>([]);
   const navigate = useNavigate();
@@ -64,11 +66,11 @@ export default function ProofsPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Documents"],
+        segments: [t("client.pages.office.proofs.breadcrumbHome"), t("client.pages.office.proofs.breadcrumbDocuments")],
         links: ["/office/dashboard"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   const fetchDocuments = async () => {
     try {
@@ -84,17 +86,17 @@ export default function ProofsPage() {
 
       setDocuments(mappedDocs);
     } catch (error) {
-      console.error("Erreur lors de la récupération des documents", error);
+      console.error(t("client.pages.office.proofs.errorFetchingDocuments"), error);
     }
   };
 
   useEffect(() => {
     fetchDocuments();
-  }, []);
+  }, [t]);
 
   const handleSubmit = async () => {
     if (!selectedFile || !documentName) {
-      alert("Veuillez sélectionner un fichier et entrer un nom.");
+      alert(t("client.pages.office.proofs.alertSelectFile"));
       return;
     }
 
@@ -103,44 +105,44 @@ export default function ProofsPage() {
       setDocumentName("");
       setDocumentDescription("");
       setSelectedFile(null);
-      await fetchDocuments(); // 🔁 Refresh list
+      await fetchDocuments();
     } catch (error) {
-      console.error("Erreur lors de l'envoi du document :", error);
+      console.error(t("client.pages.office.proofs.errorUploadingDocument"), error);
     }
   };
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold mb-4">Liste des Documents</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.office.proofs.title")}</h1>
       <div className="flex flex-col md:flex-row justify-between mb-4 space-y-2 md:space-y-0">
         <Dialog>
           <DialogTrigger>
-            <Button className="w-full md:w-auto">Ajouter un justificatif</Button>
+            <Button className="w-full md:w-auto">{t("client.pages.office.proofs.addProof")}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Ajouter un justificatif</DialogTitle>
+              <DialogTitle>{t("client.pages.office.proofs.addProofDialogTitle")}</DialogTitle>
               <DialogDescription>
-                Veuillez sélectionner un fichier, donner un nom et une description.
+                {t("client.pages.office.proofs.addProofDialogDescription")}
               </DialogDescription>
             </DialogHeader>
             <FileUpload onChange={(files) => setSelectedFile(files[0] || null)} />
-            <Label htmlFor="document-name">Nom du document</Label>
+            <Label htmlFor="document-name">{t("client.pages.office.proofs.documentName")}</Label>
             <Input
               id="document-name"
-              placeholder="Entrez un nom"
+              placeholder={t("client.pages.office.proofs.documentNamePlaceholder")}
               value={documentName}
               onChange={(e) => setDocumentName(e.target.value)}
             />
-            <Label htmlFor="document-description" className="mt-2">Description</Label>
+            <Label htmlFor="document-description" className="mt-2">{t("client.pages.office.proofs.documentDescription")}</Label>
             <Textarea
               id="document-description"
-              placeholder="Entrez une description"
+              placeholder={t("client.pages.office.proofs.documentDescriptionPlaceholder")}
               value={documentDescription}
               onChange={(e) => setDocumentDescription(e.target.value)}
             />
             <Button onClick={handleSubmit} className="mt-4">
-              Envoyer
+              {t("client.pages.office.proofs.submit")}
             </Button>
           </DialogContent>
         </Dialog>
@@ -148,7 +150,7 @@ export default function ProofsPage() {
           onClick={() => navigate("/office/documents")}
           className="w-full md:w-auto md:ml-auto"
         >
-          Accéder à tous mes documents
+          {t("client.pages.office.proofs.accessAllDocuments")}
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
@@ -163,7 +165,7 @@ export default function ProofsPage() {
             <h2 className="mt-4 text-lg font-semibold">{doc.name}</h2>
             <p className="text-foreground uppercase">{doc.extension}</p>
             <p className="text-foreground text-sm mt-1">
-              Uploadé le {new Date(doc.uploadDate).toLocaleDateString()}
+              {t("client.pages.office.proofs.uploadedOn")} {new Date(doc.uploadDate).toLocaleDateString()}
             </p>
             <Button
               className="mt-4"
@@ -176,7 +178,7 @@ export default function ProofsPage() {
                 document.body.removeChild(link);
               }}
             >
-              Télécharger le document
+              {t("client.pages.office.proofs.downloadDocument")}
             </Button>
           </div>
         ))}

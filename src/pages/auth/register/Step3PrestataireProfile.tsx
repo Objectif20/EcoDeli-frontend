@@ -111,7 +111,7 @@ export default function Step3PrestataireProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.providerProfile.lastName')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Dupont" {...field} />
+                        <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.lastName')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -124,7 +124,7 @@ export default function Step3PrestataireProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.providerProfile.firstName')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="Jean" {...field} />
+                        <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.firstName')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -139,7 +139,7 @@ export default function Step3PrestataireProfile() {
                   <FormItem>
                     <FormLabel>{t('client.pages.public.register.providerProfile.email')}</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="exemple@email.com" {...field} />
+                      <Input type="email" placeholder={t('client.pages.public.register.providerProfile.placeholders.email')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -154,7 +154,7 @@ export default function Step3PrestataireProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.providerProfile.password')}</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="********" {...field} />
+                        <Input type="password" placeholder={t('client.pages.public.register.providerProfile.placeholders.password')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -167,7 +167,7 @@ export default function Step3PrestataireProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.providerProfile.confirmPassword')}</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="********" {...field} />
+                        <Input type="password" placeholder={t('client.pages.public.register.providerProfile.placeholders.confirmPassword')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -182,7 +182,7 @@ export default function Step3PrestataireProfile() {
                   <FormItem>
                     <FormLabel>{t('client.pages.public.register.providerProfile.companyName')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ma Société" {...field} />
+                      <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.companyName')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -196,7 +196,7 @@ export default function Step3PrestataireProfile() {
                   <FormItem>
                     <FormLabel>{t('client.pages.public.register.providerProfile.siretNumber')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="12345678901234" {...field} />
+                      <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.siretNumber')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -235,7 +235,7 @@ export default function Step3PrestataireProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.providerProfile.address')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="123 rue de Paris" {...field} />
+                        <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.address')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -250,7 +250,7 @@ export default function Step3PrestataireProfile() {
                       <FormItem>
                         <FormLabel>{t('client.pages.public.register.providerProfile.postalCode')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="75001" {...field} />
+                          <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.postalCode')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -264,7 +264,7 @@ export default function Step3PrestataireProfile() {
                       <FormItem>
                         <FormLabel>{t('client.pages.public.register.providerProfile.city')}</FormLabel>
                         <FormControl>
-                          <Input placeholder="Paris" {...field} />
+                          <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.city')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -300,7 +300,7 @@ export default function Step3PrestataireProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.providerProfile.phone')}</FormLabel>
                       <FormControl>
-                        <Input placeholder="0612345678" {...field} />
+                        <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.phone')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -339,7 +339,7 @@ export default function Step3PrestataireProfile() {
                     <FormItem className="col-span-1 md:col-span-2">
                       <FormLabel>{t('client.pages.public.register.providerProfile.description')}</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Décrivez votre entreprise..." className="resize-none" {...field} />
+                        <Textarea placeholder={t('client.pages.public.register.providerProfile.placeholders.description')} className="resize-none" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

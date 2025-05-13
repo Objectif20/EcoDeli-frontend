@@ -25,6 +25,7 @@ import CityAsyncSelectDemo from "@/components/search-place"
 import { DeliveriesAPI } from "@/api/deliveries.api"
 import axios from "axios"
 import { Switch } from "@/components/ui/switch"
+import { useTranslation } from 'react-i18next'
 
 interface DeliveryNegotiateProps {
   deliveryman_user_id: string
@@ -63,6 +64,7 @@ interface City {
 export default function DeliveryNegotiateDialog({
   deliveryman_user_id,
 }: DeliveryNegotiateProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false)
   const [warehouses, setWarehouses] = useState<Warehouse[]>([])
   const [selectedCity, setSelectedCity] = useState<City | null>(null)
@@ -81,7 +83,7 @@ export default function DeliveryNegotiateDialog({
     latitude?: number
     longitude?: number
     end_date: string
-    isbox: boolean 
+    isbox: boolean
   }>({
     delivery_person_id: deliveryman_user_id,
     price: 0,
@@ -105,7 +107,7 @@ export default function DeliveryNegotiateDialog({
           })),
         )
       } catch (error) {
-        console.error("Erreur lors du chargement des entrepôts :", error)
+        console.error(t("client.pages.office.chat-negotiation.errorLoadingWarehouses"), error)
       }
     }
 
@@ -131,13 +133,13 @@ export default function DeliveryNegotiateDialog({
           }))
         }
       } catch (error) {
-        console.error("Erreur lors du chargement des livraisons :", error)
+        console.error(t("client.pages.office.chat-negotiation.errorLoadingDeliveries"), error)
       }
     }
 
     fetchWarehouses()
     fetchShipments()
-  }, [])
+  }, [t])
 
   const getCityNameFromCoordinates = async (lat: number, lon: number) => {
     try {
@@ -147,7 +149,7 @@ export default function DeliveryNegotiateDialog({
       const cityName = response.data.address.city || response.data.address.town || response.data.address.village;
       return cityName || "Unknown";
     } catch (error) {
-      console.error("Error fetching city name from OpenStreetMap:", error);
+      console.error(t("client.pages.office.chat-negotiation.errorFetchingCityName"), error);
       return "Unknown";
     }
   };
@@ -208,7 +210,7 @@ export default function DeliveryNegotiateDialog({
     try {
       await DeliveriesAPI.createPartialDelivery(submissionData, selectedShipment?.id || "")
     } catch (error) {
-      console.error("Erreur lors de la soumission des données :", error)
+      console.error(t("client.pages.office.chat-negotiation.errorSubmittingData"), error)
     }
 
     console.log("Form data submitted:", submissionData)
@@ -218,19 +220,19 @@ export default function DeliveryNegotiateDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="default">Négocier la livraison</Button>
+        <Button variant="default">{t("client.pages.office.chat-negotiation.negotiateDelivery")}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Négocier la livraison</DialogTitle>
-          <DialogDescription>Proposez de nouvelles conditions pour cette livraison</DialogDescription>
+          <DialogTitle className="text-xl font-bold">{t("client.pages.office.chat-negotiation.negotiateDelivery")}</DialogTitle>
+          <DialogDescription>{t("client.pages.office.chat-negotiation.proposeNewConditions")}</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-6 py-4">
           <div className="grid gap-4">
-            <h3 className="text-sm font-medium">Sélection de la livraison</h3>
+            <h3 className="text-sm font-medium">{t("client.pages.office.chat-negotiation.selectDelivery")}</h3>
             <div className="space-y-2">
-              <Label htmlFor="shipment">Livraison</Label>
+              <Label htmlFor="shipment">{t("client.pages.office.chat-negotiation.delivery")}</Label>
               <Select
                 onValueChange={(shipmentId) => {
                   const selected = shipments.find((s) => s.id === shipmentId)
@@ -245,7 +247,7 @@ export default function DeliveryNegotiateDialog({
                 defaultValue={shipments.length > 0 ? shipments[0].id : undefined}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner une livraison" />
+                  <SelectValue placeholder={t("client.pages.office.chat-negotiation.selectDeliveryPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {shipments.map((shipment) => (
@@ -259,11 +261,11 @@ export default function DeliveryNegotiateDialog({
           </div>
 
           <div className="grid gap-4">
-            <h3 className="text-sm font-medium">Informations de prix</h3>
+            <h3 className="text-sm font-medium">{t("client.pages.office.chat-negotiation.priceInformation")}</h3>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="space-y-2">
-                  <Label htmlFor="new_price">Modifier le prix pour le reste de la demande de livraison</Label>
+                  <Label htmlFor="new_price">{t("client.pages.office.chat-negotiation.modifyPrice")}</Label>
                   <Input
                     id="new_price"
                     type="number"
@@ -280,7 +282,7 @@ export default function DeliveryNegotiateDialog({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="price">Prix pour une livraison négociée avec ce transporteur</Label>
+                <Label htmlFor="price">{t("client.pages.office.chat-negotiation.negotiatedPrice")}</Label>
                 <Input
                   id="price"
                   type="number"
@@ -299,22 +301,22 @@ export default function DeliveryNegotiateDialog({
           </div>
 
           <div className="grid gap-4">
-            <h3 className="text-sm font-medium">Destination</h3>
+            <h3 className="text-sm font-medium">{t("client.pages.office.chat-negotiation.destination")}</h3>
             <Tabs
               defaultValue="warehouse"
               onValueChange={(value) => setLocationType(value as "warehouse" | "custom")}
               className="w-full"
             >
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="warehouse">Entrepôt</TabsTrigger>
-                <TabsTrigger value="custom">Adresse personnalisée</TabsTrigger>
+                <TabsTrigger value="warehouse">{t("client.pages.office.chat-negotiation.warehouse")}</TabsTrigger>
+                <TabsTrigger value="custom">{t("client.pages.office.chat-negotiation.customAddress")}</TabsTrigger>
               </TabsList>
               <TabsContent value="warehouse" className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="warehouse">Sélectionner un entrepôt</Label>
+                  <Label htmlFor="warehouse">{t("client.pages.office.chat-negotiation.selectWarehouse")}</Label>
                   <Select onValueChange={handleWarehouseChange} value={formData.warehouse_id}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner un entrepôt" />
+                      <SelectValue placeholder={t("client.pages.office.chat-negotiation.selectWarehousePlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       {warehouses.map((warehouse) => (
@@ -328,20 +330,20 @@ export default function DeliveryNegotiateDialog({
               </TabsContent>
               <TabsContent value="custom" className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label>Rechercher une adresse</Label>
+                  <Label>{t("client.pages.office.chat-negotiation.searchAddress")}</Label>
                   <CityAsyncSelectDemo
                     onCitySelect={handleCitySelect}
-                    placeholder="Rechercher une ville ou une adresse"
+                    placeholder={t("client.pages.office.chat-negotiation.searchAddressPlaceholder")}
                     labelValue={selectedCity?.label || ""}
                   />
                   {selectedCity && (
                     <div className="mt-2 text-sm">
-                      Coordonnées : {selectedCity.lat.toFixed(6)}, {selectedCity.lon.toFixed(6)}
+                      {t("client.pages.office.chat-negotiation.coordinates")} : {selectedCity.lat.toFixed(6)}, {selectedCity.lon.toFixed(6)}
                     </div>
                   )}
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Label htmlFor="isbox" className="">S'agit-il d'un box ?</Label>
+                  <Label htmlFor="isbox" className="">{t("client.pages.office.chat-negotiation.isBox")}</Label>
                   <Switch
                     id="isbox"
                     checked={customAddressEnabled}
@@ -360,7 +362,7 @@ export default function DeliveryNegotiateDialog({
 
           {/* Date section */}
           <div className="grid gap-4">
-            <h3 className="text-sm font-medium">Date de fin</h3>
+            <h3 className="text-sm font-medium">{t("client.pages.office.chat-negotiation.endDate")}</h3>
             <div className="space-y-2">
               <Popover>
                 <PopoverTrigger asChild>
@@ -369,7 +371,7 @@ export default function DeliveryNegotiateDialog({
                     className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
                   >
                     <Calendar className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP", { locale: fr }) : "Sélectionner une date"}
+                    {date ? format(date, "PPP", { locale: fr }) : t("client.pages.office.chat-negotiation.selectDate")}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -402,7 +404,7 @@ export default function DeliveryNegotiateDialog({
 
         <DialogFooter>
           <Button type="submit" onClick={handleSubmit}>
-            Soumettre la proposition
+            {t("client.pages.office.chat-negotiation.submitProposal")}
           </Button>
         </DialogFooter>
       </DialogContent>

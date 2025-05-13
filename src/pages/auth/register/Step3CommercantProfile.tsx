@@ -132,7 +132,7 @@ export default function Step3CommercantProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.merchantProfile.lastName')} *</FormLabel>
                       <FormControl>
-                        <Input placeholder="Dupont" {...field} />
+                        <Input placeholder={t('client.pages.public.register.merchantProfile.lastNamePlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -146,7 +146,7 @@ export default function Step3CommercantProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.merchantProfile.firstName')} *</FormLabel>
                       <FormControl>
-                        <Input placeholder="Jean" {...field} />
+                        <Input placeholder={t('client.pages.public.register.merchantProfile.firstNamePlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -162,7 +162,7 @@ export default function Step3CommercantProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.merchantProfile.email')} *</FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="exemple@email.com" {...field} />
+                        <Input type="email" placeholder={t('client.pages.public.register.merchantProfile.emailPlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -178,7 +178,7 @@ export default function Step3CommercantProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.merchantProfile.password')} *</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
+                        <Input type="password" placeholder={t('client.pages.public.register.merchantProfile.passwordPlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -192,7 +192,7 @@ export default function Step3CommercantProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.merchantProfile.confirmPassword')} *</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
+                        <Input type="password" placeholder={t('client.pages.public.register.merchantProfile.confirmPasswordPlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -208,7 +208,7 @@ export default function Step3CommercantProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.merchantProfile.companyName')} *</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ma Société" {...field} />
+                        <Input placeholder={t('client.pages.public.register.merchantProfile.companyNamePlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -222,7 +222,7 @@ export default function Step3CommercantProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.merchantProfile.siret')} *</FormLabel>
                       <FormControl>
-                        <Input placeholder="12345678901234" {...field} />
+                        <Input placeholder={t('client.pages.public.register.merchantProfile.siretPlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -238,7 +238,7 @@ export default function Step3CommercantProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.merchantProfile.address')} *</FormLabel>
                       <FormControl>
-                        <Input placeholder="123 rue de Paris" {...field} />
+                        <Input placeholder={t('client.pages.public.register.merchantProfile.addressPlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -253,7 +253,7 @@ export default function Step3CommercantProfile() {
                       <FormItem>
                         <FormLabel>{t('client.pages.public.register.merchantProfile.postalCode')} *</FormLabel>
                         <FormControl>
-                          <Input placeholder="75001" {...field} />
+                          <Input placeholder={t('client.pages.public.register.merchantProfile.postalCodePlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -267,7 +267,7 @@ export default function Step3CommercantProfile() {
                       <FormItem>
                         <FormLabel>{t('client.pages.public.register.merchantProfile.city')} *</FormLabel>
                         <FormControl>
-                          <Input placeholder="Paris" {...field} />
+                          <Input placeholder={t('client.pages.public.register.merchantProfile.cityPlaceholder')} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -303,7 +303,7 @@ export default function Step3CommercantProfile() {
                     <FormItem>
                       <FormLabel>{t('client.pages.public.register.merchantProfile.phone')} *</FormLabel>
                       <FormControl>
-                        <Input placeholder="0612345678" {...field} />
+                        <Input placeholder={t('client.pages.public.register.merchantProfile.phonePlaceholder')} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -342,7 +342,7 @@ export default function Step3CommercantProfile() {
                     <FormItem className="col-span-1 md:col-span-2">
                       <FormLabel>{t('client.pages.public.register.merchantProfile.description')}</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Décrivez votre entreprise..." className="resize-none" {...field} />
+                        <Textarea placeholder={t('client.pages.public.register.merchantProfile.descriptionPlaceholder')} className="resize-none" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

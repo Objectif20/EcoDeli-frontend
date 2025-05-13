@@ -10,10 +10,10 @@ import { useDispatch } from "react-redux"
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 import { ProfileAPI } from "@/api/profile.api"
 import { getRandomColor } from "@/utils/random-color"
-
-
+import { useTranslation } from 'react-i18next'
 
 export default function PlanningPage() {
+  const { t } = useTranslation();
   const [events, setEvents] = useState<CalendarEvent[]>([])
   const [initialDate, setInitialDate] = useState(new Date())
   const dispatch = useDispatch()
@@ -29,23 +29,22 @@ export default function PlanningPage() {
 
       setEvents(eventsWithColor);
     } catch (error) {
-      console.error("Error fetching events:", error);
+      console.error("Error fetching", error);
     }
   };
 
   useEffect(() => {
     getEvents();
-  }, []);
-
+  }, [t]);
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Mon planning"],
+        segments: [t("client.pages.office.planning.breadcrumbHome"), t("client.pages.office.planning.breadcrumbPlanning")],
         links: ["/office/dashboard"],
       }),
     )
-  }, [dispatch])
+  }, [dispatch, t])
 
   const handleEventAdd = (event: CalendarEvent) => {
     setEvents([...events, event])

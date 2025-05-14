@@ -1,12 +1,22 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Globe } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 import { RegisterApi } from "@/api/register.api"
+import { useDispatch, useSelector } from "react-redux"
+import { RootState } from "@/redux/store"
+import { updateLang } from "@/redux/slices/userSlice"
+import { UserApi } from "@/api/user.api"
 
 interface Language {
   language_id: string
@@ -22,35 +32,57 @@ interface LanguageSelectorProps {
 
 export default function LanguageSelector({ mode = "text", className }: LanguageSelectorProps) {
   const [languages, setLanguages] = useState<Language[]>([])
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("")
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("fr")
   const { i18n } = useTranslation()
+  const dispatch = useDispatch()
+
+  const user = useSelector((state: RootState) => state.user.user)
 
   useEffect(() => {
     async function fetchLanguages() {
       try {
-        const languages = await RegisterApi.getLanguage()
-        const activeLanguages = languages.filter((lang) => lang.active)
+        const response = await RegisterApi.getLanguage()
+        const activeLanguages = response.filter((lang) => lang.active)
         setLanguages(activeLanguages)
 
-        if (!selectedLanguage && activeLanguages.length > 0) {
-          setSelectedLanguage(i18n.language || activeLanguages[0].iso_code)
-        }
+        const storedLang = i18n.language;
+
+        const matchedLang = activeLanguages.find((lang) => lang.iso_code === storedLang)
+
+        const initialLang = matchedLang ? matchedLang.iso_code : "fr"
+
+        setSelectedLanguage(initialLang)
+        i18n.changeLanguage(initialLang)
       } catch (error) {
         console.error("Failed to fetch languages:", error)
       }
     }
 
     fetchLanguages()
-  }, [i18n.language, selectedLanguage])
+  }, [user?.language])
 
   const getFlag = (isoCode: string) => {
+    if (!isoCode || isoCode.length !== 2) return "🌐"
     const codePoints = Array.from(isoCode.toUpperCase()).map((char) => 127397 + char.charCodeAt(0))
     return String.fromCodePoint(...codePoints)
   }
 
-  const handleLanguageChange = (value: string) => {
-    setSelectedLanguage(value)
-    i18n.changeLanguage(value)
+  const handleLanguageChange = async (isoCode: string) => {
+    setSelectedLanguage(isoCode)
+    dispatch(updateLang(isoCode))
+    localStorage.setItem("i18nextLng", isoCode)
+  
+    const selectedLang = languages.find((lang) => lang.iso_code === isoCode)
+  
+    if (user && selectedLang) {
+      try {
+        await UserApi.updateLanguage(selectedLang.language_id)
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour de la langue sur le serveur :", error)
+      }
+    }
+  
+    i18n.changeLanguage(isoCode)
   }
 
   if (mode === "text") {
@@ -58,17 +90,10 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
       <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
         <SelectTrigger className={cn(className)}>
           <SelectValue>
-            {selectedLanguage ? (
-              <div className="flex items-center gap-2">
-                <span>{getFlag(selectedLanguage)}</span>
-                <span>{languages.find((l) => l.iso_code === selectedLanguage)?.language_name || selectedLanguage}</span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Globe className="h-4 w-4" />
-                <span>Sélectionner</span>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <span>{getFlag(selectedLanguage)}</span>
+              <span>{languages.find((l) => l.iso_code === selectedLanguage)?.language_name || selectedLanguage}</span>
+            </div>
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -89,23 +114,17 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
     <DropdownMenu>
       <DropdownMenuTrigger
         className={cn(
-          "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-          className,
+          "flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm",
+          className
         )}
       >
-        {selectedLanguage ? (
-          <div className="flex items-center">
-            <span className="text-xl">{getFlag(selectedLanguage)}</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2">
-            <Globe className="h-4 w-4" />
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{getFlag(selectedLanguage)}</span>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Choisir la langue</DropdownMenuLabel>
-          <DropdownMenuSeparator />
+        <DropdownMenuLabel>Choisir la langue</DropdownMenuLabel>
+        <DropdownMenuSeparator />
         {languages.map((language) => (
           <DropdownMenuItem
             key={language.language_id}

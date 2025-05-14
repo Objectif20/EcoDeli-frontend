@@ -49,6 +49,11 @@ export class UserApi {
     return response.status === 200;
   }
 
+  static async updateLanguage(language_id : string) {
+    const response = await axiosInstance.patch("/client/profile/language", { language_id });
+    return response.data;
+  }
+
   // ========================
   // ====== PROVIDER ========
   // ========================

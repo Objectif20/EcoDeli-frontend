@@ -9,6 +9,7 @@ export interface User {
   active: boolean;
   language: string;
   iso_code: string;
+  language_id: string;
   profile: string[];
   otp?: boolean | false;
   updgradablePlan?: boolean | false;

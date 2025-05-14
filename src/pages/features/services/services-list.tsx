@@ -6,10 +6,12 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function MyServicesList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const [services, setServices] = useState([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -19,11 +21,11 @@ export default function MyServicesList() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Mes prestations"],
+        segments: [t("client.pages.offices.services.provider.services-list.breadcrumb.home"), t("client.pages.offices.services.provider.services-list.breadcrumb.my-services")],
         links: ["/office/dashboard"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -32,12 +34,12 @@ export default function MyServicesList() {
         setServices(response.data.data || []);
         setTotalItems(response.data?.total || 0);
       } catch (error) {
-        console.error("Erreur lors de la récupération des services :", error);
+        console.error(t("client.pages.offices.services.provider.services-list.error"), error);
       }
     };
 
     fetchServices();
-  }, [pageIndex, pageSize]);
+  }, [pageIndex, pageSize, t]);
 
   return (
     <>
@@ -45,13 +47,13 @@ export default function MyServicesList() {
         onClick={() => navigate("/office/services/create")}
         className="w-fit"
       >
-        Ajouter une nouvelle prestation
+        {t("client.pages.offices.services.provider.services-list.add-service")}
       </Button>
-  
-      <h1 className="text-2xl font-semibold mb-4">Mes services sur EcoDeli</h1>
-  
+
+      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.offices.services.provider.services-list.title")}</h1>
+
       <DataTable key={`${pageIndex}-${pageSize}`} data={services} />
-  
+
       <PaginationControls
         pageIndex={pageIndex}
         pageSize={pageSize}

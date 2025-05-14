@@ -48,12 +48,7 @@ export const schema = z.object({
   justification_file: z.string().url(),
 });
 
-export const columnLink = [
-  { column_id: "name", text: "Nom" },
-  { column_id: "matricule", text: "Matricule" },
-  { column_id: "co2", text: "CO2" },
-  { column_id: "allow", text: "Autorisé" },
-];
+
 
 export const columns = (t: any): ColumnDef<z.infer<typeof schema>>[] => {
   const [, setSelectedVehicle] = useState<any>(null);
@@ -138,6 +133,13 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
       setData(initialData);
     }
   }, [initialData]);
+
+  const columnLink = [
+  { column_id: "name", text: t('client.pages.office.delivery.vehicles.myVehicles.table.name') },
+  { column_id: "matricule", text: t('client.pages.office.delivery.vehicles.myVehicles.table.matricule') },
+  { column_id: "co2", text: t('client.pages.office.delivery.vehicles.myVehicles.table.co2') },
+  { column_id: "allow", text: t('client.pages.office.delivery.vehicles.myVehicles.table.allow') },
+];
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});

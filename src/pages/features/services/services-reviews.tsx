@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { DataTable } from "@/components/features/services/services-reviews";
 import { ServiceApi } from "@/api/service.api";
-
+import { useTranslation } from "react-i18next";
 
 interface Review {
   id: string;
@@ -23,6 +23,7 @@ interface Review {
 
 export default function ReviewServicesPage() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -31,29 +32,29 @@ export default function ReviewServicesPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Avis"],
+        segments: [t("client.pages.offices.services.provider.services-reviews.breadcrumb.home"), t("client.pages.offices.services.provider.services-reviews.breadcrumb.reviews")],
         links: ["/office/dashboard"],
       })
     );
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const data = await ServiceApi.getProviderReviews(pageSize, pageIndex + 1); 
+        const data = await ServiceApi.getProviderReviews(pageSize, pageIndex + 1);
         setReviews(data.data);
         setTotalItems(data.totalRows);
       } catch (error) {
-        console.error("Erreur lors de la récupération des avis", error);
+        console.error(t("client.pages.offices.services.provider.services-reviews.error"), error);
       }
     };
 
     fetchReviews();
-  }, [pageIndex, pageSize]);
+  }, [pageIndex, pageSize, t]);
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold mb-4">Les avis sur EcoDeli</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.offices.services.provider.services-reviews.title")}</h1>
       <DataTable key={`${pageIndex}-${pageSize}`} data={reviews} />
       <PaginationControls
         pageIndex={pageIndex}

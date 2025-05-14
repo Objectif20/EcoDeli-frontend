@@ -34,7 +34,7 @@ export default function OngoingDeliveries() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", t('client.pages.office.deliveryman.ongoingDeliveries.title')],
+        segments: [ t('client.pages.office.deliveryman.ongoingDeliveries.home'), t('client.pages.office.deliveryman.ongoingDeliveries.title')],
         links: ["/office/dashboard"],
       })
     );

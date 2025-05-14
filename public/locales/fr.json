@@ -1905,7 +1905,7 @@
           "typeMessage": "Tapez votre message ici...",
           "selectContact": "Sélectionnez un contact pour commencer à discuter."
         },
-                "chat-negotiation": {
+        "chat-negotiation": {
           "negotiateDelivery": "Négocier la livraison",
           "proposeNewConditions": "Proposez de nouvelles conditions pour cette livraison",
           "selectDelivery": "Sélection de la livraison",
@@ -2532,6 +2532,7 @@
           },
           "ongoingDeliveries": {
             "title": "Mes livraisons en cours",
+            "home": "Accueil",
             "noDeliveries": "Aucune livraison en cours",
             "noDeliveriesDescription": "Vous n'avez pas de livraison en cours.",
             "deliveryId": "Livraison {{id}}",
@@ -2540,7 +2541,41 @@
             "currentPosition": "Position actuelle",
             "packageTransmitted": "Colis transmis",
             "estimatedArrivalDate": "Date d'arrivée estimée :"
-          }
+          },
+          "my-routes": {
+              "routeManagement": "Gestion des Trajets",
+              "addRoute": "Ajouter un trajet",
+              "errorFetchingRoutes": "Erreur lors de la récupération des trajets:",
+              "errorAddingRoute": "Erreur lors de l'ajout du trajet:",
+              "activeAndPermanentRoutes": "Trajets actifs et permanents",
+              "noActiveOrPermanentRoutes": "Aucun trajet actif ou permanent",
+              "pastRoutes": "Trajets passés",
+              "departure": "Départ",
+              "arrival": "Arrivée",
+              "coordinates": "Coordonnées",
+              "day": "Jour",
+              "date": "Date",
+              "toleranceRadius": "Rayon de tolérance",
+              "return": "Retour",
+              "sameDay": "Le même jour",
+              "nextDay": "Le lendemain",
+              "type": "Type",
+              "permanent": "Permanent",
+              "oneTime": "Ponctuel",
+              "departureRequired": "Le lieu de départ est requis",
+              "arrivalRequired": "Le lieu d'arrivée est requis",
+              "radiusPositive": "Le rayon doit être positif",
+              "weekdayOrDateRequired": "Un jour de la semaine est requis pour les trajets permanents, une date pour les trajets ponctuels",
+              "days": {
+                "monday": "Lundi",
+                "tuesday": "Mardi",
+                "wednesday": "Mercredi",
+                "thursday": "Jeudi",
+                "friday": "Vendredi",
+                "saturday": "Samedi",
+                "sunday": "Dimanche"
+              }
+            }
         },
         "services": {
           "client": {
@@ -2575,6 +2610,25 @@
               "dropdown": {
                 "columns": "Colonnes"
               }
+            },
+            "services-reviews": {
+              "breadcrumb": {
+                "home": "Accueil",
+                "services": "Prestations",
+                "my-reviews": "Mes avis"
+              },
+              "title": "Mes avis",
+              "error": "Erreur lors de la récupération des avis",
+              "columns": {
+                "provider": "Prestataire",
+                "message": "Message",
+                "service": "Service",
+                "rate": "Note",
+                "date": "Date",
+                "columns": "Colonnes"
+              },
+              "full-message": "Message complet",
+              "no-results": "No results."
             }
           },
           "successCreate": {
@@ -2621,6 +2675,76 @@
               "invalidDuration": "Durée invalide",
               "acceptTermsRequired": "Vous devez accepter les conditions.",
               "imageRequired": "Vous devez ajouter au moins une image."
+            }
+          },
+          "provider": {
+            "services-history": {
+              "breadcrumb": {
+                "home": "Accueil",
+                "history": "Historique des prestations"
+              },
+              "title": "Historique des prestations sur EcoDeli",
+              "error": "Erreur lors de la récupération de l'historique des services :",
+              "columns": {
+                "client": "Client",
+                "date": "Date",
+                "time": "Heure",
+                "service": "Service",
+                "rating": "Note",
+                "columns": "Colonnes"
+              },
+              "no-results": "No results."
+            },
+            "services-list": {
+              "breadcrumb": {
+                "home": "Accueil",
+                "my-services": "Mes prestations"
+              },
+              "title": "Mes services sur EcoDeli",
+              "error": "Erreur lors de la récupération des services :",
+              "add-service": "Ajouter une nouvelle prestation",
+              "columns": {
+                "name": "Nom",
+                "description": "Description",
+                "type": "Type",
+                "city": "Ville",
+                "price": "Prix",
+                "duration": "Durée",
+                "status": "Statut",
+                "columns": "Colonnes"
+              },
+              "status": {
+                "active": "Actif",
+                "inactive": "Inactif"
+              },
+              "actions": {
+                "details": "Détails"
+              },
+              "no-results": "No results."
+            },
+            "services-reviews": {
+              "breadcrumb": {
+                "home": "Accueil",
+                "reviews": "Avis"
+              },
+              "title": "Les avis sur EcoDeli",
+              "error": "Erreur lors de la récupération des avis",
+              "columns": {
+                "author": "Auteur",
+                "service": "Service",
+                "rate": "Note",
+                "date": "Date",
+                "message": "Message",
+                "columns": "Colonnes"
+              },
+              "reply-message": "Message de réponse:",
+              "selected-review-id": "ID de l'avis sélectionné:",
+              "reply-placeholder": "Répondre à cet avis...",
+              "send": "Envoyer",
+              "actions": {
+                "details": "Détails"
+              },
+              "no-results": "No results."
             }
           }
         },

@@ -6,7 +6,7 @@ import { ProfileAPI } from "@/api/profile.api";
 import { useTranslation } from "react-i18next";
 
 export default function OneSignalInit() {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const initOneSignal = async () => {
@@ -15,8 +15,14 @@ export default function OneSignalInit() {
         language: i18n.language || "fr",
         serviceWorkerPath: "myPath/OneSignalSDKWorker.js",
         serviceWorkerParam: { scope: "/myPath/myCustomScope/" },
+        
+        
 
-        promptOptions: {
+
+
+      });
+      {/* 
+                promptOptions: {
           slidedown: {
             prompts: [
               {
@@ -69,8 +75,7 @@ export default function OneSignalInit() {
             "tip.state.subscribed": t("pages.notif.tip.state.subscribed"),
             "tip.state.unsubscribed": t("pages.notif.tip.state.unsubscribed"),
           },
-        },
-      });
+        },*/}
 
       OneSignal.Debug.setLogLevel("0");
 

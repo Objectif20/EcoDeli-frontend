@@ -3,14 +3,22 @@ import { PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { z } from "zod"
 import { AddRouteDialog } from "@/components/features/deliveries/deliverman/add-routes"
+import { useTranslation } from "react-i18next"
+import { useMemo } from "react"
+import { format, isPast, parseISO } from "date-fns"
+import { fr } from "date-fns/locale"
+import { MapPin, Calendar, Repeat, ArrowRight, CornerDownRight } from "lucide-react"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
+import { DeliverymanApi } from "@/api/deliveryman.api"
 
-const daysOfWeek = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
-
-export const routeSchema = z
+export const routeSchema = (t: any) => z
   .object({
     id: z.string(),
-    from: z.string().min(1, "Le lieu de départ est requis"),
-    to: z.string().min(1, "Le lieu d'arrivée est requis"),
+    from: z.string().min(1, t("client.pages.offices.deliveryman.my-routes.departureRequired")),
+    to: z.string().min(1, t("client.pages.offices.deliveryman.my-routes.arrivalRequired")),
     permanent: z.boolean(),
     coordinates: z.object({
       origin: z.tuple([z.number(), z.number()]),
@@ -18,7 +26,7 @@ export const routeSchema = z
     }),
     date: z.string().optional(),
     weekday: z.string().regex(/^[0-6]$/).optional(),
-    tolerate_radius: z.number().min(0, "Le rayon doit être positif"),
+    tolerate_radius: z.number().min(0, t("client.pages.offices.deliveryman.my-routes.radiusPositive")),
     comeback_today_or_tomorrow: z.union([z.literal("today"), z.literal("tomorrow"), z.literal("later")]),
   })
   .refine(
@@ -30,14 +38,25 @@ export const routeSchema = z
       }
     },
     {
-      message: "Un jour de la semaine est requis pour les trajets permanents, une date pour les trajets ponctuels",
+      message: t("client.pages.offices.deliveryman.my-routes.weekdayOrDateRequired"),
       path: ["weekday"],
     },
   )
 
-export type Route = z.infer<typeof routeSchema>
+export type Route = z.infer<ReturnType<typeof routeSchema>>
 
 export default function MyRoutes() {
+  const { t } = useTranslation()
+  const daysOfWeek = [
+    t("client.pages.offices.deliveryman.my-routes.days.monday"),
+    t("client.pages.offices.deliveryman.my-routes.days.tuesday"),
+    t("client.pages.offices.deliveryman.my-routes.days.wednesday"),
+    t("client.pages.offices.deliveryman.my-routes.days.thursday"),
+    t("client.pages.offices.deliveryman.my-routes.days.friday"),
+    t("client.pages.offices.deliveryman.my-routes.days.saturday"),
+    t("client.pages.offices.deliveryman.my-routes.days.sunday")
+  ]
+
   const [routes, setRoutes] = useState<Route[]>([])
 
   useEffect(() => {
@@ -46,57 +65,47 @@ export default function MyRoutes() {
         const data = await DeliverymanApi.getDeliverymanRoutes()
         setRoutes(data)
       } catch (error) {
-        console.error("Erreur lors de la récupération des trajets:", error)
+        console.error(t("client.pages.offices.deliveryman.my-routes.errorFetchingRoutes"), error)
       }
     }
 
     fetchRoutes()
-  }, [])
-
+  }, [t])
 
   const addRoute = async () => {
     try {
       const data = await DeliverymanApi.getDeliverymanRoutes()
       setRoutes(data)
     } catch (error) {
-      console.error("Erreur lors de l'ajout du trajet:", error)
+      console.error(t("client.pages.offices.deliveryman.my-routes.errorAddingRoute"), error)
     }
   }
 
   return (
     <main className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-foreground">Gestion des Trajets</h1>
+        <h1 className="text-3xl font-bold text-foreground">{t("client.pages.offices.deliveryman.my-routes.routeManagement")}</h1>
         <AddRouteDialog onAddRoute={addRoute}>
           <Button className="bg-primary hover:bg-primary/90">
             <PlusCircle className="mr-2 h-4 w-4" />
-            Ajouter un trajet
+            {t("client.pages.offices.deliveryman.my-routes.addRoute")}
           </Button>
         </AddRouteDialog>
       </div>
 
-      <RoutesList routes={routes} />
+      <RoutesList routes={routes} daysOfWeek={daysOfWeek} />
     </main>
   )
 }
 
-"use client"
-
-import { useMemo } from "react"
-import { format, isPast, parseISO } from "date-fns"
-import { fr } from "date-fns/locale"
-import { MapPin, Calendar, Repeat, ArrowRight, CornerDownRight } from "lucide-react"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { DeliverymanApi } from "@/api/deliveryman.api"
 
 interface RoutesListProps {
   routes: Route[]
+  daysOfWeek: string[]
 }
 
-export function RoutesList({ routes }: RoutesListProps) {
+export function RoutesList({ routes, daysOfWeek }: RoutesListProps) {
+  const { t } = useTranslation()
   const { activeRoutes, pastRoutes } = useMemo(() => {
     return routes.reduce(
       (acc, route) => {
@@ -119,25 +128,25 @@ export function RoutesList({ routes }: RoutesListProps) {
   return (
     <div className="space-y-8">
       <section>
-        <h2 className="text-xl font-semibold mb-4 text-foreground">Trajets actifs et permanents</h2>
+        <h2 className="text-xl font-semibold mb-4 text-foreground">{t("client.pages.offices.deliveryman.my-routes.activeAndPermanentRoutes")}</h2>
         <Accordion type="multiple" defaultValue={activeRoutes.map((route) => route.id)} className="space-y-4">
           {activeRoutes.map((route) => (
-            <RouteAccordionItem key={route.id} route={route} />
+            <RouteAccordionItem key={route.id} route={route} daysOfWeek={daysOfWeek} />
           ))}
         </Accordion>
         {activeRoutes.length === 0 && (
           <Card className="bg-muted">
-            <CardContent className="p-6 text-center text-muted-foreground">Aucun trajet actif ou permanent</CardContent>
+            <CardContent className="p-6 text-center text-muted-foreground">{t("client.pages.offices.deliveryman.my-routes.noActiveOrPermanentRoutes")}</CardContent>
           </Card>
         )}
       </section>
 
       {pastRoutes.length > 0 && (
         <section>
-          <h2 className="text-xl font-semibold mb-4 text-foreground">Trajets passés</h2>
+          <h2 className="text-xl font-semibold mb-4 text-foreground">{t("client.pages.offices.deliveryman.my-routes.pastRoutes")}</h2>
           <Accordion type="multiple" className="space-y-4">
             {pastRoutes.map((route) => (
-              <RouteAccordionItem key={route.id} route={route} disabled />
+              <RouteAccordionItem key={route.id} route={route} daysOfWeek={daysOfWeek} disabled />
             ))}
           </Accordion>
         </section>
@@ -148,10 +157,12 @@ export function RoutesList({ routes }: RoutesListProps) {
 
 interface RouteAccordionItemProps {
   route: Route
+  daysOfWeek: string[]
   disabled?: boolean
 }
 
-function RouteAccordionItem({ route, disabled = false }: RouteAccordionItemProps) {
+function RouteAccordionItem({ route, daysOfWeek, disabled = false }: RouteAccordionItemProps) {
+  const { t } = useTranslation()
   const weekdayName = route.weekday !== undefined ? daysOfWeek[parseInt(route.weekday, 10)] : ""
 
   return (
@@ -169,7 +180,7 @@ function RouteAccordionItem({ route, disabled = false }: RouteAccordionItemProps
             {route.permanent ? (
               <Badge variant="outline" className="bg-accent text-accent-foreground">
                 <Repeat className="h-3 w-3 mr-1" />
-                Permanent
+                {t("client.pages.offices.deliveryman.my-routes.permanent")}
               </Badge>
             ) : route.date ? (
               <Badge variant="outline" className="bg-secondary text-secondary-foreground">
@@ -186,22 +197,22 @@ function RouteAccordionItem({ route, disabled = false }: RouteAccordionItemProps
             <div className="space-y-2">
               <div className="flex items-center text-sm">
                 <MapPin className="h-4 w-4 mr-2 text-primary" />
-                <span className="font-medium">Départ:</span>
+                <span className="font-medium">{t("client.pages.offices.deliveryman.my-routes.departure")}:</span>
                 <span className="ml-2">{route.from}</span>
               </div>
               <div className="text-xs text-muted-foreground ml-6">
-                Coordonnées: {route.coordinates.origin[0]}, {route.coordinates.origin[1]}
+                {t("client.pages.offices.deliveryman.my-routes.coordinates")}: {route.coordinates.origin[0]}, {route.coordinates.origin[1]}
               </div>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center text-sm">
                 <MapPin className="h-4 w-4 mr-2 text-primary" />
-                <span className="font-medium">Arrivée:</span>
+                <span className="font-medium">{t("client.pages.offices.deliveryman.my-routes.arrival")}:</span>
                 <span className="ml-2">{route.to}</span>
               </div>
               <div className="text-xs text-muted-foreground ml-6">
-                Coordonnées: {route.coordinates.destination[0]}, {route.coordinates.destination[1]}
+                {t("client.pages.offices.deliveryman.my-routes.coordinates")}: {route.coordinates.destination[0]}, {route.coordinates.destination[1]}
               </div>
             </div>
           </div>
@@ -213,19 +224,19 @@ function RouteAccordionItem({ route, disabled = false }: RouteAccordionItemProps
               {route.permanent ? (
                 <div className="flex items-center text-sm">
                   <Calendar className="h-4 w-4 mr-2 text-primary" />
-                  <span className="font-medium">Jour:</span>
+                  <span className="font-medium">{t("client.pages.offices.deliveryman.my-routes.day")}:</span>
                   <span className="ml-2">{weekdayName}</span>
                 </div>
               ) : route.date ? (
                 <div className="flex items-center text-sm">
                   <Calendar className="h-4 w-4 mr-2 text-primary" />
-                  <span className="font-medium">Date:</span>
+                  <span className="font-medium">{t("client.pages.offices.deliveryman.my-routes.date")}:</span>
                   <span className="ml-2">{format(parseISO(route.date), "dd MMMM yyyy", { locale: fr })}</span>
                 </div>
               ) : null}
 
               <div className="flex items-center text-sm">
-                <span className="font-medium ml-6">Rayon de tolérance:</span>
+                <span className="font-medium ml-6">{t("client.pages.offices.deliveryman.my-routes.toleranceRadius")}:</span>
                 <span className="ml-2">{route.tolerate_radius} km</span>
               </div>
             </div>
@@ -233,14 +244,14 @@ function RouteAccordionItem({ route, disabled = false }: RouteAccordionItemProps
             <div className="space-y-2">
               <div className="flex items-center text-sm">
                 <CornerDownRight className="h-4 w-4 mr-2 text-primary" />
-                <span className="font-medium">Retour:</span>
-                <span className="ml-2">{route.comeback_today_or_tomorrow === "today" ? "Le même jour" : "Le lendemain"}</span>
+                <span className="font-medium">{t("client.pages.offices.deliveryman.my-routes.return")}:</span>
+                <span className="ml-2">{route.comeback_today_or_tomorrow === "today" ? t("client.pages.offices.deliveryman.my-routes.sameDay") : t("client.pages.offices.deliveryman.my-routes.nextDay")}</span>
               </div>
 
               <div className="flex items-center text-sm">
                 <Repeat className="h-4 w-4 mr-2 text-primary" />
-                <span className="font-medium">Type:</span>
-                <span className="ml-2">{route.permanent ? "Permanent" : "Ponctuel"}</span>
+                <span className="font-medium">{t("client.pages.offices.deliveryman.my-routes.type")}:</span>
+                <span className="ml-2">{route.permanent ? t("client.pages.offices.deliveryman.my-routes.permanent") : t("client.pages.offices.deliveryman.my-routes.oneTime")}</span>
               </div>
             </div>
           </div>

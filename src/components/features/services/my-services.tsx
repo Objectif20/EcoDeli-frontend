@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   ColumnDef,
@@ -17,6 +15,7 @@ import {
   ChevronDownIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -50,66 +49,8 @@ export const schema = z.object({
   validated: z.boolean(),
 });
 
-export const columnLink = [
-  { column_id: "name", text: "Nom" },
-  { column_id: "type", text: "Type" },
-  { column_id: "city", text: "Ville" },
-  { column_id: "price", text: "Prix" },
-  { column_id: "duration", text: "Durée" },
-  { column_id: "status", text: "Statut" },
-];
-
-export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
-  const navigate = useNavigate();
-
-  return [
-    {
-      accessorKey: "name",
-      header: "Nom",
-      cell: ({ row }) => <span>{row.original.name}</span>,
-    },
-    {
-      accessorKey: "description",
-      header: "Description",
-      cell: ({ row }) => (
-        <span>
-          {row.original.description.length > 30
-            ? `${row.original.description.substring(0, 30)}...`
-            : row.original.description}
-        </span>
-      ),
-    },
-    { accessorKey: "type", header: "Type", cell: ({ row }) => row.original.type },
-    { accessorKey: "city", header: "Ville", cell: ({ row }) => row.original.city || "N/A" },
-    { accessorKey: "price", header: "Prix", cell: ({ row }) => row.original.price },
-    { accessorKey: "duration", header: "Durée", cell: ({ row }) => row.original.duration },
-    { accessorKey: "status", header: "Statut", cell: ({ row }) => 
-    (
-        <Badge
-          variant={row.original.status === "active" ? "default" : "destructive"}
-          className="capitalize"
-        >
-          {row.original.status === "active" ? "Actif" : "Inactif"}
-        </Badge>
-    )
-    
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => (
-        <Button
-          variant="link"
-          className="w-fit px-0 text-left text-foreground"
-          onClick={() => navigate(`/office/services/${row.original.id}`)}
-        >
-          Détails
-        </Button>
-      ),
-    },
-  ];
-};
-
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
+  const { t } = useTranslation();
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
@@ -117,6 +58,64 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
       setData(initialData);
     }
   }, [initialData]);
+
+  const columnLink = [
+    { column_id: "name", text: t("client.pages.offices.services.provider.services-list.columns.name") },
+    { column_id: "type", text: t("client.pages.offices.services.provider.services-list.columns.type") },
+    { column_id: "city", text: t("client.pages.offices.services.provider.services-list.columns.city") },
+    { column_id: "price", text: t("client.pages.offices.services.provider.services-list.columns.price") },
+    { column_id: "duration", text: t("client.pages.offices.services.provider.services-list.columns.duration") },
+    { column_id: "status", text: t("client.pages.offices.services.provider.services-list.columns.status") },
+  ];
+
+  const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
+    const navigate = useNavigate();
+
+    return [
+      {
+        accessorKey: "name",
+        header: t("client.pages.offices.services.provider.services-list.columns.name"),
+        cell: ({ row }) => <span>{row.original.name}</span>,
+      },
+      {
+        accessorKey: "description",
+        header: t("client.pages.offices.services.provider.services-list.columns.description"),
+        cell: ({ row }) => (
+          <span>
+            {row.original.description.length > 30
+              ? `${row.original.description.substring(0, 30)}...`
+              : row.original.description}
+          </span>
+        ),
+      },
+      { accessorKey: "type", header: t("client.pages.offices.services.provider.services-list.columns.type"), cell: ({ row }) => row.original.type },
+      { accessorKey: "city", header: t("client.pages.offices.services.provider.services-list.columns.city"), cell: ({ row }) => row.original.city || "N/A" },
+      { accessorKey: "price", header: t("client.pages.offices.services.provider.services-list.columns.price"), cell: ({ row }) => row.original.price },
+      { accessorKey: "duration", header: t("client.pages.offices.services.provider.services-list.columns.duration"), cell: ({ row }) => row.original.duration },
+      { accessorKey: "status", header: t("client.pages.offices.services.provider.services-list.columns.status"), cell: ({ row }) =>
+        (
+          <Badge
+            variant={row.original.status === "active" ? "default" : "destructive"}
+            className="capitalize"
+          >
+            {row.original.status === "active" ? t("client.pages.offices.services.provider.services-list.status.active") : t("client.pages.offices.services.provider.services-list.status.inactive")}
+          </Badge>
+        )
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => (
+          <Button
+            variant="link"
+            className="w-fit px-0 text-left text-foreground"
+            onClick={() => navigate(`/office/services/${row.original.id}`)}
+          >
+            {t("client.pages.offices.services.provider.services-list.actions.details")}
+          </Button>
+        ),
+      },
+    ];
+  };
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -151,8 +150,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">Colonnes</span>
-                <span className="lg:hidden">Colonnes</span>
+                <span className="hidden lg:inline">{t("client.pages.offices.services.provider.services-list.columns.columns")}</span>
+                <span className="lg:hidden">{t("client.pages.offices.services.provider.services-list.columns.columns")}</span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -232,7 +231,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t("client.pages.offices.services.provider.services-list.no-results")}
                 </TableCell>
               </TableRow>
             )}

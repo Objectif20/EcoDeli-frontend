@@ -1,5 +1,3 @@
-"use client";
-
 import * as React from "react";
 import {
   ColumnDef,
@@ -34,13 +32,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { ServiceApi } from "@/api/service.api";
-
+import { useTranslation } from "react-i18next";
 
 export const schema = z.object({
   id: z.string(),
@@ -57,125 +54,8 @@ export const schema = z.object({
   rate: z.number(),
 });
 
-export const columnLink = [
-  { column_id: "author.name", text: "Auteur" },
-  { column_id: "services_name", text: "Service" },
-  { column_id: "rate", text: "Note" },
-  { column_id: "date", text: "Date" },
-];
-
-export const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
-  const [selectedReview, setSelectedReview] = useState<any>(null);
-  const replyMessageRef = React.useRef<HTMLTextAreaElement>(null); 
-
-  const handleReplySubmit = async () => {
-    const replyMessage = replyMessageRef.current?.value;  
-    console.log("Message de réponse:", replyMessage);  
-    console.log("ID de l'avis sélectionné:", selectedReview?.id);
-
-    if (replyMessage) {
-      await ServiceApi.reponseToReview(selectedReview?.id, replyMessage);
-    }
-
-    if (replyMessageRef.current) {
-      replyMessageRef.current.value = ""; 
-    }
-
-    handleClose();  
-  };
-
-  const handleClose = () => {
-    setSelectedReview(null);
-    if (replyMessageRef.current) {
-      replyMessageRef.current.value = "";
-    }
-  };
-
-  return [
-    {
-      id: "author",
-      accessorKey: "author.name",
-      header: "Auteur",
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Avatar>
-            <AvatarImage src={row.original.author.photo} />
-            <AvatarFallback>{row.original.author.name[0]}</AvatarFallback>
-          </Avatar>
-          <span>{row.original.author.name}</span>
-        </div>
-      ),
-      enableHiding: false,
-    },
-    {
-      accessorKey: "content",
-      header: "Message",
-      cell: ({ row }) => (
-        <span>
-          {row.original.content.length > 30
-            ? `${row.original.content.substring(0, 30)}...`
-            : row.original.content}
-        </span>
-      ),
-        },
-        { accessorKey: "services_name", header: "Service", cell: ({ row }) => row.original.services_name },
-        { accessorKey: "rate", header: "Note", cell: ({ row }) => row.original.rate },
-        { 
-      accessorKey: "date", 
-      header: "Date", 
-      cell: ({ row }) => {
-        const date = new Date(row.original.date);
-        return date.toLocaleDateString("fr-FR");
-      }
-        },
-        {
-      id: "actions",
-      cell: ({ row }) => (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button
-              variant="link"
-              className="w-fit px-0 text-left text-foreground"
-              onClick={() => setSelectedReview(row.original)}
-            >
-              Détails
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader className="flex flex-col items-center text-center">
-              <Avatar className="w-16 h-16 mb-2">
-                <AvatarImage src={row.original?.author.photo} />
-                <AvatarFallback>{row.original?.author.name[0]}</AvatarFallback>
-              </Avatar>
-              <DialogTitle className="text-lg font-semibold">
-                {row.original?.author.name}
-              </DialogTitle>
-              <DialogDescription className="text-sm text-gray-500">
-                {row.original?.date}
-              </DialogDescription>
-            </DialogHeader>
-            <p className="text-sm text-center text-gray-600">{row.original?.content}</p>
-            {!row.original?.reply && (
-              <div className="mt-4">
-                <Textarea
-                  ref={replyMessageRef}
-                  placeholder="Répondre à cet avis..."
-                />
-              </div>
-            )}
-            <DialogFooter>
-              <DialogClose asChild>
-              <Button className="mt-2 w-full" onClick={handleReplySubmit}>Envoyer</Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      ),
-    },
-  ];
-};
-
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
+  const { t } = useTranslation();
   const [data, setData] = React.useState(initialData);
 
   React.useEffect(() => {
@@ -183,6 +63,124 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
       setData(initialData);
     }
   }, [initialData]);
+
+  const columnLink = [
+    { column_id: "author.name", text: t("client.pages.offices.services.provider.services-reviews.columns.author") },
+    { column_id: "services_name", text: t("client.pages.offices.services.provider.services-reviews.columns.service") },
+    { column_id: "rate", text: t("client.pages.offices.services.provider.services-reviews.columns.rate") },
+    { column_id: "date", text: t("client.pages.offices.services.provider.services-reviews.columns.date") },
+  ];
+
+  const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
+    const [selectedReview, setSelectedReview] = useState<any>(null);
+    const replyMessageRef = React.useRef<HTMLTextAreaElement>(null);
+
+    const handleReplySubmit = async () => {
+      const replyMessage = replyMessageRef.current?.value;
+      console.log(t("client.pages.offices.services.provider.services-reviews.reply-message"), replyMessage);
+      console.log(t("client.pages.offices.services.provider.services-reviews.selected-review-id"), selectedReview?.id);
+
+      if (replyMessage) {
+        await ServiceApi.reponseToReview(selectedReview?.id, replyMessage);
+      }
+
+      if (replyMessageRef.current) {
+        replyMessageRef.current.value = "";
+      }
+
+      handleClose();
+    };
+
+    const handleClose = () => {
+      setSelectedReview(null);
+      if (replyMessageRef.current) {
+        replyMessageRef.current.value = "";
+      }
+    };
+
+    return [
+      {
+        id: "author",
+        accessorKey: "author.name",
+        header: t("client.pages.offices.services.provider.services-reviews.columns.author"),
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <Avatar>
+              <AvatarImage src={row.original.author.photo} />
+              <AvatarFallback>{row.original.author.name[0]}</AvatarFallback>
+            </Avatar>
+            <span>{row.original.author.name}</span>
+          </div>
+        ),
+        enableHiding: false,
+      },
+      {
+        accessorKey: "content",
+        header: t("client.pages.offices.services.provider.services-reviews.columns.message"),
+        cell: ({ row }) => (
+          <span>
+            {row.original.content.length > 30
+              ? `${row.original.content.substring(0, 30)}...`
+              : row.original.content}
+          </span>
+        ),
+      },
+      { accessorKey: "services_name", header: t("client.pages.offices.services.provider.services-reviews.columns.service"), cell: ({ row }) => row.original.services_name },
+      { accessorKey: "rate", header: t("client.pages.offices.services.provider.services-reviews.columns.rate"), cell: ({ row }) => row.original.rate },
+      {
+        accessorKey: "date",
+        header: t("client.pages.offices.services.provider.services-reviews.columns.date"),
+        cell: ({ row }) => {
+          const date = new Date(row.original.date);
+          return date.toLocaleDateString("fr-FR");
+        }
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="link"
+                className="w-fit px-0 text-left text-foreground"
+                onClick={() => setSelectedReview(row.original)}
+              >
+                {t("client.pages.offices.services.provider.services-reviews.actions.details")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader className="flex flex-col items-center text-center">
+                <Avatar className="w-16 h-16 mb-2">
+                  <AvatarImage src={row.original?.author.photo} />
+                  <AvatarFallback>{row.original?.author.name[0]}</AvatarFallback>
+                </Avatar>
+                <DialogTitle className="text-lg font-semibold">
+                  {row.original?.author.name}
+                </DialogTitle>
+                <DialogDescription className="text-sm text-gray-500">
+                  {row.original?.date}
+                </DialogDescription>
+              </DialogHeader>
+              <p className="text-sm text-center text-gray-600">{row.original?.content}</p>
+              {!row.original?.reply && (
+                <div className="mt-4">
+                  <Textarea
+                    ref={replyMessageRef}
+                    placeholder={t("client.pages.offices.services.provider.services-reviews.reply-placeholder")}
+                  />
+                </div>
+              )}
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button className="mt-2 w-full" onClick={handleReplySubmit}>{t("client.pages.offices.services.provider.services-reviews.send")}</Button>
+                </DialogClose>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        ),
+      },
+    ];
+  };
 
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -217,8 +215,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">Colonnes</span>
-                <span className="lg:hidden">Colonnes</span>
+                <span className="hidden lg:inline">{t("client.pages.offices.services.provider.services-reviews.columns.columns")}</span>
+                <span className="lg:hidden">{t("client.pages.offices.services.provider.services-reviews.columns.columns")}</span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -298,7 +296,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t("client.pages.offices.services.provider.services-reviews.no-results")}
                 </TableCell>
               </TableRow>
             )}

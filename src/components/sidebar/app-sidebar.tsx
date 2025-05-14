@@ -53,7 +53,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     avatar: user?.photo || `${user?.first_name?.charAt(0) || ""}${user?.last_name?.charAt(0) || ""}`,
   };
 
-  const { open } = useSidebar();
+  const { open, isMobile } = useSidebar();
 
   const isMerchant = user?.profile.includes("MERCHANT");
   const isProvider = user?.profile.includes("PROVIDER");
@@ -333,7 +333,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </InfoCard>
       )}
       <SidebarFooter>
-        <NavLanguage />
+        {isMobile && (
+          <NavLanguage />
+        )}
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />

@@ -61,7 +61,7 @@ export function NavLanguage() {
     setSelectedLanguage(value)
     i18n.changeLanguage(value)
   }
-
+  
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -71,12 +71,15 @@ export function NavLanguage() {
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {getFlag(selectedLanguage)} {languages.find(l => l.iso_code === selectedLanguage)?.language_name}
-                </span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+                  <>
+                  <div className="grid flex-1 text-left text-sm leading-tight">
+                    <span className="truncate font-semibold">
+                      {getFlag(selectedLanguage)} {languages.find(l => l.iso_code === selectedLanguage)?.language_name}
+                    </span>
+                  </div>
+
+                    <ChevronsUpDown className="ml-auto size-4 " />
+                </>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

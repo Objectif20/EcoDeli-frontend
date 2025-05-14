@@ -8,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog-without-close";
 import { Trophy, PackageCheck } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -31,7 +31,11 @@ export function Result() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" 
+      onInteractOutside={(e) => {
+        e.preventDefault();
+      }}
+      >
         <DialogHeader>
           <DialogTitle className="text-center text-3xl font-bold mb-2">{t("game.title")}</DialogTitle>
           <DialogDescription>{t("game.resultTitle")}</DialogDescription>

@@ -7,12 +7,13 @@ import { UserApi } from './api/user.api';
 import { Spinner } from './components/ui/spinner';
 import { AppDispatch, RootState } from './redux/store';
 import OneSignalInit from './config/oneSignalInit';
-import i18n from './i18n';
+import i18n, { loadTranslations } from './i18n';
 
 function App() {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
+  const [i18nReady, setI18nReady] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -36,21 +37,25 @@ function App() {
   const user = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
-    const localLang = localStorage.getItem('i18nextLng')
-    if (localLang) {
-      i18n.changeLanguage(localLang)
-      return
-    }
+    const setupLanguage = async () => {
+      const localLang = localStorage.getItem("i18nextLng");
+      const userLang = localLang || user?.language || "fr";
 
-    const userLang = user?.language || 'fr'
-    if (userLang !== i18n.language) {
-      i18n.changeLanguage(userLang).then(() => {
-        localStorage.setItem('i18nextLng', userLang)
-      })
-    }
-  }, [user])
+      const translations = await loadTranslations(userLang);
+      i18n.addResourceBundle(userLang, "translation", translations, true, true);
 
-  if (loading) {
+      if (i18n.language !== userLang) {
+        await i18n.changeLanguage(userLang);
+      }
+
+      localStorage.setItem("i18nextLng", userLang);
+      setI18nReady(true);
+    };
+
+    setupLanguage();
+  }, [user]);
+
+  if (!i18nReady || loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />

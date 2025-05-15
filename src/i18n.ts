@@ -3,7 +3,7 @@ import { initReactI18next } from "react-i18next"
 import LanguageDetector from "i18next-browser-languagedetector"
 import axiosInstance from "@/api/axiosInstance"
 
-const loadTranslations = async (lng: string) => {
+export const loadTranslations = async (lng: string) => {
   try {
     const [apiRes, fallbackRes] = await Promise.all([
       axiosInstance.get(`/client/languages/${lng}`).then((res) => res.data),

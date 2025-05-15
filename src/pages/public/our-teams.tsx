@@ -1,14 +1,14 @@
 import { useTranslation } from "react-i18next";
-import user1 from "@/assets/illustrations/deliveryPerson.svg";
-import user2 from "@/assets/illustrations/deliveryPerson.svg";
-import user3 from "@/assets/illustrations/deliveryPerson.svg";
-import user4 from "@/assets/illustrations/deliveryPerson.svg";
-import user5 from "@/assets/illustrations/deliveryPerson.svg";
-import user6 from "@/assets/illustrations/deliveryPerson.svg";
-import user7 from "@/assets/illustrations/deliveryPerson.svg";
-import user8 from "@/assets/illustrations/deliveryPerson.svg";
-import user9 from "@/assets/illustrations/deliveryPerson.svg";
-import user10 from "@/assets/illustrations/deliveryPerson.svg";
+import user1 from "@/assets/illustrations/remy.svg";
+import user2 from "@/assets/illustrations/damien.svg";
+import user3 from "@/assets/illustrations/quentin.svg";
+import user4 from "@/assets/illustrations/frederic.svg";
+import user5 from "@/assets/illustrations/kevin.svg";
+import user6 from "@/assets/illustrations/christophe.svg";
+import user7 from "@/assets/illustrations/maxime.svg";
+import user8 from "@/assets/illustrations/john.svg";
+import user9 from "@/assets/illustrations/gregoire.svg";
+import user10 from "@/assets/illustrations/alice.svg";
 
 const TeamPage = () => {
   const { t } = useTranslation();

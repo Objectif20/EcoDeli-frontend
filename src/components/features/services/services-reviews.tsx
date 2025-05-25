@@ -65,10 +65,10 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
   }, [initialData]);
 
   const columnLink = [
-    { column_id: "author.name", text: t("client.pages.offices.services.provider.services-reviews.columns.author") },
-    { column_id: "services_name", text: t("client.pages.offices.services.provider.services-reviews.columns.service") },
-    { column_id: "rate", text: t("client.pages.offices.services.provider.services-reviews.columns.rate") },
-    { column_id: "date", text: t("client.pages.offices.services.provider.services-reviews.columns.date") },
+    { column_id: "author.name", text: t("client.pages.office.services.provider.services-reviews.columns.author") },
+    { column_id: "services_name", text: t("client.pages.office.services.provider.services-reviews.columns.service") },
+    { column_id: "rate", text: t("client.pages.office.services.provider.services-reviews.columns.rate") },
+    { column_id: "date", text: t("client.pages.office.services.provider.services-reviews.columns.date") },
   ];
 
   const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
@@ -77,8 +77,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
 
     const handleReplySubmit = async () => {
       const replyMessage = replyMessageRef.current?.value;
-      console.log(t("client.pages.offices.services.provider.services-reviews.reply-message"), replyMessage);
-      console.log(t("client.pages.offices.services.provider.services-reviews.selected-review-id"), selectedReview?.id);
+      console.log(t("client.pages.office.services.provider.services-reviews.reply-message"), replyMessage);
+      console.log(t("client.pages.office.services.provider.services-reviews.selected-review-id"), selectedReview?.id);
 
       if (replyMessage) {
         await ServiceApi.reponseToReview(selectedReview?.id, replyMessage);
@@ -102,7 +102,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
       {
         id: "author",
         accessorKey: "author.name",
-        header: t("client.pages.offices.services.provider.services-reviews.columns.author"),
+        header: t("client.pages.office.services.provider.services-reviews.columns.author"),
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <Avatar>
@@ -116,7 +116,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
       },
       {
         accessorKey: "content",
-        header: t("client.pages.offices.services.provider.services-reviews.columns.message"),
+        header: t("client.pages.office.services.provider.services-reviews.columns.message"),
         cell: ({ row }) => (
           <span>
             {row.original.content.length > 30
@@ -125,11 +125,11 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
           </span>
         ),
       },
-      { accessorKey: "services_name", header: t("client.pages.offices.services.provider.services-reviews.columns.service"), cell: ({ row }) => row.original.services_name },
-      { accessorKey: "rate", header: t("client.pages.offices.services.provider.services-reviews.columns.rate"), cell: ({ row }) => row.original.rate },
+      { accessorKey: "services_name", header: t("client.pages.office.services.provider.services-reviews.columns.service"), cell: ({ row }) => row.original.services_name },
+      { accessorKey: "rate", header: t("client.pages.office.services.provider.services-reviews.columns.rate"), cell: ({ row }) => row.original.rate },
       {
         accessorKey: "date",
-        header: t("client.pages.offices.services.provider.services-reviews.columns.date"),
+        header: t("client.pages.office.services.provider.services-reviews.columns.date"),
         cell: ({ row }) => {
           const date = new Date(row.original.date);
           return date.toLocaleDateString("fr-FR");
@@ -145,7 +145,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                 className="w-fit px-0 text-left text-foreground"
                 onClick={() => setSelectedReview(row.original)}
               >
-                {t("client.pages.offices.services.provider.services-reviews.actions.details")}
+                {t("client.pages.office.services.provider.services-reviews.actions.details")}
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -166,13 +166,13 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                 <div className="mt-4">
                   <Textarea
                     ref={replyMessageRef}
-                    placeholder={t("client.pages.offices.services.provider.services-reviews.reply-placeholder")}
+                    placeholder={t("client.pages.office.services.provider.services-reviews.reply-placeholder")}
                   />
                 </div>
               )}
               <DialogFooter>
                 <DialogClose asChild>
-                  <Button className="mt-2 w-full" onClick={handleReplySubmit}>{t("client.pages.offices.services.provider.services-reviews.send")}</Button>
+                  <Button className="mt-2 w-full" onClick={handleReplySubmit}>{t("client.pages.office.services.provider.services-reviews.send")}</Button>
                 </DialogClose>
               </DialogFooter>
             </DialogContent>
@@ -215,8 +215,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">{t("client.pages.offices.services.provider.services-reviews.columns.columns")}</span>
-                <span className="lg:hidden">{t("client.pages.offices.services.provider.services-reviews.columns.columns")}</span>
+                <span className="hidden lg:inline">{t("client.pages.office.services.provider.services-reviews.columns.columns")}</span>
+                <span className="lg:hidden">{t("client.pages.office.services.provider.services-reviews.columns.columns")}</span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -296,7 +296,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t("client.pages.offices.services.provider.services-reviews.no-results")}
+                  {t("client.pages.office.services.provider.services-reviews.no-results")}
                 </TableCell>
               </TableRow>
             )}

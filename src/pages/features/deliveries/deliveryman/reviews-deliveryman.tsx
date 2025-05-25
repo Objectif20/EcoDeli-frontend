@@ -31,7 +31,7 @@ export default function ReviewDeliverymanPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Avis"],
+        segments: [t('client.pages.office.delivery.deliveryman.reviews.breadcrumb.home'), t('client.pages.office.delivery.deliveryman.reviews.breadcrumb.reviews')],
         links: ["/office/dashboard"],
       })
     );

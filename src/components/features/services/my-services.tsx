@@ -60,12 +60,12 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
   }, [initialData]);
 
   const columnLink = [
-    { column_id: "name", text: t("client.pages.offices.services.provider.services-list.columns.name") },
-    { column_id: "type", text: t("client.pages.offices.services.provider.services-list.columns.type") },
-    { column_id: "city", text: t("client.pages.offices.services.provider.services-list.columns.city") },
-    { column_id: "price", text: t("client.pages.offices.services.provider.services-list.columns.price") },
-    { column_id: "duration", text: t("client.pages.offices.services.provider.services-list.columns.duration") },
-    { column_id: "status", text: t("client.pages.offices.services.provider.services-list.columns.status") },
+    { column_id: "name", text: t("client.pages.office.services.provider.services-list.columns.name") },
+    { column_id: "type", text: t("client.pages.office.services.provider.services-list.columns.type") },
+    { column_id: "city", text: t("client.pages.office.services.provider.services-list.columns.city") },
+    { column_id: "price", text: t("client.pages.office.services.provider.services-list.columns.price") },
+    { column_id: "duration", text: t("client.pages.office.services.provider.services-list.columns.duration") },
+    { column_id: "status", text: t("client.pages.office.services.provider.services-list.columns.status") },
   ];
 
   const columns = (): ColumnDef<z.infer<typeof schema>>[] => {
@@ -74,12 +74,12 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
     return [
       {
         accessorKey: "name",
-        header: t("client.pages.offices.services.provider.services-list.columns.name"),
+        header: t("client.pages.office.services.provider.services-list.columns.name"),
         cell: ({ row }) => <span>{row.original.name}</span>,
       },
       {
         accessorKey: "description",
-        header: t("client.pages.offices.services.provider.services-list.columns.description"),
+        header: t("client.pages.office.services.provider.services-list.columns.description"),
         cell: ({ row }) => (
           <span>
             {row.original.description.length > 30
@@ -88,17 +88,17 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
           </span>
         ),
       },
-      { accessorKey: "type", header: t("client.pages.offices.services.provider.services-list.columns.type"), cell: ({ row }) => row.original.type },
-      { accessorKey: "city", header: t("client.pages.offices.services.provider.services-list.columns.city"), cell: ({ row }) => row.original.city || "N/A" },
-      { accessorKey: "price", header: t("client.pages.offices.services.provider.services-list.columns.price"), cell: ({ row }) => row.original.price },
-      { accessorKey: "duration", header: t("client.pages.offices.services.provider.services-list.columns.duration"), cell: ({ row }) => row.original.duration },
-      { accessorKey: "status", header: t("client.pages.offices.services.provider.services-list.columns.status"), cell: ({ row }) =>
+      { accessorKey: "type", header: t("client.pages.office.services.provider.services-list.columns.type"), cell: ({ row }) => row.original.type },
+      { accessorKey: "city", header: t("client.pages.office.services.provider.services-list.columns.city"), cell: ({ row }) => row.original.city || "N/A" },
+      { accessorKey: "price", header: t("client.pages.office.services.provider.services-list.columns.price"), cell: ({ row }) => row.original.price },
+      { accessorKey: "duration", header: t("client.pages.office.services.provider.services-list.columns.duration"), cell: ({ row }) => row.original.duration },
+      { accessorKey: "status", header: t("client.pages.office.services.provider.services-list.columns.status"), cell: ({ row }) =>
         (
           <Badge
             variant={row.original.status === "active" ? "default" : "destructive"}
             className="capitalize"
           >
-            {row.original.status === "active" ? t("client.pages.offices.services.provider.services-list.status.active") : t("client.pages.offices.services.provider.services-list.status.inactive")}
+            {row.original.status === "active" ? t("client.pages.office.services.provider.services-list.status.active") : t("client.pages.office.services.provider.services-list.status.inactive")}
           </Badge>
         )
       },
@@ -110,7 +110,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             className="w-fit px-0 text-left text-foreground"
             onClick={() => navigate(`/office/services/${row.original.id}`)}
           >
-            {t("client.pages.offices.services.provider.services-list.actions.details")}
+            {t("client.pages.office.services.provider.services-list.actions.details")}
           </Button>
         ),
       },
@@ -150,8 +150,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">{t("client.pages.offices.services.provider.services-list.columns.columns")}</span>
-                <span className="lg:hidden">{t("client.pages.offices.services.provider.services-list.columns.columns")}</span>
+                <span className="hidden lg:inline">{t("client.pages.office.services.provider.services-list.columns.columns")}</span>
+                <span className="lg:hidden">{t("client.pages.office.services.provider.services-list.columns.columns")}</span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -231,7 +231,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t("client.pages.offices.services.provider.services-list.no-results")}
+                  {t("client.pages.office.services.provider.services-list.no-results")}
                 </TableCell>
               </TableRow>
             )}

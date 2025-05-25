@@ -28,7 +28,7 @@ export default function ServicesHistory() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: [t("client.pages.offices.services.provider.services-history.breadcrumb.home"), t("client.pages.offices.services.provider.services-history.breadcrumb.history")],
+        segments: [t("client.pages.office.services.provider.services-history.breadcrumb.home"), t("client.pages.office.services.provider.services-history.breadcrumb.history")],
         links: ["/office/dashboard"],
       })
     );
@@ -41,7 +41,7 @@ export default function ServicesHistory() {
         setServices(response.data);
         setTotalItems(response.totalRows);
       } catch (error) {
-        console.error(t("client.pages.offices.services.provider.services-history.error"), error);
+        console.error(t("client.pages.office.services.provider.services-history.error"), error);
       }
     };
 
@@ -50,7 +50,7 @@ export default function ServicesHistory() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.offices.services.provider.services-history.title")}</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.office.services.provider.services-history.title")}</h1>
 
       <DataTable key={`${pageIndex}-${pageSize}`} data={services} />
 

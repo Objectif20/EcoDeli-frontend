@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { DataTable } from "@/components/features/deliveries/deliverman/history-table";
 import { DeliveriesAPI, HistoryDelivery } from "@/api/deliveries.api";
+import { useTranslation } from "react-i18next";
 
 export default function MyDeliveryHistoryPage() {
   const dispatch = useDispatch();
@@ -11,11 +12,12 @@ export default function MyDeliveryHistoryPage() {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
+  const {t} = useTranslation();
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Livraisons", "Historique des livraisons"],
+        segments: [t("client.pages.office.delivery.deliveryman.history.breadcrumb.home"), t("client.pages.office.delivery.deliveryman.history.breadcrumb.deliveries"), t("client.pages.office.delivery.deliveryman.history.breadcrumb.history")],
         links: ["/office/dashboard"],
       })
     );
@@ -37,7 +39,7 @@ export default function MyDeliveryHistoryPage() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold mb-4">Historique des livraisons</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.office.delivery.deliveryman.history.title")}</h1>
       <DataTable
         key={`${pageIndex}-${pageSize}`}
         data={deliveries}

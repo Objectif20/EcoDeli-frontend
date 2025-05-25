@@ -21,7 +21,7 @@ export default function MyServicesList() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: [t("client.pages.offices.services.provider.services-list.breadcrumb.home"), t("client.pages.offices.services.provider.services-list.breadcrumb.my-services")],
+        segments: [t("client.pages.office.services.provider.services-list.breadcrumb.home"), t("client.pages.office.services.provider.services-list.breadcrumb.my-services")],
         links: ["/office/dashboard"],
       })
     );
@@ -34,7 +34,7 @@ export default function MyServicesList() {
         setServices(response.data.data || []);
         setTotalItems(response.data?.total || 0);
       } catch (error) {
-        console.error(t("client.pages.offices.services.provider.services-list.error"), error);
+        console.error(t("client.pages.office.services.provider.services-list.error"), error);
       }
     };
 
@@ -47,10 +47,10 @@ export default function MyServicesList() {
         onClick={() => navigate("/office/services/create")}
         className="w-fit"
       >
-        {t("client.pages.offices.services.provider.services-list.add-service")}
+        {t("client.pages.office.services.provider.services-list.add-service")}
       </Button>
 
-      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.offices.services.provider.services-list.title")}</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.office.services.provider.services-list.title")}</h1>
 
       <DataTable key={`${pageIndex}-${pageSize}`} data={services} />
 

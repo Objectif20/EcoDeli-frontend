@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { CheckCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Link } from "react-router-dom";
 
 export default function ShipmentSuccessCreatePage() {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-center p-4">
       <Card className="mx-auto max-w-md shadow-lg">
@@ -12,23 +15,23 @@ export default function ShipmentSuccessCreatePage() {
           <div className="flex justify-center mb-2">
             <CheckCircle className="h-16 w-16" />
           </div>
-          <CardTitle className="text-2xl font-bold">Demande de livraison envoyée !</CardTitle>
-          <CardDescription>Votre demande de livraison a été enregistrée avec succès.</CardDescription>
+          <CardTitle className="text-2xl font-bold">{t("client.pages.office.delivery.createSuccess.title")}</CardTitle>
+          <CardDescription>{t("client.pages.office.delivery.createSuccess.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <Alert>
-            <AlertTitle>Confirmation</AlertTitle>
+            <AlertTitle>{t("client.pages.office.delivery.createSuccess.confirmation")}</AlertTitle>
             <AlertDescription>
-              Votre demande de livraison est maintenant visible pour nos livreurs. Vous serez notifié dès qu'un livreur sera intéressé par votre demande.
+              {t("client.pages.office.delivery.createSuccess.alertDescription")}
             </AlertDescription>
           </Alert>
           <div className="mt-6 space-y-2 text-center text-muted-foreground">
-            <p>Merci pour votre patience.</p>
+            <p>{t("client.pages.office.delivery.createSuccess.thanks")}</p>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild>
-            <Link to="/office/dashboard">Aller au tableau de bord</Link>
+            <Link to="/office/dashboard">{t("client.pages.office.delivery.createSuccess.dashboard")}</Link>
           </Button>
         </CardFooter>
       </Card>

@@ -42,6 +42,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
 
 export interface City {
   value: string;
@@ -528,15 +529,24 @@ function DeliveriesPage() {
                   <AccordionItem value="type-filter">
                     <AccordionTrigger>{t('client.pages.public.deliveries.deliveryType')}</AccordionTrigger>
                     <AccordionContent>
-                      <select
-                        value={deliveryType || ""}
-                        onChange={(e) => setDeliveryType(e.target.value)}
-                        className="w-full p-2 border rounded"
-                      >
-                        <option value="">{t('client.pages.public.deliveries.all')}</option>
-                        <option value="urgent">{t('client.pages.public.deliveries.urgent')}</option>
-                        <option value="non-urgent">{t('client.pages.public.deliveries.nonUrgent')}</option>
-                      </select>
+
+                      <Select defaultValue="all" onValueChange={(value) => setDeliveryType(value)}>
+                        <SelectTrigger className="w-full">
+                          <Label>{t('client.pages.public.deliveries.deliveryType')}</Label>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">
+                            {t('client.pages.public.deliveries.all')}
+                          </SelectItem>
+                          <SelectItem value="urgent">
+                            {t('client.pages.public.deliveries.urgent')}
+                          </SelectItem>
+                          <SelectItem value="non-urgent">
+                            {t('client.pages.public.deliveries.nonUrgent')}
+                          </SelectItem>
+                        </SelectContent>
+
+                      </Select>
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>

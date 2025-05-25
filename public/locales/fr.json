@@ -2500,7 +2500,71 @@
               "columns": "Colonnes",
               "noResults": "No results.",
               "title": "Les avis sur EcoDeli",
-              "deliveryName": "Nom de la livraison"
+              "deliveryName": "Nom de la livraison",
+              "breadcrumb": {
+                "home": "Accueil",
+                "reviews": "Avis"
+              }
+            }
+          },
+          "onGoing": {
+            "breadcrumb": {
+              "home": "Accueil",
+              "deliveries": "Livraisons"
+            },
+            "title": "Livraisons en cours",
+            "errorFetching": "Erreur lors de la récupération des livraisons",
+            "delivery": "Livraison",
+            "departure": "Départ",
+            "arrival": "Arrivée",
+            "deliveryman": "Livreur",
+            "viewDetails": "Voir les détails"
+          },
+          "createSuccess": {
+            "title": "Demande de livraison envoyée !",
+            "description": "Votre demande de livraison a été enregistrée avec succès.",
+            "confirmation": "Confirmation",
+            "alertDescription": "Votre demande de livraison est maintenant visible pour nos livreurs. Vous serez notifié dès qu'un livreur sera intéressé par votre demande.",
+            "thanks": "Merci pour votre patience.",
+            "dashboard": "Aller au tableau de bord"
+          },
+          "create": {
+            "breadcrumb": {
+              "home": "Accueil",
+              "deliveries": "Livraisons",
+              "createDelivery": "Créer un lacher de chariot"
+            },
+            "steps": {
+              "packages": "Colis",
+              "pickup": "Départ",
+              "pickupEnd": "Arrivée",
+              "price": "Prix",
+              "summary": "Résumé"
+            },
+            "form": {
+              "name": "Nom de l'objet",
+              "weight": "Poids",
+              "estimatedPrice": "Prix estimé",
+              "volume": "Volume",
+              "isFragile": "Fragile",
+              "image": "Image",
+              "address": "Adresse",
+              "postalCode": "Code postal",
+              "city": "Ville",
+              "price": "Prix",
+              "deadline_date": "Date",
+              "isPriorityShipping": "Livraison prioritaire",
+              "shipmentName": "Nom de l'expédition",
+              "deliveryEmail": "Email de livraison",
+              "previous": "Précédent",
+              "next": "Suivant",
+              "finish": "Terminer"
+            },
+            "errors": {
+              "required": "est requis",
+              "invalidEmail": "Email invalide",
+              "addressNotFound": "Adresse non trouvée",
+              "geocodingError": "Erreur de géocodage"
             }
           }
         },
@@ -2540,7 +2604,14 @@
             "arrival": "Arrivée :",
             "currentPosition": "Position actuelle",
             "packageTransmitted": "Colis transmis",
-            "estimatedArrivalDate": "Date d'arrivée estimée :"
+            "estimatedArrivalDate": "Date d'arrivée estimée :",
+            "scanPackage": "Scanner le colis",
+            "cancelScan": "Annuler le scan",
+            "codeScanned": "Code scanné :",
+            "takePackage": "Prendre le colis",
+            "finishDelivery": "Terminer la livraison",
+            "validateDelivery": "Valider la livraison"
+
           },
           "my-routes": {
               "routeManagement": "Gestion des Trajets",
@@ -2575,7 +2646,7 @@
                 "saturday": "Samedi",
                 "sunday": "Dimanche"
               }
-            }
+          }
         },
         "services": {
           "client": {
@@ -2768,6 +2839,76 @@
               "yes": "Oui",
               "no": "Non"
             }
+          },
+          "onGoing": {
+            "title": "Demandes de livraison",
+            "breadcrumb": {
+              "home": "Accueil",
+              "shipments": "Demandes de livraison"
+            },
+            "warningMessage": "Vos demandes de livraison ne pourront pas apparaître tant que vous n'avez pas renseigné vos coordonnées bancaires pour les futurs prélèvements.",
+            "addBankDetails": "Renseigner mes coordonnées bancaires",
+            "invalidDate": "Date invalide",
+            "errorFetching": "Erreur lors de la récupération des livraisons:",
+            "status": {
+              "finished": "Terminée",
+              "pending": "En attente",
+              "inProgress": "En cours"
+            },
+            "urgent": "URGENT",
+            "from": "De",
+            "to": "À",
+            "packages": "colis",
+            "progress": "Progression",
+            "viewDetails": "Voir détails"
+          },
+          "details": {
+            "breadcrumb": {
+              "home": "Accueil",
+              "shipments": "Demandes de livraison",
+              "details": "Détails"
+            },
+            "errorFetching": "Erreur lors de la récupération des détails de la livraison.",
+            "missingId": "Erreur : ID de livraison manquant",
+            "loading": "Chargement...",
+            "urgent": "URGENT",
+            "reference": "Référence",
+            "departure": "Départ prévu",
+            "arrival": "Arrivée prévue",
+            "collection": "Collecte le",
+            "delivery": "Livraison prévue le",
+            "progress": "Progression",
+            "noSteps": "Aucune étape pour le moment",
+            "fullDelivery": "Livraison entièrement prise en charge",
+            "lastStep": "Dernière étape en cours",
+            "steps": "étape",
+            "on": "sur",
+            "totalPrice": "Prix total",
+            "initialPrice": "Prix initial",
+            "viewInvoice": "Voir la facture",
+            "overview": "Aperçu",
+            "packages": "Colis",
+            "stepsTab": "Étapes",
+            "additionalInfo": "Informations complémentaires",
+            "deliveryStatus": "État de la livraison",
+            "courier": "Transporteur",
+            "partialDelivery": "Le transporteur assure une partie de la distance",
+            "packageOverview": "Aperçu des colis",
+            "fragile": "Fragile",
+            "shippingDetails": "Détails de l'expédition",
+            "status": "Statut",
+            "pending": "En attente",
+            "inProgress": "En cours",
+            "finished": "Terminée",
+            "distance": "Distance",
+            "totalWeight": "Poids total",
+            "packageDetails": "Détails des colis",
+            "packagesForDelivery": "colis pour cette livraison",
+            "weight": "Poids",
+            "volume": "Volume",
+            "deliverySteps": "Étapes de livraison",
+            "tracking": "Suivi du parcours de votre livraison",
+            "viewDetails": "Voir les détails"
           }
         }
       }

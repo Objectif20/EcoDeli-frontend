@@ -24,11 +24,8 @@ const PackagesFormComponent = ({  }: { onFormSubmit: (data: PackagesFormValues) 
   };
 
   const handleImageUpload = (index: number, files: File[]) => {
-    // Convertir les fichiers en base64
     Promise.all(files.map((file) => fileToBase64(file))).then((base64Images) => {
-      // Stocker les fichiers en base64 dans localStorage avec une clé spécifique à ce colis
       localStorage.setItem(`package-image-${index}`, JSON.stringify(base64Images));
-      // Mettre à jour l'état local du formulaire avec les images
       setValue(`packages.${index}.image`, base64Images);
     });
   };
@@ -37,7 +34,6 @@ const PackagesFormComponent = ({  }: { onFormSubmit: (data: PackagesFormValues) 
     if (index > 0) {
       const updatedPackages = packages.filter((_, i) => i !== index);
       setValue("packages", updatedPackages);
-      // Supprimer l'image associée au colis du localStorage pour cet index
       localStorage.removeItem(`package-image-${index}`);
     }
   };
@@ -56,7 +52,6 @@ const PackagesFormComponent = ({  }: { onFormSubmit: (data: PackagesFormValues) 
             )}
           </div>
 
-          {/* Image Upload */}
           <FormField
             control={control}
             name={`packages.${index}.image`}
@@ -71,7 +66,6 @@ const PackagesFormComponent = ({  }: { onFormSubmit: (data: PackagesFormValues) 
             )}
           />
 
-          {/* Autres champs pour le colis */}
           <FormField
             control={control}
             name={`packages.${index}.name`}

@@ -20,6 +20,9 @@ export const pickupSchema = z.object({
   city: z.string().min(1, "Ville requise"),
   lat: z.string().optional(),
   lon: z.string().optional(),  
+  departure_handling: z.boolean().default(false),
+  floor_departure_handling : z.number().optional().default(0),
+  elevator_departure : z.boolean().default(false),
 });
 
 export const pickupEndSchema = z.object({
@@ -28,11 +31,15 @@ export const pickupEndSchema = z.object({
   city: z.string().min(1, "Ville requise"),
   lat: z.string().optional(),
   lon: z.string().optional(),
+  arrival_handling: z.boolean().default(false),
+  floor_arrival_handling : z.number().optional().default(0),
+  elevator_arrival : z.boolean().default(false),
 });
 
 export const priceChoiceSchema = z.object({
   price : z.string().min(0, "Prix requis"),
   deadline_date : z.string().min(0, "Date requise"),
+  hour_date : z.string().min(0, "Heure requise"),
   isPriorityShipping: z.boolean().default(false),
   shipmentName : z.string().min(0, "Nom de l'expédition requis"),
   deliveryEmail : z.string().email("Email invalide"),

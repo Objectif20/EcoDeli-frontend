@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -15,30 +16,31 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 import { DeliveriesAPI, ShipmentListItem } from "@/api/deliveries.api"
 import { RootState } from "@/redux/store"
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return isNaN(date.getTime()) ? "Date invalide" : format(date, "d MMM yyyy", { locale: fr });
-}
-
-const StatusBadge = ({ status, finished }: { status: string; finished: boolean }) => {
-  if (finished) {
-    return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Terminée</Badge>
-  }
-
-  switch (status) {
-    case "pending":
-      return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">En attente</Badge>
-    case "In Progress":
-      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">En cours</Badge>
-    default:
-      return <Badge>{status}</Badge>
-  }
-}
-
 export default function ShipmentsListPage() {
+  const { t } = useTranslation();
   const [shipments, setShipments] = useState<ShipmentListItem[]>([])
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
+
+  const StatusBadge = ({ status, finished }: { status: string; finished: boolean }) => {
+    if (finished) {
+      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">{t("client.pages.office.shipment.onGoing.status.finished")}</Badge>
+    }
+
+    switch (status) {
+      case "pending":
+        return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">{t("client.pages.office.shipment.onGoing.status.pending")}</Badge>
+      case "In Progress":
+        return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">{t("client.pages.office.shipment.onGoing.status.inProgress")}</Badge>
+      default:
+        return <Badge>{status}</Badge>
+    }
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return isNaN(date.getTime()) ? t("client.pages.office.shipment.onGoing.invalidDate") : format(date, "d MMM yyyy", { locale: fr });
+  }
 
   const user = useSelector((state: RootState) => state.user.user);
   const isStripeValidate = user?.customer_stripe_id;
@@ -46,7 +48,7 @@ export default function ShipmentsListPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Demandes de livraison"],
+        segments: [t("client.pages.office.shipment.onGoing.breadcrumb.home"), t("client.pages.office.shipment.onGoing.breadcrumb.shipments")],
         links: ["/office/dashboard"],
       })
     );
@@ -59,7 +61,7 @@ export default function ShipmentsListPage() {
         setShipments(data)
         setLoading(false)
       } catch (error) {
-        console.error("Erreur lors de la récupération des livraisons:", error)
+        console.error(t("client.pages.office.shipment.onGoing.errorFetching"), error)
         setLoading(false)
       }
     }
@@ -70,7 +72,7 @@ export default function ShipmentsListPage() {
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-bold mb-6">Demandes de livraison</h1>
+        <h1 className="text-2xl font-bold mb-6">{t("client.pages.office.shipment.onGoing.title")}</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, index) => (
             <Card key={index} className="overflow-hidden">
@@ -97,14 +99,14 @@ export default function ShipmentsListPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Demandes de livraison</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("client.pages.office.shipment.onGoing.title")}</h1>
       {!isStripeValidate && (
           <div className="mb-4">
             <p className="text-sm flex items-center text-underline">
               <MessageCircleWarning className="mr-2" />
-              Vos demandes de livraison ne pourront pas apparaître tant que vous n'avez pas renseigné vos coordonnées bancaires pour les futurs prélèvements. &nbsp;
+              {t("client.pages.office.shipment.onGoing.warningMessage")} &nbsp;
               <Link to="/office/subscriptions" className="underline text-sm text-primary">
-                  Renseigner mes coordonnées bancaires
+                  {t("client.pages.office.shipment.onGoing.addBankDetails")}
                 </Link>
             </p>
           </div>
@@ -118,7 +120,7 @@ export default function ShipmentsListPage() {
                   <h2 className="font-semibold text-lg line-clamp-1">{shipment.name}</h2>
                   {shipment.urgent && (
                     <Badge variant="destructive" className="ml-2">
-                      URGENT
+                      {t("client.pages.office.shipment.onGoing.urgent")}
                     </Badge>
                   )}
                 </div>
@@ -127,7 +129,7 @@ export default function ShipmentsListPage() {
                   <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">De: {shipment.departure.city}</p>
+                      <p className="text-sm font-medium">{t("client.pages.office.shipment.onGoing.from")}: {shipment.departure.city}</p>
                       <p className="text-sm text-muted-foreground">{formatDate(shipment.departure_date)}</p>
                     </div>
                   </div>
@@ -135,20 +137,20 @@ export default function ShipmentsListPage() {
                   <div className="flex items-start gap-2">
                     <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" />
                     <div>
-                      <p className="text-sm font-medium">À: {shipment.arrival.city}</p>
+                      <p className="text-sm font-medium">{t("client.pages.office.shipment.onGoing.to")}: {shipment.arrival.city}</p>
                       <p className="text-sm text-muted-foreground">{formatDate(shipment.arrival_date)}</p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-muted-foreground" />
-                    <p className="text-sm">{shipment.packageCount} colis</p>
+                    <p className="text-sm">{shipment.packageCount} {t("client.pages.office.shipment.onGoing.packages")}</p>
                   </div>
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex justify-between text-sm">
-                    <span>Progression</span>
+                    <span>{t("client.pages.office.shipment.onGoing.progress")}</span>
                     <span>{shipment.progress}%</span>
                   </div>
                   <Progress value={shipment.progress} className="h-2" />
@@ -159,7 +161,7 @@ export default function ShipmentsListPage() {
             <CardFooter className="bg-muted/50 p-4 flex justify-between">
               <StatusBadge status={shipment.status} finished={shipment.finished} />
               <Link to={`/office/shipments/${shipment.id}`}>
-                <Button>Voir détails</Button>
+                <Button>{t("client.pages.office.shipment.onGoing.viewDetails")}</Button>
               </Link>
             </CardFooter>
           </Card>

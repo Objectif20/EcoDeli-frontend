@@ -233,10 +233,20 @@ details: {
     departure: {
     city: string;
     coordinates: [number, number];
+    address?:string;
+    postal_code?:string;
+    handling?: boolean;
+    floor?: number;
+    elevator?: boolean;
     };
     arrival: {
     city: string;
     coordinates: [number, number];
+    address?:string;
+    postal_code?:string;
+    handling?: boolean;
+    floor?: number;
+    elevator?: boolean;
     };
     departure_date: string;
     arrival_date: string;
@@ -252,6 +262,7 @@ details: {
     }[];
     urgent: boolean;
     finished: boolean;
+
 };
 package: {
     id: string;

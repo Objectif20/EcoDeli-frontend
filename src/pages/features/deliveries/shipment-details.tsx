@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,6 +18,7 @@ import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
 import { DeliveriesAPI, ShipmentsDetailsOffice } from "@/api/deliveries.api"
 
 export default function ShipmentsDetailsOfficePage() {
+  const { t } = useTranslation();
   const [_, setActiveTab] = useState("overview")
   const [delivery, setDelivery] = useState<ShipmentsDetailsOffice | null>(null)
   const navigate = useNavigate()
@@ -28,7 +30,7 @@ export default function ShipmentsDetailsOfficePage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: ["Accueil", "Demandes de livraison", "Détails"],
+        segments: [t("client.pages.office.shipment.details.breadcrumb.home"), t("client.pages.office.shipment.details.breadcrumb.shipments"), t("client.pages.office.shipment.details.breadcrumb.details")],
         links: ["/office/dashboard", "/office/shipments"],
       })
     )
@@ -39,27 +41,26 @@ export default function ShipmentsDetailsOfficePage() {
           const data = await DeliveriesAPI.getShipmentDetailsByIdOffice(id)
           setDelivery(data)
         } catch (error) {
-          console.error("Erreur lors de la récupération des détails de la livraison.")
+          console.error(t("client.pages.office.shipment.details.errorFetching"))
         }
       } else {
-        console.error("Erreur : ID de livraison manquant")
+        console.error(t("client.pages.office.shipment.details.missingId"))
       }
     }
 
     fetchDeliveryDetails()
   }, [dispatch, id])
 
-
-  if (!id) return <div>Erreur : ID de livraison manquant</div>
-  if (!delivery) return <div>Chargement...</div>
+  if (!id) return <div>{t("client.pages.office.shipment.details.missingId")}</div>
+  if (!delivery) return <div>{t("client.pages.office.shipment.details.loading")}</div>
 
   const lastStep = delivery.steps[delivery.steps.length - 1]
   let progress = 0
 
   if (lastStep?.id === -1) {
-    progress = 0 
+    progress = 0
   } else if (lastStep?.id === 0 || lastStep?.id === 1000) {
-    progress = 100 
+    progress = 100
   } else if (lastStep?.id >= 1 && lastStep?.id <= 999) {
     const maxStepId = Math.max(
       ...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id),
@@ -81,16 +82,16 @@ export default function ShipmentsDetailsOfficePage() {
           <div>
             <CardTitle className="text-2xl md:text-3xl font-bold flex items-center">
               {delivery.details.name}
-              {delivery.details.urgent && <Badge className="ml-2 bg-red-500 text-white border-none">URGENT</Badge>}
+              {delivery.details.urgent && <Badge className="ml-2 bg-red-500 text-white border-none">{t("client.pages.office.shipment.details.urgent")}</Badge>}
             </CardTitle>
             <CardDescription className="text-primary-foreground/90 mt-1">
-              Référence N°{delivery.details.id}
+              {t("client.pages.office.shipment.details.reference")} N°{delivery.details.id}
             </CardDescription>
             {(delivery.details.departure_date || delivery.details.arrival_date) && (
               <div className="flex flex-wrap gap-x-6 gap-y-2 mt-3 text-sm text-primary-foreground/80">
                 {delivery.details.departure_date && (
                   <div className="flex items-center gap-2">
-                    <span>Départ prévu:</span>
+                    <span>{t("client.pages.office.shipment.details.departure")}:</span>
                     <span className="font-medium">
                       {formatDate(delivery.details.departure_date)}
                     </span>
@@ -98,7 +99,7 @@ export default function ShipmentsDetailsOfficePage() {
                 )}
                 {delivery.details.arrival_date && (
                   <div className="flex items-center gap-2">
-                    <span>Arrivée prévue:</span>
+                    <span>{t("client.pages.office.shipment.details.arrival")}:</span>
                     <span className="font-medium">
                       {formatDate(delivery.details.arrival_date)}
                     </span>
@@ -117,9 +118,9 @@ export default function ShipmentsDetailsOfficePage() {
                     <div className="w-2 h-2 rounded-full bg-background"></div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Départ</p>
+                    <p className="text-sm font-medium">{t("client.pages.office.shipment.details.departure")}</p>
                     <h3 className="text-lg font-semibold">{delivery.details.departure.city}</h3>
-                    <p className="text-sm text-foreground">Collecte le {formatDate(delivery.details.departure_date)}</p>
+                    <p className="text-sm text-foreground">{t("client.pages.office.shipment.details.collection")} {formatDate(delivery.details.departure_date)}</p>
                   </div>
                 </div>
                 <div className="relative">
@@ -127,10 +128,10 @@ export default function ShipmentsDetailsOfficePage() {
                     <MapPin className="w-3 h-3 text-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">Arrivée</p>
+                    <p className="text-sm font-medium">{t("client.pages.office.shipment.details.arrival")}</p>
                     <h3 className="text-lg font-semibold">{delivery.details.arrival.city}</h3>
                     <p className="text-sm text-foreground">
-                      Livraison prévue le {formatDate(delivery.details.arrival_date)}
+                      {t("client.pages.office.shipment.details.delivery")} {formatDate(delivery.details.arrival_date)}
                     </p>
                   </div>
                 </div>
@@ -139,31 +140,31 @@ export default function ShipmentsDetailsOfficePage() {
             <div className="space-y-6">
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium">Progression</span>
+                  <span className="text-sm font-medium">{t("client.pages.office.shipment.details.progress")}</span>
                   <span className="text-sm font-medium">{Math.round(progress)}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
                 <p className="text-xs text-muted-foreground">
                   {lastStep?.id === -1
-                    ? "Aucune étape pour le moment"
+                    ? t("client.pages.office.shipment.details.noSteps")
                     : lastStep?.id === 0
-                      ? "Livraison entièrement prise en charge"
+                      ? t("client.pages.office.shipment.details.fullDelivery")
                       : lastStep?.id === 1000
-                        ? "Dernière étape en cours"
-                        : `${delivery.steps.length} étape${delivery.steps.length > 1 ? "s" : ""} sur ${Math.max(...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id)) + 1}`}
+                        ? t("client.pages.office.shipment.details.lastStep")
+                        : `${delivery.steps.length} ${t("client.pages.office.shipment.details.steps")} ${delivery.steps.length > 1 ? "s" : ""} ${t("client.pages.office.shipment.details.on")} ${Math.max(...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id)) + 1}`}
                 </p>
               </div>
               <div className="bg-background p-4 rounded-lg">
                 <div className="flex justify-between">
-                  <span className="font-medium">Prix total</span>
+                  <span className="font-medium">{t("client.pages.office.shipment.details.totalPrice")}</span>
                   <span className="text-xl font-bold">{totalPrice} €</span>
                 </div>
-                <p className="text-sm text-foreground">Prix initial: {delivery.details.initial_price} €</p>
+                <p className="text-sm text-foreground">{t("client.pages.office.shipment.details.initialPrice")}: {delivery.details.initial_price} €</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button variant="outline" className="flex items-center gap-2">
                   <FileText className="w-4 h-4" />
-                  Voir la facture
+                  {t("client.pages.office.shipment.details.viewInvoice")}
                 </Button>
               </div>
             </div>
@@ -173,52 +174,52 @@ export default function ShipmentsDetailsOfficePage() {
 
       <Tabs defaultValue="overview" onValueChange={setActiveTab} className="w-full mt-6">
         <TabsList className="grid grid-cols-3 mb-6">
-          <TabsTrigger value="overview">Aperçu</TabsTrigger>
-          <TabsTrigger value="packages">Colis ({delivery.package.length})</TabsTrigger>
+          <TabsTrigger value="overview">{t("client.pages.office.shipment.details.overview")}</TabsTrigger>
+          <TabsTrigger value="packages">{t("client.pages.office.shipment.details.packages")} ({delivery.package.length})</TabsTrigger>
           {delivery.steps.some(step => step.id !== -1) && (
-            <TabsTrigger value="steps">Étapes ({delivery.steps.filter(step => step.id !== -1).length})</TabsTrigger>
+            <TabsTrigger value="steps">{t("client.pages.office.shipment.details.stepsTab")} ({delivery.steps.filter(step => step.id !== -1).length})</TabsTrigger>
           )}
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Informations complémentaires</CardTitle>
+              <CardTitle className="text-xl">{t("client.pages.office.shipment.details.additionalInfo")}</CardTitle>
             </CardHeader>
             <CardContent>
               <p>{delivery.details.complementary_info}</p>
               <Separator className="my-6" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">État de la livraison</h3>
+                  <h3 className="text-lg font-semibold mb-4">{t("client.pages.office.shipment.details.deliveryStatus")}</h3>
                   <Card className="border-none shadow-md bg-gradient-to-br from-background to-muted">
                     <CardContent className="pt-6">
                       <div className="flex items-start gap-4">
                         <Avatar className="h-12 w-12 border-2 border-primary shadow-md">
                           <AvatarImage
                             src={lastStep?.courier?.photoUrl || "/placeholder.svg"}
-                            alt={lastStep?.courier?.name || "Livreur"}
+                            alt={lastStep?.courier?.name || t("client.pages.office.shipment.details.courier")}
                           />
                           <AvatarFallback>{lastStep?.courier?.name?.charAt(0) || "?"}</AvatarFallback>
                         </Avatar>
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold">{lastStep?.courier?.name || "Transporteur"}</p>
+                            <p className="font-semibold">{lastStep?.courier?.name || t("client.pages.office.shipment.details.courier")}</p>
                             <Badge
                               variant="outline"
                               className={delivery.details.urgent ? "bg-red-50 text-red-700 border-red-200" : "hidden"}
                             >
-                              URGENT
+                              {t("client.pages.office.shipment.details.urgent")}
                             </Badge>
                           </div>
                           <p className="text-sm text-foreground mt-1">
                             {lastStep?.id === -1
-                              ? "Aucune étape pour le moment"
+                              ? t("client.pages.office.shipment.details.noSteps")
                               : lastStep?.id === 0
-                                ? "Le transporteur assure toute la distance"
+                                ? t("client.pages.office.shipment.details.fullDelivery")
                                 : lastStep?.id === 1000
-                                  ? "Le transporteur assure le reste de la distance"
-                                  : "Le transporteur assure une partie de la distance"}
+                                  ? t("client.pages.office.shipment.details.lastStep")
+                                  : t("client.pages.office.shipment.details.partialDelivery")}
                           </p>
                           {lastStep?.date && (
                             <p className="text-xs text-muted-foreground mt-1">
@@ -231,7 +232,7 @@ export default function ShipmentsDetailsOfficePage() {
                   </Card>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Aperçu des colis</h3>
+                  <h3 className="text-lg font-semibold mb-4">{t("client.pages.office.shipment.details.packageOverview")}</h3>
                   <div className="space-y-3">
                     {delivery.package.slice(0, 2).map((pkg) => (
                       <div
@@ -258,7 +259,7 @@ export default function ShipmentsDetailsOfficePage() {
                             )}
                             {pkg.fragility && (
                               <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
-                                <AlertTriangle className="w-3 h-3 mr-1" /> Fragile
+                                <AlertTriangle className="w-3 h-3 mr-1" /> {t("client.pages.office.shipment.details.fragile")}
                               </Badge>
                             )}
                           </div>
@@ -269,11 +270,11 @@ export default function ShipmentsDetailsOfficePage() {
                 </div>
               </div>
               <div className="col-span-1 md:col-span-2 mt-6">
-                <h3 className="text-lg font-semibold mb-4">Détails de l'expédition</h3>
+                <h3 className="text-lg font-semibold mb-4">{t("client.pages.office.shipment.details.shippingDetails")}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">Statut</span>
+                      <span className="text-sm text-muted-foreground">{t("client.pages.office.shipment.details.status")}</span>
                       <Badge
                         className={`w-fit mt-2 ${
                           delivery.details.status === "pending"
@@ -284,18 +285,18 @@ export default function ShipmentsDetailsOfficePage() {
                         }`}
                       >
                         {delivery.details.status === "pending"
-                          ? "En attente"
+                          ? t("client.pages.office.shipment.details.pending")
                           : delivery.details.status === "In Progress"
-                            ? "En cours"
+                            ? t("client.pages.office.shipment.details.inProgress")
                             : delivery.details.finished
-                              ? "Terminée"
+                              ? t("client.pages.office.shipment.details.finished")
                               : delivery.details.status}
                       </Badge>
                     </div>
                   </Card>
                   <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">Distance</span>
+                      <span className="text-sm text-muted-foreground">{t("client.pages.office.shipment.details.distance")}</span>
                       <span className="font-medium mt-2">
                         {Math.round(
                           Math.sqrt(
@@ -315,7 +316,7 @@ export default function ShipmentsDetailsOfficePage() {
                   </Card>
                   <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">Poids total</span>
+                      <span className="text-sm text-muted-foreground">{t("client.pages.office.shipment.details.totalWeight")}</span>
                       <span className="font-medium mt-2">
                         {delivery.package.reduce((total, pkg) => total + pkg.weight, 0)} kg
                       </span>
@@ -330,8 +331,8 @@ export default function ShipmentsDetailsOfficePage() {
         <TabsContent value="packages">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Détails des colis</CardTitle>
-              <CardDescription>{delivery.package.length} colis pour cette livraison</CardDescription>
+              <CardTitle className="text-xl">{t("client.pages.office.shipment.details.packageDetails")}</CardTitle>
+              <CardDescription>{delivery.package.length} {t("client.pages.office.shipment.details.packagesForDelivery")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -348,17 +349,17 @@ export default function ShipmentsDetailsOfficePage() {
                           <h3 className="text-lg font-semibold">{pkg.name}</h3>
                           {pkg.fragility && (
                             <Badge className="border-none">
-                              <AlertTriangle className="w-3 h-3 mr-1" /> Fragile
+                              <AlertTriangle className="w-3 h-3 mr-1" /> {t("client.pages.office.shipment.details.fragile")}
                             </Badge>
                           )}
                         </div>
                         <div className="grid grid-cols-2 gap-4 mt-4">
                           <div>
-                            <p className="text-sm text-foreground">Poids</p>
+                            <p className="text-sm text-foreground">{t("client.pages.office.shipment.details.weight")}</p>
                             <p className="font-medium">{pkg.weight} kg</p>
                           </div>
                           <div>
-                            <p className="text-sm text-foreground">Volume</p>
+                            <p className="text-sm text-foreground">{t("client.pages.office.shipment.details.volume")}</p>
                             <p className="font-medium">{pkg.volume} m³</p>
                           </div>
                         </div>
@@ -374,8 +375,8 @@ export default function ShipmentsDetailsOfficePage() {
         <TabsContent value="steps" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">Étapes de livraison</CardTitle>
-              <CardDescription>Suivi du parcours de votre livraison</CardDescription>
+              <CardTitle className="text-xl">{t("client.pages.office.shipment.details.deliverySteps")}</CardTitle>
+              <CardDescription>{t("client.pages.office.shipment.details.tracking")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="relative pl-8 space-y-8">
@@ -420,7 +421,7 @@ export default function ShipmentsDetailsOfficePage() {
                             </Avatar>
                             <div>
                               <p className="text-sm font-medium">{step.courier.name}</p>
-                              <p className="text-xs">Livreur</p>
+                              <p className="text-xs">{t("client.pages.office.shipment.details.courier")}</p>
                             </div>
                           </div>
                         </div>
@@ -431,14 +432,14 @@ export default function ShipmentsDetailsOfficePage() {
                           <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4" />
                             <div>
-                              <p className="text-sm ">Départ</p>
+                              <p className="text-sm ">{t("client.pages.office.shipment.details.departure")}</p>
                               <p className="font-medium">{step.departure.city}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2">
                             <MapPin className="w-4 h-4 " />
                             <div>
-                              <p className="text-sm">Arrivée</p>
+                              <p className="text-sm">{t("client.pages.office.shipment.details.arrival")}</p>
                               <p className="font-medium">{step.arrival.city}</p>
                             </div>
                           </div>
@@ -448,7 +449,7 @@ export default function ShipmentsDetailsOfficePage() {
                           onClick={() => navigate(`/office/deliveries/public/${step.idLink}`)}
                           className="mt-4"
                         >
-                          Voir les détails
+                          {t("client.pages.office.shipment.details.viewDetails")}
                         </Button>
                       </CardContent>
                     </Card>

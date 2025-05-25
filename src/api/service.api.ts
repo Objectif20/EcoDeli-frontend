@@ -93,6 +93,16 @@ export interface Service {
     service_name: string;
     rate: number;
   }
+
+export interface FutureAppointmentProvider {
+  id: string;
+  clientName: string;
+  clientImage: string | null;
+  date: string;
+  time: string;
+  serviceName: string;
+  status: string;
+}
   
 
 
@@ -180,5 +190,24 @@ export class ServiceApi {
         const response = await axiosInstance.get(`/client/service/myReviews?limit=${limit}&page=${page}`);
         return response.data;
     }
+
+    static async getFutureAppointmentsProvider(page: number, limit: number) : Promise<{data : FutureAppointmentProvider[], totalRows: number, totalPages: number, currentPage: number, limit: number}> {
+        const response = await axiosInstance.get(`/client/service/futureAppointments?limit=${limit}&page=${page}`);
+        return response.data;
+    }
+
+    static async startAppointment(appointment_id: string, code : string) {
+        const response = await axiosInstance.post(`/client/service/${appointment_id}/start`, {
+            code: code,
+        });
+        return response;
+    }
+
+    static async endAppointment(appointment_id: string) {
+        const response = await axiosInstance.post(`/client/service/${appointment_id}/finish`);
+        return response;
+    }
+
+
 
 }

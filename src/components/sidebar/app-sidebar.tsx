@@ -147,6 +147,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               icon: ShoppingCart,
               items: [
                 { title: t("client.components.sidebar.activeAds"), url: "/office/my-services" },
+                { title: t("client.components.sidebar.history"), url: "/office/onGoing-services" },
                 { title: t("client.components.sidebar.history"), url: "/office/ads-history-provider" },
                 { title: t("client.components.sidebar.reviews"), url: "/office/reviews-provider" },
               ],

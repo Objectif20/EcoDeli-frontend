@@ -36,8 +36,11 @@ export const pickupSchema = z.object({
   postalCode: z.string().min(5, "Code postal requis"),
   city: z.string().min(1, "Ville requise"),
   lat: z.string().optional(),
-  lon: z.string().optional(),
-})
+  lon: z.string().optional(),  
+  departure_handling: z.boolean().default(false),
+  floor_departure_handling : z.number().optional().default(0),
+  elevator_departure : z.boolean().default(false),
+});
 
 export const pickupEndSchema = z.object({
   address: z.string().min(1, "Adresse requise"),
@@ -45,11 +48,15 @@ export const pickupEndSchema = z.object({
   city: z.string().min(1, "Ville requise"),
   lat: z.string().optional(),
   lon: z.string().optional(),
-})
+  arrival_handling: z.boolean().default(false),
+  floor_arrival_handling : z.number().optional().default(0),
+  elevator_arrival : z.boolean().default(false),
+});
 
 export const priceChoiceSchema = z.object({
   price : z.string().min(0, "Prix requis"),
   deadline_date : z.string().min(0, "Date requise"),
+  hour_date : z.string().min(0, "Heure requise"),
   isPriorityShipping: z.boolean().default(false),
   shipmentName : z.string().min(0, "Nom de l'expédition requis"),
   deliveryEmail : z.string().email("Email invalide"),
@@ -130,18 +137,48 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
   const methods = useStepper()
   const navigate = useNavigate()
 
-  const getDefaultValues = (step: string) => {
-    if (step === "packages") {
-      return { packages: [{ name: "", weight: "", estimatedPrice: "", volume: "", isFragile: false, image: null }] }
-    }
-    if (step === "pickup" || step === "pickupEnd") {
-      return { address: "", city: "", postalCode: "", pickupMethod: "", lat: "", lon: "" }
-    }
+    const getDefaultValues = (step: string) => {
+      if (step === "packages") {
+        return {
+          packages: [
+            { name: "", weight: "", estimatedPrice: "", volume: "", isFragile: false, image: null },
+          ],
+        };
+      }
+
+      if (step === "pickup") {
+        return {
+          address: "",
+          city: "",
+          postalCode: "",
+          lat: "",
+          lon: "",
+          pickupMethod: "",
+          departure_handling: false,
+          floor_departure_handling: 0,
+          elevator_departure: false,
+        };
+      }
+
+      if (step === "pickupEnd") {
+        return {
+          address: "",
+          city: "",
+          postalCode: "",
+          lat: "",
+          lon: "",
+          arrival_handling: false,
+          floor_arrival_handling: 0,
+          elevator_arrival: false,
+        };
+      }
+
     if (step === "price") {
-      return { price: "0", deadline_date: "", isPriorityShipping: false, shipmentName: "", deliveryEmail: "" }
+      return { price: "0", deadline_date: "", isPriorityShipping: false, shipmentName: "", deliveryEmail: "", hour_date: "" }
     }
-    return {}
-  }
+
+      return {};
+    };
 
   const form = useForm<any>({
     mode: "onTouched",
@@ -169,7 +206,7 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
   
   const onSubmit = async (values: any) => {
     console.log("Form submitted with values:", values);
-  
+
     if (methods.current.id === "packages") {
       setFormData((prev) => ({ ...prev, packages: values }));
     } else if (methods.current.id === "pickup") {
@@ -179,64 +216,77 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
     } else if (methods.current.id === "price") {
       setFormData((prev) => ({ ...prev, price: values }));
     }
-  
+
     if (methods.isLast) {
       const fullData = {
         ...formData,
         [methods.current.id]: values,
       };
-  
+
       const packageList = fullData.packages?.packages || [];
       const pickup = fullData.pickup;
       const pickupEnd = fullData.pickupEnd;
       const price = fullData.price;
-  
+
+      const totalWeight = packageList.reduce((sum, pkg) => sum + Number(pkg.weight || 0), 0);
+      const totalVolume = packageList.reduce((sum, pkg) => sum + Number(pkg.volume || 0), 0);
+
       const formDataToSend = new FormData();
-  
+
       formDataToSend.append("shipment[description]", price?.shipmentName || "Expédition");
       formDataToSend.append("shipment[estimated_total_price]", price?.price || "0");
-      formDataToSend.append("shipment[weight]", packageList[0]?.weight || "0");
-      formDataToSend.append("shipment[volume]", packageList[0]?.volume || "0");
+      formDataToSend.append("shipment[weight]", totalWeight.toString());
+      formDataToSend.append("shipment[volume]", totalVolume.toString());
       formDataToSend.append("shipment[deadline_date]", fullData.price?.deadline_date || "");
+      formDataToSend.append("shipment[hour_date]", price?.hour_date || "");
       formDataToSend.append("shipment[urgent]", price?.isPriorityShipping ? "true" : "false");
       formDataToSend.append("shipment[status]", "pending");
       formDataToSend.append("shipment[delivery_mail]", price?.deliveryEmail || "");
+
       const keywords = ["fragile", "colis", "expédition"];
-  
       keywords.forEach((keyword, index) => {
         formDataToSend.append(`shipment[keywords][${index}]`, keyword);
       });
+
       formDataToSend.append("shipment[departure_city]", pickup?.city || "0");
       formDataToSend.append("shipment[arrival_city]", pickupEnd?.city || "0");
+      formDataToSend.append("shipment[departure_postal_code]", pickup?.postalCode || "0");
+      formDataToSend.append("shipment[arrival_postal_code]", pickupEnd?.postalCode || "0");
+      formDataToSend.append("shipment[departure_address]", pickup?.address || "0");
+      formDataToSend.append("shipment[arrival_address]", pickupEnd?.address || "0");
+      formDataToSend.append("shipment[departure_handling]", pickup?.departure_handling ? "true" : "false");
+      formDataToSend.append("shipment[arrival_handling]", pickupEnd?.arrival_handling ? "true" : "false");
+      formDataToSend.append("shipment[handling_floor_departure]", pickup?.floor_departure_handling ? pickup?.floor_departure_handling.toString() : "0");
+      formDataToSend.append("shipment[handling_floor_arrival]", pickupEnd?.floor_arrival_handling ? pickupEnd?.floor_arrival_handling.toString() : "0");
+      formDataToSend.append("shipment[elevator_departure]", pickup?.elevator_departure ? "true" : "false");
+      formDataToSend.append("shipment[elevator_arrival]", pickupEnd?.elevator_arrival ? "true" : "false");
       formDataToSend.append("shipment[departure_location][latitude]", pickup?.lat || "0");
       formDataToSend.append("shipment[departure_location][longitude]", pickup?.lon || "0");
-  
       formDataToSend.append("shipment[arrival_location][latitude]", pickupEnd?.lat || "0");
       formDataToSend.append("shipment[arrival_location][longitude]", pickupEnd?.lon || "0");
-  
+
       try {
         const departureCoords = await getCoordinatesFromAddress(pickup?.address || "", pickup?.city || "", pickup?.postalCode || "");
         const arrivalCoords = await getCoordinatesFromAddress(pickupEnd?.address || "", pickupEnd?.city || "", pickupEnd?.postalCode || "");
-  
+
         formDataToSend.set("shipment[departure_location][latitude]", departureCoords.latitude);
         formDataToSend.set("shipment[departure_location][longitude]", departureCoords.longitude);
-  
         formDataToSend.set("shipment[arrival_location][latitude]", arrivalCoords.latitude);
         formDataToSend.set("shipment[arrival_location][longitude]", arrivalCoords.longitude);
       } catch (error) {
         console.error("Erreur de géocodage des adresses", error);
         return;
       }
-  
+
       for (let i = 0; i < packageList.length; i++) {
         const pkg = packageList[i];
-  
+
         formDataToSend.append(`shipment[parcels][${i}][name]`, pkg.name);
         formDataToSend.append(`shipment[parcels][${i}][weight]`, pkg.weight);
         formDataToSend.append(`shipment[parcels][${i}][estimate_price]`, pkg.estimatedPrice);
         formDataToSend.append(`shipment[parcels][${i}][fragility]`, pkg.isFragile?.toString());
         formDataToSend.append(`shipment[parcels][${i}][volume]`, pkg.volume);
-  
+
         if (pkg.image && Array.isArray(pkg.image)) {
           for (let j = 0; j < pkg.image.length; j++) {
             const base64Data = pkg.image[j];
@@ -245,14 +295,14 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
           }
         }
       }
-  
+
       const shipmentImage = localStorage.getItem("shipment-img");
       if (shipmentImage) {
         const response = await fetch(shipmentImage);
         const blob = await response.blob();
         formDataToSend.append("shipment[img]", blob, "shipment_image.png");
       }
-  
+
       try {
         await DeliveriesAPI.createShipment(formDataToSend);
         navigate("/office/shipments/create/finish");
@@ -260,13 +310,12 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
         console.error("Erreur lors de l'envoi du formulaire : ", error);
       }
 
-  
       return;
     }
-  
+
     methods.next();
   };
-  
+
 
   useEffect(() => {
     form.reset(formData[methods.current.id as keyof typeof formData] || getDefaultValues(methods.current.id))
@@ -312,7 +361,7 @@ const FormStepperComponent = ({ formData, setFormData }: FormStepperProps) => {
                 packages: ({ Component }) => <Component onFormSubmit={onSubmit} />,
                 pickup: ({ Component }) => <Component onFormSubmit={onSubmit} />,
                 pickupEnd: ({ Component }) => <Component onFormSubmit={onSubmit} />,
-                price: ({ Component }) => <Component onFormSubmit={onSubmit} />,
+                price: ({ Component }) => <Component onFormSubmit={onSubmit} pickupData={formData.pickup} pickupEndData={formData.pickupEnd} />,
                 summary: ({ Component }) => <Component />,
               })}
             </div>

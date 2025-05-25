@@ -32,7 +32,7 @@ export default function ReviewServicesPage() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: [t("client.pages.offices.services.provider.services-reviews.breadcrumb.home"), t("client.pages.offices.services.provider.services-reviews.breadcrumb.reviews")],
+        segments: [t("client.pages.office.services.provider.services-reviews.breadcrumb.home"), t("client.pages.office.services.provider.services-reviews.breadcrumb.reviews")],
         links: ["/office/dashboard"],
       })
     );
@@ -45,7 +45,7 @@ export default function ReviewServicesPage() {
         setReviews(data.data);
         setTotalItems(data.totalRows);
       } catch (error) {
-        console.error(t("client.pages.offices.services.provider.services-reviews.error"), error);
+        console.error(t("client.pages.office.services.provider.services-reviews.error"), error);
       }
     };
 
@@ -54,7 +54,7 @@ export default function ReviewServicesPage() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.offices.services.provider.services-reviews.title")}</h1>
+      <h1 className="text-2xl font-semibold mb-4">{t("client.pages.office.services.provider.services-reviews.title")}</h1>
       <DataTable key={`${pageIndex}-${pageSize}`} data={reviews} />
       <PaginationControls
         pageIndex={pageIndex}

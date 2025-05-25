@@ -59,7 +59,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
     return [
       {
         accessorKey: "clientName",
-        header: t("client.pages.offices.services.provider.services-history.columns.client"),
+        header: t("client.pages.office.services.provider.services-history.columns.client"),
         cell: ({ row }) => (
           <div className="flex items-center">
             <Avatar>
@@ -70,23 +70,23 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
           </div>
         ),
       },
-      { accessorKey: "date", header: t("client.pages.offices.services.provider.services-history.columns.date"), cell: ({ row }) => row.original.date },
-      { accessorKey: "time", header: t("client.pages.offices.services.provider.services-history.columns.time"), cell: ({ row }) => row.original.time },
-      { accessorKey: "serviceName", header: t("client.pages.offices.services.provider.services-history.columns.service"), cell: ({ row }) => row.original.serviceName },
+      { accessorKey: "date", header: t("client.pages.office.services.provider.services-history.columns.date"), cell: ({ row }) => row.original.date },
+      { accessorKey: "time", header: t("client.pages.office.services.provider.services-history.columns.time"), cell: ({ row }) => row.original.time },
+      { accessorKey: "serviceName", header: t("client.pages.office.services.provider.services-history.columns.service"), cell: ({ row }) => row.original.serviceName },
       {
         accessorKey: "rating",
-        header: t("client.pages.offices.services.provider.services-history.columns.rating"),
+        header: t("client.pages.office.services.provider.services-history.columns.rating"),
         cell: ({ row }) => row.original.rating ? `${row.original.rating}/5` : "N/A",
       },
     ];
   };
 
   const columnLink = [
-    { column_id: "clientName", text: t("client.pages.offices.services.provider.services-history.columns.client") },
-    { column_id: "date", text: t("client.pages.offices.services.provider.services-history.columns.date") },
-    { column_id: "time", text: t("client.pages.offices.services.provider.services-history.columns.time") },
-    { column_id: "serviceName", text: t("client.pages.offices.services.provider.services-history.columns.service") },
-    { column_id: "rating", text: t("client.pages.offices.services.provider.services-history.columns.rating") },
+    { column_id: "clientName", text: t("client.pages.office.services.provider.services-history.columns.client") },
+    { column_id: "date", text: t("client.pages.office.services.provider.services-history.columns.date") },
+    { column_id: "time", text: t("client.pages.office.services.provider.services-history.columns.time") },
+    { column_id: "serviceName", text: t("client.pages.office.services.provider.services-history.columns.service") },
+    { column_id: "rating", text: t("client.pages.office.services.provider.services-history.columns.rating") },
   ];
 
   const [rowSelection, setRowSelection] = React.useState({});
@@ -122,8 +122,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
                 <ColumnsIcon className="h-4 w-4 mr-2" />
-                <span className="hidden lg:inline">{t("client.pages.offices.services.provider.services-history.columns.columns")}</span>
-                <span className="lg:hidden">{t("client.pages.offices.services.provider.services-history.columns.columns")}</span>
+                <span className="hidden lg:inline">{t("client.pages.office.services.provider.services-history.columns.columns")}</span>
+                <span className="lg:hidden">{t("client.pages.office.services.provider.services-history.columns.columns")}</span>
                 <ChevronDownIcon />
               </Button>
             </DropdownMenuTrigger>
@@ -203,7 +203,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t("client.pages.offices.services.provider.services-history.no-results")}
+                  {t("client.pages.office.services.provider.services-history.no-results")}
                 </TableCell>
               </TableRow>
             )}

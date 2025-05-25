@@ -186,7 +186,7 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
               {!showScanner ? (
                 <div className="flex flex-wrap gap-2">
                   <Button onClick={() => setShowScanner(true)} >
-                    📦 Scanner le colis
+                    📦 {t("client.pages.office.deliveryman.ongoingDeliveries.scanPackage")}
                   </Button>
                   <CancelDeliveryDialog deliveryId={delivery.id} onCancel={handleCancelDelivery} />
                 </div>
@@ -194,15 +194,15 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
                 <div className="flex flex-col items-center gap-4 mt-4">
                   <BarcodeScanner onResult={handleScanResult} />
                   <Button onClick={() => setShowScanner(false)} variant={"destructive"}>
-                    ❌ Annuler le scan
+                    ❌ {t("client.pages.office.deliveryman.ongoingDeliveries.cancelScan")}
                   </Button>
                 </div>
               )}
               {scannedCode && (
                 <div className="mt-2">
-                  <p className="font-medium">✅ Code scanné : {scannedCode}</p>
+                  <p className="font-medium">✅ {t("client.pages.office.deliveryman.ongoingDeliveries.codeScanned")} {scannedCode}</p>
                   <Button onClick={handleTakeDelivery} >
-                    Prendre le colis
+                    {t("client.pages.office.deliveryman.ongoingDeliveries.takePackage")}
                   </Button>
                 </div>
               )}
@@ -212,7 +212,7 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
           {delivery.status === "taken" && (
             <div className="mt-8 flex flex-wrap gap-2">
               <Button onClick={handleFinishDelivery}>
-                Terminer la livraison
+                {t("client.pages.office.deliveryman.ongoingDeliveries.finishDelivery")}
               </Button>
               <CancelDeliveryDialog deliveryId={delivery.id} onCancel={handleCancelDelivery} />
             </div>
@@ -235,7 +235,7 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
               </InputOTP>
               <div className="flex flex-wrap gap-2 mt-2">
                 <Button onClick={handleValidateDelivery}>
-                  Valider la livraison
+                  {t("client.pages.office.deliveryman.ongoingDeliveries.validateDelivery")}
                 </Button>
                 <CancelDeliveryDialog deliveryId={delivery.id} onCancel={handleCancelDelivery} />
               </div>

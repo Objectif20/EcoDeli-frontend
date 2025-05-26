@@ -14,12 +14,15 @@ export default function DocumentsPage() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const [nodes, setNodes] = useState<{ name: string }[]>([]);
+  const [nodes, setNodes] = useState<{ name: string; url?: string }[]>([]);
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: [t("client.pages.office.myDocuments.home"), t("client.pages.office.myDocuments.myDocuments")],
+        segments: [
+          t("client.pages.office.myDocuments.home"),
+          t("client.pages.office.myDocuments.myDocuments"),
+        ],
         links: ["/office/dashboard"],
       })
     );
@@ -38,8 +41,7 @@ export default function DocumentsPage() {
     };
   }, []);
 
-  useEffect(() =>{
-
+  useEffect(() => {
     const fetchMyDocuments = async () => {
       try {
         const response = await ProfileAPI.getMyProfileDocuments();
@@ -49,47 +51,47 @@ export default function DocumentsPage() {
       }
     };
     fetchMyDocuments();
+  }, [t]);
 
-  }, [])
+  const handleFileClick = useCallback(
+    async (url: string, name?: string) => {
+      try {
+        const response = await axiosInstance.get("/client/utils/document", {
+          params: { url },
+          responseType: "arraybuffer",
+        });
 
-  const handleFileClick = useCallback(async (url: string) => {
-    try {
-      const response = await axiosInstance.get('/client/utils/document', {
-        params: { url },
-        responseType: 'arraybuffer',
-      });
-  
-      const contentType = response.headers['content-type'];
-      const blob = new Blob([response.data], { type: contentType });
-  
-      if (contentType === 'application/pdf') {
-        if (isMobile) {
+        const contentType = response.headers["content-type"];
+        const blob = new Blob([response.data], { type: contentType });
+        const objectURL = URL.createObjectURL(blob);
+
+        if (contentType === "application/pdf") {
+          if (isMobile) {
+            const link = document.createElement("a");
+            link.href = objectURL;
+            link.download = name || "document.pdf";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          } else {
+            setPdfUrl(objectURL);
+          }
+        } else if (contentType.startsWith("image/")) {
+          setPdfUrl(objectURL);
+        } else {
           const link = document.createElement("a");
-          link.href = URL.createObjectURL(blob);
-          link.download = "document.pdf";
+          link.href = objectURL;
+          link.download = name || "document";
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-        } else {
-          const objectURL = URL.createObjectURL(blob);
-          setPdfUrl(objectURL);
         }
-      } else if (contentType.startsWith('image/')) {
-        const objectURL = URL.createObjectURL(blob);
-        setPdfUrl(objectURL);
-      } else {
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = url.split('/').pop() || 'download';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      } catch (error) {
+        console.error(t("client.pages.office.myDocuments.error"), error);
       }
-  
-    } catch (error) {
-      console.error(t("client.pages.office.myDocuments.error"), error);
-    }
-  }, [isMobile, t]);
+    },
+    [isMobile, t]
+  );
 
   return (
     <div className="flex flex-col h-full md:flex-row">
@@ -97,8 +99,8 @@ export default function DocumentsPage() {
         <ul>
           {nodes.map((node) => (
             <FilesystemItem
-              node={node}
               key={node.name}
+              node={node}
               animated
               onFileClick={handleFileClick}
             />
@@ -106,24 +108,13 @@ export default function DocumentsPage() {
         </ul>
       </div>
       <div className="w-full md:w-3/4 p-4">
-        {pdfUrl && !isMobile && (
-          <>
-            {/*<iframe
-            src={pdfUrl}
-            className="w-full h-full"
-            style={{ border: "none" }}
-          />*/}
-          <MyPDFReader fileURL={pdfUrl} />
-          </>
-
-        )}
+        {pdfUrl && !isMobile && <MyPDFReader fileURL={pdfUrl} />}
         {!pdfUrl && !isMobile && (
           <div className="flex min-h-[70svh] flex-col items-center justify-center py-16 text-center">
-            <File
-              size={32}
-              className="text-muted-foreground/50 mb-2"
-            />
-            <h3 className="text-lg font-medium">{t("client.pages.office.myDocuments.noDocumentSelected")}</h3>
+            <File size={32} className="text-muted-foreground/50 mb-2" />
+            <h3 className="text-lg font-medium">
+              {t("client.pages.office.myDocuments.noDocumentSelected")}
+            </h3>
             <p className="text-muted-foreground">
               {t("client.pages.office.myDocuments.selectDocument")}
             </p>

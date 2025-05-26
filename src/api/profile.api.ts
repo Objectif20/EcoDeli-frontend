@@ -184,7 +184,7 @@ export class ProfileAPI {
       }
 
       static async getMyProfileDocuments() {
-        const response = await axiosInstance.get("/client/profile/myDocuments");
+        const response = await axiosInstance.get("/client/documents/mine");
         return response.data;
       }
 

@@ -56,8 +56,11 @@ export default function DocumentsPage() {
   const handleFileClick = useCallback(
     async (url: string, name?: string) => {
       try {
-        const response = await axiosInstance.get("/client/utils/document", {
-          params: { url },
+        const encodedUrl = encodeURIComponent(url);
+
+        const requestUrl = `/client/utils/document?url=${encodedUrl}`;
+
+        const response = await axiosInstance.get(requestUrl, {
           responseType: "arraybuffer",
         });
 
@@ -92,6 +95,7 @@ export default function DocumentsPage() {
     },
     [isMobile, t]
   );
+
 
   return (
     <div className="flex flex-col h-full md:flex-row">

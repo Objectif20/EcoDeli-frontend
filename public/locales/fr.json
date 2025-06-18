@@ -2987,6 +2987,8 @@
         "profile": "Profil",
         "privacy": "Confidentialité",
         "contactDetails": "Coordonnées",
+        "onGoing-services": "Prestations en cours",
+        "history-services": "Historique des prestations",
         "subscriptions": "Abonnements",
         "billingSettings": "Facturation",
         "reports": "Signalements",

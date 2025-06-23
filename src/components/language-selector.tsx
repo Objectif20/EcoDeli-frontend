@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/redux/store"
 import { updateLang } from "@/redux/slices/userSlice"
 import { UserApi } from "@/api/user.api"
+import { changeLanguageWithReload } from "@/i18n"
 
 interface Language {
   language_id: string
@@ -33,6 +34,7 @@ interface LanguageSelectorProps {
 export default function LanguageSelector({ mode = "text", className }: LanguageSelectorProps) {
   const [languages, setLanguages] = useState<Language[]>([])
   const [selectedLanguage, setSelectedLanguage] = useState<string>("fr")
+  const [isChangingLanguage, setIsChangingLanguage] = useState(false) 
   const { i18n } = useTranslation()
   const dispatch = useDispatch()
 
@@ -45,21 +47,24 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
         const activeLanguages = response.filter((lang) => lang.active)
         setLanguages(activeLanguages)
 
-        const storedLang = i18n.language;
-
-        const matchedLang = activeLanguages.find((lang) => lang.iso_code === storedLang)
-
+        const currentLang = i18n.language || "fr"
+        const matchedLang = activeLanguages.find((lang) => lang.iso_code === currentLang)
         const initialLang = matchedLang ? matchedLang.iso_code : "fr"
 
         setSelectedLanguage(initialLang)
-        i18n.changeLanguage(initialLang)
       } catch (error) {
         console.error("Failed to fetch languages:", error)
       }
     }
 
     fetchLanguages()
-  }, [user?.language])
+  }, [i18n.language])
+
+  useEffect(() => {
+    if (i18n.language && i18n.language !== selectedLanguage) {
+      setSelectedLanguage(i18n.language)
+    }
+  }, [i18n.language])
 
   const getFlag = (isoCode: string) => {
     if (!isoCode || isoCode.length !== 2) return "🌐"
@@ -68,31 +73,48 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
   }
 
   const handleLanguageChange = async (isoCode: string) => {
-    setSelectedLanguage(isoCode)
-    dispatch(updateLang(isoCode))
-    localStorage.setItem("i18nextLng", isoCode)
-  
-    const selectedLang = languages.find((lang) => lang.iso_code === isoCode)
-  
-    if (user && selectedLang) {
-      try {
-        await UserApi.updateLanguage(selectedLang.language_id)
-      } catch (error) {
-        console.error("Erreur lors de la mise à jour de la langue sur le serveur :", error)
+    if (isChangingLanguage || isoCode === selectedLanguage) return
+    
+    
+    setIsChangingLanguage(true)
+    
+    try {
+      setSelectedLanguage(isoCode)
+      
+      dispatch(updateLang(isoCode))
+      
+      await changeLanguageWithReload(isoCode)
+      
+      if (user) {
+        const selectedLang = languages.find((lang) => lang.iso_code === isoCode)
+        if (selectedLang) {
+          try {
+            await UserApi.updateLanguage(selectedLang.language_id)
+          } catch (apiError) {
+            console.warn("⚠️ Erreur mise à jour profil utilisateur :", apiError)
+          }
+        }
       }
+      
+    } catch (error) {
+      console.error("❌ Erreur lors du changement de langue :", error)
+      setSelectedLanguage(i18n.language || "fr")
+    } finally {
+      setIsChangingLanguage(false)
     }
-  
-    i18n.changeLanguage(isoCode)
   }
+
+  const {t} = useTranslation()
 
   if (mode === "text") {
     return (
-      <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
+      <Select value={selectedLanguage} onValueChange={handleLanguageChange} disabled={isChangingLanguage}>
         <SelectTrigger className={cn(className)}>
           <SelectValue>
             <div className="flex items-center gap-2">
               <span>{getFlag(selectedLanguage)}</span>
               <span>{languages.find((l) => l.iso_code === selectedLanguage)?.language_name || selectedLanguage}</span>
+              {isChangingLanguage && <span className="text-xs opacity-70">...</span>}
             </div>
           </SelectValue>
         </SelectTrigger>
@@ -115,21 +137,25 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
       <DropdownMenuTrigger
         className={cn(
           "flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm",
+          isChangingLanguage && "opacity-70 cursor-wait",
           className
         )}
+        disabled={isChangingLanguage}
       >
         <div className="flex items-center gap-2">
           <span className="text-xl">{getFlag(selectedLanguage)}</span>
+          {isChangingLanguage && <span className="text-xs">...</span>}
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Choisir la langue</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("client.components.langage.title")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {languages.map((language) => (
           <DropdownMenuItem
             key={language.language_id}
             onClick={() => handleLanguageChange(language.iso_code)}
             className="flex cursor-pointer items-center gap-2"
+            disabled={isChangingLanguage}
           >
             <span>{getFlag(language.iso_code)}</span>
             <span>{language.language_name}</span>

@@ -1,30 +1,62 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { ChevronLeft, EllipsisVertical } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, EllipsisVertical } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   DropdownMenuLabel,
-} from "@/components/ui/dropdown-menu"
-import { DeleteConversationDialog } from "./delete-conversation-dialog"
-import { BlockUserDialog } from "./block-user-dialog"
-import { Contact } from "@/hooks/use-chat"
-import DeliveryNegotiateDialog from "@/pages/features/messaging/delivery-negociate"
+} from "@/components/ui/dropdown-menu";
+import { DeleteConversationDialog } from "./delete-conversation-dialog";
+import { BlockUserDialog } from "./block-user-dialog";
+import DeliveryNegotiateDialog from "@/pages/features/messaging/delivery-negociate";
+import { Contact } from "@/hooks/use-chat";
+import { RootState } from "@/redux/store";
+import { DeliveriesAPI } from "@/api/deliveries.api";
+import { DeliverymanApi } from "@/api/deliveryman.api";
+
 
 interface ChatHeaderProps {
-  contactInfo?: Contact
-  onBackClick: () => void
-  userId: string
+  contactInfo?: Contact;
+  onBackClick: () => void;
+  userId: string;
 }
 
 export const ChatHeader = ({ contactInfo, onBackClick, userId }: ChatHeaderProps) => {
+  const user = useSelector((state: RootState) => state.user.user);
+  const [showNegotiate, setShowNegotiate] = useState(false);
+
+  useEffect(() => {
+    const checkEligibility = async () => {
+      if (!user) return;
+
+      const isClientOrMerchant = user.profile.includes("CLIENT") || user.profile.includes("MERCHANT");
+      if (!isClientOrMerchant) return;
+
+      try {
+        const deliveries = await DeliveriesAPI.getMyCurrentShipments();
+        if (deliveries.length === 0) return;
+
+        const isEligible = await DeliverymanApi.isDeliverymanElligibleToTakeDeliveries(userId);
+        if (isEligible) {
+          setShowNegotiate(true);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification des conditions :", error);
+      }
+    };
+
+    checkEligibility();
+  }, [user, userId]);
+
   return (
     <div className="flex items-center p-4 border-b border-border bg-background/95 sticky top-0 z-10">
-      {window.innerWidth <= 768 && (
+      {typeof window !== "undefined" && window.innerWidth <= 768 && (
         <Button onClick={onBackClick} className="mr-2" variant="ghost" size="icon">
           <ChevronLeft className="size-4" />
         </Button>
@@ -37,19 +69,6 @@ export const ChatHeader = ({ contactInfo, onBackClick, userId }: ChatHeaderProps
         <h1 className="text-lg font-semibold">
           {contactInfo?.first_name} {contactInfo?.last_name}
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {contactInfo?.online ? (
-            <span className="flex items-center">
-              <span className="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>
-              Online
-            </span>
-          ) : (
-            <span className="flex items-center">
-              <span className="w-2 h-2 bg-gray-400 rounded-full mr-1.5"></span>
-              Offline
-            </span>
-          )}
-        </p>
       </div>
       <div className="ml-auto">
         <DropdownMenu>
@@ -61,12 +80,12 @@ export const ChatHeader = ({ contactInfo, onBackClick, userId }: ChatHeaderProps
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DeliveryNegotiateDialog deliveryman_user_id={userId || ""} />
+            {showNegotiate && <DeliveryNegotiateDialog deliveryman_user_id={userId || ""} />}
             <DeleteConversationDialog userId={userId} />
             <BlockUserDialog userId={userId} />
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
     </div>
-  )
-}
+  );
+};

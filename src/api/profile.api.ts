@@ -136,6 +136,14 @@ export class ProfileAPI {
         await axiosInstance.delete(`/client/profile/blocked/${userId}`);
     }
 
+    static async blockUser(userId: string): Promise<void> {
+        await axiosInstance.post(`/client/profile/blocked/${userId}`);
+    }
+
+    static async deleteChat(userId: string): Promise<void> {
+        await axiosInstance.delete(`/client/profile/chat/${userId}`);
+    }
+
     static async getStripeAccount() : Promise<{stripeAccountId : string}> {
         const response = await axiosInstance.get<{stripeAccountId : string}>("/client/profile/stripe-account");
         return response.data;

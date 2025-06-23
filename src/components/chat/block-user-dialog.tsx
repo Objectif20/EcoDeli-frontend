@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { ProfileAPI } from "@/api/profile.api"
 
 interface BlockUserDialogProps {
   userId: string
@@ -20,10 +21,18 @@ interface BlockUserDialogProps {
 
 export const BlockUserDialog = ({ userId }: BlockUserDialogProps) => {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const handleConfirm = () => {
-    console.log("Blocking user with ID:", userId)
-    window.location.reload()
+  const handleConfirm = async () => {
+    try {
+      setLoading(true)
+      await ProfileAPI.blockUser(userId)
+      window.location.reload()
+    } catch (error) {
+      console.error("Erreur lors du blocage de l'utilisateur :", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -46,8 +55,10 @@ export const BlockUserDialog = ({ userId }: BlockUserDialogProps) => {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Annuler</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>Confirmer</AlertDialogAction>
+          <AlertDialogCancel disabled={loading}>Annuler</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm} disabled={loading}>
+            {loading ? "Blocage..." : "Confirmer"}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

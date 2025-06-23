@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { ProfileAPI } from "@/api/profile.api"
 
 interface DeleteConversationDialogProps {
   userId: string
@@ -20,10 +21,18 @@ interface DeleteConversationDialogProps {
 
 export const DeleteConversationDialog = ({ userId }: DeleteConversationDialogProps) => {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const handleConfirm = () => {
-    console.log("Deleting conversation with user ID:", userId)
-    window.location.reload()
+  const handleConfirm = async () => {
+    try {
+      setLoading(true)
+      await ProfileAPI.deleteChat(userId)
+      window.location.reload()
+    } catch (error) {
+      console.error("Erreur lors de la suppression de la conversation :", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -46,8 +55,10 @@ export const DeleteConversationDialog = ({ userId }: DeleteConversationDialogPro
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Annuler</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>Confirmer</AlertDialogAction>
+          <AlertDialogCancel disabled={loading}>Annuler</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm} disabled={loading}>
+            {loading ? "Suppression..." : "Confirmer"}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

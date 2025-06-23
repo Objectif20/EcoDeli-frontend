@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +23,7 @@ interface DeleteConversationDialogProps {
 export const DeleteConversationDialog = ({ userId }: DeleteConversationDialogProps) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { t } = useTranslation()
 
   const handleConfirm = async () => {
     try {
@@ -44,20 +46,20 @@ export const DeleteConversationDialog = ({ userId }: DeleteConversationDialogPro
             setOpen(true)
           }}
         >
-          Supprimer la conversation
+          {t("client.pages.office.chat.deleteConversation")}
         </DropdownMenuItem>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Supprimer la conversation</AlertDialogTitle>
+          <AlertDialogTitle>{t("client.pages.office.chat.deleteConversation")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action est irréversible.
+            {t("client.pages.office.chat.deleteConversationConfirmation")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>Annuler</AlertDialogCancel>
+          <AlertDialogCancel disabled={loading}>{t("client.pages.office.chat.cancel")}</AlertDialogCancel>
           <AlertDialogAction onClick={handleConfirm} disabled={loading}>
-            {loading ? "Suppression..." : "Confirmer"}
+            {loading ? t("client.pages.office.chat.deleting") : t("client.pages.office.chat.confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

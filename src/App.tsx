@@ -7,7 +7,7 @@ import { UserApi } from './api/user.api';
 import { Spinner } from './components/ui/spinner';
 import { AppDispatch, RootState } from './redux/store';
 import OneSignalInit from './config/oneSignalInit';
-import i18n, { loadTranslations } from './i18n';
+import { initI18n } from './i18n';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -41,19 +41,13 @@ function App() {
       const localLang = localStorage.getItem("i18nextLng");
       const userLang = localLang || user?.language || "fr";
 
-      const translations = await loadTranslations(userLang);
-      i18n.addResourceBundle(userLang, "translation", translations, true, true);
+      await initI18n(userLang)
+      localStorage.setItem("i18nextLng", userLang)
+      setI18nReady(true)
+    }
 
-      if (i18n.language !== userLang) {
-        await i18n.changeLanguage(userLang);
-      }
-
-      localStorage.setItem("i18nextLng", userLang);
-      setI18nReady(true);
-    };
-
-    setupLanguage();
-  }, [user]);
+    setupLanguage()
+  }, [user])
 
   if (!i18nReady || loading) {
     return (

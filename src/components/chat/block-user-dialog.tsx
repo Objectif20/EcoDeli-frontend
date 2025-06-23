@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +23,7 @@ interface BlockUserDialogProps {
 export const BlockUserDialog = ({ userId }: BlockUserDialogProps) => {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const { t } = useTranslation()
 
   const handleConfirm = async () => {
     try {
@@ -44,20 +46,20 @@ export const BlockUserDialog = ({ userId }: BlockUserDialogProps) => {
             setOpen(true)
           }}
         >
-          Bloquer l'utilisateur
+          {t("client.pages.office.chat.blockUser")}
         </DropdownMenuItem>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Bloquer l'utilisateur</AlertDialogTitle>
+          <AlertDialogTitle>{t("client.pages.office.chat.blockUser")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Êtes-vous sûr de vouloir bloquer cet utilisateur ? Vous ne pourrez plus recevoir de messages de sa part.
+            {t("client.pages.office.chat.blockUserConfirmation")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>Annuler</AlertDialogCancel>
+          <AlertDialogCancel disabled={loading}>{t("client.pages.office.chat.cancel")}</AlertDialogCancel>
           <AlertDialogAction onClick={handleConfirm} disabled={loading}>
-            {loading ? "Blocage..." : "Confirmer"}
+            {loading ? t("client.pages.office.chat.blocking") : t("client.pages.office.chat.confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

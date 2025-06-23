@@ -3,7 +3,7 @@
 import type { FormEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { ChatInput } from "@/components/ui/chat/chat-input"
-import { Send, File } from "lucide-react"
+import { Send } from "lucide-react"
 
 interface ChatInputFormProps {
   onSendMessage: (message: string) => void
@@ -11,7 +11,7 @@ interface ChatInputFormProps {
   t: (key: string) => string
 }
 
-export const ChatInputForm = ({ onSendMessage, onFileSelect, t }: ChatInputFormProps) => {
+export const ChatInputForm = ({ onSendMessage, t }: ChatInputFormProps) => {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const input = (e.target as HTMLFormElement).elements.namedItem("chatInput") as HTMLInputElement
@@ -28,7 +28,7 @@ export const ChatInputForm = ({ onSendMessage, onFileSelect, t }: ChatInputFormP
         className="min-h-12 bg-background shadow-none"
         placeholder={t("client.pages.office.chat.typeMessage")}
       />
-      <Button
+      {/*<Button
         className="absolute top-1/2 right-16 transform size-8 -translate-y-1/2"
         size="icon"
         type="button"
@@ -45,7 +45,7 @@ export const ChatInputForm = ({ onSendMessage, onFileSelect, t }: ChatInputFormP
           const file = e.target.files?.[0]
           onFileSelect(file || null)
         }}
-      />
+      />*/}
       <Button className="absolute top-1/2 right-6 transform size-8 -translate-y-1/2" size="icon" type="submit">
         <Send className="size-4" />
       </Button>

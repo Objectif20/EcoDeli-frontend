@@ -17,6 +17,7 @@ export default function Dashboard() {
     const isClient = user?.profile.includes("CLIENT");
     const isDeliveryman = user?.profile.includes("DELIVERYMAN");
     const isProviderValidated = user?.profile.includes("PROVIDER") && user?.validateProfile;
+    const userName = user?.first_name || "";
     const isDeliverymanValidated = user?.profile.includes("DELIVERYMAN") && user?.validateProfile;
 
     const isClientOnly = isClient && !isMerchant && !isProvider;
@@ -46,10 +47,10 @@ export default function Dashboard() {
                             </TabsList>
                         </div>
                         <TabsContent value="expediteur">
-                            <ClientDashboard />
+                            <ClientDashboard name={userName} />
                         </TabsContent>
                         <TabsContent value="transporteur">
-                            <DeliveryManDashboard />
+                            <DeliveryManDashboard name={userName}/>
                         </TabsContent>
                     </Tabs>
                 </div>
@@ -57,10 +58,10 @@ export default function Dashboard() {
 
             {!isClientAndDeliveryman && (
                 <div className="text-center mt-6">
-                    {isMerchant && <MerchantDashboard />}
-                    {isProviderValidated && <ProviderDashboard />}
-                    {isClient && !isDeliveryman && <ClientDashboard />}
-                    {isDeliveryman && !isDeliverymanValidated && <ClientDashboard />}
+                    {isMerchant && <MerchantDashboard name={userName}/>}
+                    {isProviderValidated && <ProviderDashboard name={userName}/>}
+                    {isClient && !isDeliveryman && <ClientDashboard name={userName}/>}
+                    {isDeliveryman && !isDeliverymanValidated && <ClientDashboard name={userName}/>}
                     {isProvider && !isProviderValidated && (
                         <p>En attente de validation de votre profil Prestataire. Vous serez informé dès que le processus sera terminé.</p>
                     )}

@@ -84,9 +84,36 @@ export default function Step3PrestataireProfile() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setPrestataireInfo(values)
-    nextStep()
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { confirm_password, terms, ...dataToStore } = values;
+
+    const [emailAvailable, siretAvailable] = await Promise.all([
+      RegisterApi.isEmailAvailable(values.email),
+      RegisterApi.isSiretAvailable(values.siret),
+    ]);
+
+    let hasError = false;
+
+    if (!emailAvailable) {
+      form.setError("email", {
+        type: "manual",
+        message: t('client.pages.public.register.merchantProfile.emailAlreadyUsed'),
+      });
+      hasError = true;
+    }
+
+    if (!siretAvailable) {
+      form.setError("siret", {
+        type: "manual",
+        message: t('client.pages.public.register.merchantProfile.siretAlreadyUsed'),
+      });
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    setPrestataireInfo(dataToStore);
+    nextStep();
   }
 
   return (

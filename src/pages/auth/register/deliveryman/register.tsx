@@ -111,6 +111,17 @@ export default function RegisterDeliveryman() {
   });
 
   async function onSubmit(values: FormValues) {
+
+    const isEmailTaken = await RegisterApi.isDeliveryPersonEmailAvailable(values.professional_email);
+    if (isEmailTaken) {
+      form.setError('professional_email', {
+        type: 'manual',
+        message: 'Cet email est déjà utilisé.',
+      });
+      return;
+    }
+
+
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
       formData.append(key, value);

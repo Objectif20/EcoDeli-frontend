@@ -90,8 +90,8 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
       },
       { accessorKey: "type", header: t("client.pages.office.services.provider.services-list.columns.type"), cell: ({ row }) => row.original.type },
       { accessorKey: "city", header: t("client.pages.office.services.provider.services-list.columns.city"), cell: ({ row }) => row.original.city || "N/A" },
-      { accessorKey: "price", header: t("client.pages.office.services.provider.services-list.columns.price"), cell: ({ row }) => row.original.price },
-      { accessorKey: "duration", header: t("client.pages.office.services.provider.services-list.columns.duration"), cell: ({ row }) => row.original.duration },
+      { accessorKey: "price", header: t("client.pages.office.services.provider.services-list.columns.price"), cell: ({ row }) => row.original.price + " €" },
+      { accessorKey: "duration", header: t("client.pages.office.services.provider.services-list.columns.duration"), cell: ({ row }) => row.original.duration + " min" },
       { accessorKey: "status", header: t("client.pages.office.services.provider.services-list.columns.status"), cell: ({ row }) =>
         (
           <Badge
@@ -228,10 +228,10 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                    colSpan={table.getVisibleLeafColumns().length}
                   className="h-24 text-center"
                 >
-                  {t("client.pages.office.services.provider.services-list.no-results")}
+                  {t('client.pages.office.delivery.reviews.table.noResults')}
                 </TableCell>
               </TableRow>
             )}

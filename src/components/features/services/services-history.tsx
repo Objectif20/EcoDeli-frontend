@@ -200,10 +200,10 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                    colSpan={table.getVisibleLeafColumns().length}
                   className="h-24 text-center"
                 >
-                  {t("client.pages.office.services.provider.services-history.no-results")}
+                  {t('client.pages.office.delivery.reviews.table.noResults')}
                 </TableCell>
               </TableRow>
             )}

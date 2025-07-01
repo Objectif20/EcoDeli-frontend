@@ -75,7 +75,9 @@ export default function ServiceDetailsPage() {
             <div className="flex flex-col items-end justify-center">
               <div className="flex items-center mb-2 bg-background  px-3 py-1.5 rounded-full shadow-sm">
                 <Star className="w-5 h-5 text-yellow-500 mr-1.5" />
-                <span className="font-semibold text-lg">{service.rate}</span>
+                <span className="font-semibold text-lg">
+                  {Math.round((service.rate ?? 0) * 2) / 2}
+                </span>
               </div>
               <div className="flex items-center text-sm text-muted-foreground">
                 <Clock className="w-4 h-4 mr-1.5" />
@@ -100,11 +102,11 @@ export default function ServiceDetailsPage() {
               </Avatar>
               <div>
                 <h3 className="font-semibold text-lg">
-                  {t("client.pages.office.services.services-details.proposedBy", { name: service.author?.name })}
+                  {t("client.pages.office.services.services-details.proposedBy")} { service.author?.name }
                 </h3>
                 <div className="flex items-center text-muted-foreground">
                   <Star className="w-4 h-4 text-yellow-500 mr-1.5" />
-                  <span>{service.rate}</span>
+                  <span>{Math.round((service.rate ?? 0) * 2) / 2}</span>
                 </div>
               </div>
             </div>
@@ -138,10 +140,6 @@ export default function ServiceDetailsPage() {
                       <div className="flex-1">
                         <div className="flex justify-between items-center mb-1">
                           <p className="font-semibold">{comment?.author?.name}</p>
-                          <div className="flex items-center">
-                            <Star className="w-3.5 h-3.5 text-yellow-500 mr-1" />
-                            <span className="text-sm font-medium">4.8</span>
-                          </div>
                         </div>
                         <p className="text-muted-foreground">{comment?.content}</p>
                       </div>

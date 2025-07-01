@@ -7,7 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -103,9 +102,6 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
       setIsChangingLanguage(false)
     }
   }
-
-  const {t} = useTranslation()
-
   if (mode === "text") {
     return (
       <Select value={selectedLanguage} onValueChange={handleLanguageChange} disabled={isChangingLanguage}>
@@ -144,11 +140,10 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
       >
         <div className="flex items-center gap-2">
           <span className="text-xl">{getFlag(selectedLanguage)}</span>
-          {isChangingLanguage && <span className="text-xs">...</span>}
+          {isChangingLanguage}
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuLabel>{t("client.components.langage.title")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {languages.map((language) => (
           <DropdownMenuItem

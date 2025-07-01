@@ -208,10 +208,10 @@ export function DataTable({ data: initialData }: { data: ShipmentRequest[] }) {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                    colSpan={table.getVisibleLeafColumns().length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  {t('client.pages.office.delivery.reviews.table.noResults')}
                 </TableCell>
               </TableRow>
             )}

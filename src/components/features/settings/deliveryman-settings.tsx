@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,7 @@ import { ProfileAPI } from "@/api/profile.api";
 
 const DeliverymanSettings: React.FC = () => {
   const { t } = useTranslation();
+  const [initialData, setInitialData] = useState<any>(null);
 
   const formSchema = z.object({
     professional_email: z.string().email(t("client.pages.office.settings.deliveryman.invalidEmail")),
@@ -45,6 +46,7 @@ const DeliverymanSettings: React.FC = () => {
           address: settings.address || "",
           postal_code: settings.postal_code || "",
         });
+        setInitialData(settings);
       } catch (error) {
         console.error("Failed to fetch common settings:", error);
       }
@@ -141,11 +143,12 @@ const DeliverymanSettings: React.FC = () => {
                   <FormItem>
                     <FormLabel>{t("client.pages.office.settings.deliveryman.country")}</FormLabel>
                     <LocationSelector
-                      onCountryChange={(country) => {
-                        field.onChange(country?.name || '');
-                      }}
-                      enableStateSelection={false}
-                    />
+                    defaultCountryName={initialData?.country}
+                    onCountryChange={(country) => {
+                      field.onChange(country?.name || '');
+                    }}
+                    enableStateSelection={false}
+                  />
                     <FormMessage />
                   </FormItem>
                 )}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import logo from "@/assets/logo.svg";
 import auth1 from "@/assets/illustrations/auth1.svg";
 import otpSvg from "@/assets/illustrations/otp.svg";
@@ -14,6 +13,7 @@ import {
 } from "@/components/ui/input-otp";
 import { newPassword, newPasswordA2F } from "@/api/auth.api";
 import { useTranslation } from 'react-i18next';
+import { PasswordInput } from "@/components/ui/inputPassword";
 
 export default function NewPasswordPage() {
   const [password, setPassword] = useState<string>("");
@@ -117,7 +117,7 @@ export default function NewPasswordPage() {
                 <div className="grid gap-6">
                   <div className="grid gap-2">
                     <Label htmlFor="password">{t('client.pages.public.auth.newPassword.newPasswordLabel')}</Label>
-                    <Input
+                    <PasswordInput
                       id="password"
                       type="password"
                       placeholder={t('client.pages.public.auth.newPassword.newPasswordPlaceholder')}
@@ -128,7 +128,7 @@ export default function NewPasswordPage() {
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="confirmPassword">{t('client.pages.public.auth.newPassword.confirmPasswordLabel')}</Label>
-                    <Input
+                    <PasswordInput
                       id="confirmPassword"
                       type="password"
                       placeholder={t('client.pages.public.auth.newPassword.confirmPasswordPlaceholder')}

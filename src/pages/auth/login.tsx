@@ -16,6 +16,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/inputPassword";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -122,7 +123,7 @@ export default function LoginPage() {
                           {t("pages.connexion.forgotPassword")}
                         </Link>
                     </div>
-                    <Input
+                    <PasswordInput
                       id="password"
                       type="password"
                       value={password}

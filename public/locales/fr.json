@@ -2484,6 +2484,12 @@
                   "price": "Prix",
                   "status": "Statut"
                 }
+              },
+              "status": {
+                "pending": "En attente",
+                "taken": "Prise en charge",
+                "finished": "Terminée",
+                "validated": "Validée"
               }
             },
             "reviews": {

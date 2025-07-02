@@ -71,7 +71,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
         ),
       },
       { accessorKey: "date", header: t("client.pages.office.services.provider.services-history.columns.date"), cell: ({ row }) => row.original.date },
-      { accessorKey: "time", header: t("client.pages.office.services.provider.services-history.columns.time"), cell: ({ row }) => row.original.time },
+      { accessorKey: "time", header: t("client.pages.office.services.provider.services-history.columns.time"), cell: ({ row }) => row.original.time + " min" },
       { accessorKey: "serviceName", header: t("client.pages.office.services.provider.services-history.columns.service"), cell: ({ row }) => row.original.serviceName },
       {
         accessorKey: "rating",

@@ -110,7 +110,7 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
             <div className="flex items-center gap-2">
               <span>{getFlag(selectedLanguage)}</span>
               <span>{languages.find((l) => l.iso_code === selectedLanguage)?.language_name || selectedLanguage}</span>
-              {isChangingLanguage && <span className="text-xs opacity-70">...</span>}
+              {isChangingLanguage}
             </div>
           </SelectValue>
         </SelectTrigger>

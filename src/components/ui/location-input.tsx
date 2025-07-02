@@ -160,13 +160,13 @@ const LocationSelector = ({
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
+        <PopoverContent className="w-[350px] p-0 overflow-hidden">
           <Command>
             <CommandInput placeholder="Recherchez un pays..." />
             <CommandList>
               <CommandEmpty>No country found.</CommandEmpty>
               <CommandGroup>
-                <ScrollArea className="h-[300px]">
+                <ScrollArea className="h-[290px]">
                   {countriesData.map((country) => (
                     <CommandItem
                       key={country.id}
@@ -218,13 +218,13 @@ const LocationSelector = ({
               <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
+          <PopoverContent className="w-[350px] max-h-[350px] p-0 overflow-hidden">
             <Command>
               <CommandInput placeholder="Search state..." />
               <CommandList>
                 <CommandEmpty>No state found.</CommandEmpty>
                 <CommandGroup>
-                  <ScrollArea className="h-[300px]">
+                  <ScrollArea className="h-[290px]">
                     {availableStates.map((state) => (
                       <CommandItem
                         key={state.id}

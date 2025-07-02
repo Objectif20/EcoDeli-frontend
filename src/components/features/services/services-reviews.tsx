@@ -126,7 +126,7 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
         ),
       },
       { accessorKey: "services_name", header: t("client.pages.office.services.provider.services-reviews.columns.service"), cell: ({ row }) => row.original.services_name },
-      { accessorKey: "rate", header: t("client.pages.office.services.provider.services-reviews.columns.rate"), cell: ({ row }) => row.original.rate },
+      { accessorKey: "rate", header: t("client.pages.office.services.provider.services-reviews.columns.rate"), cell: ({ row }) => row.original.rate + '/5' },
       {
         accessorKey: "date",
         header: t("client.pages.office.services.provider.services-reviews.columns.date"),

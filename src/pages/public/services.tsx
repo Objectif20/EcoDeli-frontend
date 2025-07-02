@@ -139,9 +139,9 @@ export default function ServicesPage() {
                         alt={service?.name}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute top-2 right-2 rounded-full px-2 py-1 text-xs font-medium flex items-center bg-white shadow">
+                      <div className="absolute top-2 right-2 rounded-full px-2 py-1 text-xs font-medium flex items-center bg-accent shadow">
                         <Star className="w-3 h-3 text-yellow-500 mr-1" />
-                        {service?.rate}
+                        {Math.round((selectedService?.rate ?? 0) * 2) / 2}
                       </div>
                     </div>
                     <CardContent className="p-4">
@@ -208,7 +208,9 @@ export default function ServicesPage() {
                     <div className="text-right">
                       <div className="flex items-center justify-end mb-1">
                         <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                        <span className="font-medium">{selectedService?.rate}</span>
+                        <span className="font-medium">
+                          {Math.round((selectedService?.rate ?? 0) * 2) / 2}
+                        </span>
                       </div>
                       <div className="flex items-center text-sm">
                         <Clock className="w-3 h-3 mr-1" />
@@ -237,14 +239,14 @@ export default function ServicesPage() {
                       </h3>
                       <div className="flex items-center">
                         <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                        <span>{selectedService?.rate}</span>
+                        <span>{Math.round((selectedService?.rate ?? 0) * 2) / 2}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="mb-6">
                     <h3 className="font-semibold text-lg mb-2">{t('client.pages.public.services.description')}</h3>
-                    <p className="text-gray-700">{selectedService?.description}</p>
+                    <p >{selectedService?.description}</p>
                     <div className="mt-4 p-4">
                       <div className="flex justify-between items-center">
                         <p className="font-medium">{t('client.pages.public.services.price')}</p>
@@ -290,11 +292,10 @@ export default function ServicesPage() {
                     </div>
                   </div>
                 </CardContent>
-                  {isClient && (
-                <TakeAppointment duration={60} service_id={selectedService.service_id}/>
-                  )}
+                  
 
                 <CardFooter className="border-t pt-4">
+                  
                 </CardFooter>
               </div>
             ) : (
@@ -313,7 +314,7 @@ export default function ServicesPage() {
 
       <Drawer>
         <DrawerTrigger asChild>
-          <Button className="lg:hidden fixed bottom-4 right-4 text-white">
+          <Button className="lg:hidden fixed bottom-4 right-4 text-foreground">
             {t('client.pages.public.services.viewDetails')}
           </Button>
         </DrawerTrigger>

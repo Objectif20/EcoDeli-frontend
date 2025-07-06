@@ -16,12 +16,18 @@ interface FilesystemItemProps {
   onFileClick?: (url: string, name?: string) => void;
 }
 
+const generateRandomId = () => {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
+
 export function FilesystemItem({
   node,
   animated = false,
   onFileClick,
 }: FilesystemItemProps) {
   let [isOpen, setIsOpen] = useState(false);
+  
+  const [itemId] = useState(() => generateRandomId());
 
   const ChevronIcon = () =>
     animated ? (
@@ -42,7 +48,7 @@ export function FilesystemItem({
     const children = node.nodes?.map((childNode) => (
       <FilesystemItem
         node={childNode}
-        key={childNode.name}
+        key={`${childNode.name}-${generateRandomId()}`}
         animated={animated}
         onFileClick={onFileClick}
       />
@@ -69,9 +75,13 @@ export function FilesystemItem({
     return isOpen && <ul className="pl-6">{children}</ul>;
   };
 
-  const handleToggleOpen = () => setIsOpen(!isOpen);
+  const handleToggleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation(); 
+    setIsOpen(!isOpen);
+  };
 
-  const handleFileClick = () => {
+  const handleFileClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); 
     if (node.url && onFileClick) {
       console.log("Clic sur fichier:", node.name, "URL:", node.url);
       onFileClick(node.url, node.name);
@@ -93,7 +103,7 @@ export function FilesystemItem({
   };
 
   return (
-    <li key={node.name}>
+    <li key={`${node.name}-${itemId}`}>
       <span className="flex items-center gap-1.5 py-1">
         {node.nodes && node.nodes.length > 0 && (
           <button onClick={handleToggleOpen} className="p-1 -m-1">

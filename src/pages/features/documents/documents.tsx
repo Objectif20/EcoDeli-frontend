@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { FilesystemItem } from "@/components/ui/filesystem-items";
 import axiosInstance from "@/api/axiosInstance";
 import { File } from "lucide-react";
@@ -12,6 +12,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+
+const generateStableId = (node: any, index: number) => {
+  return `${node.name}-${index}-${JSON.stringify(node.url || '')}`;
+};
 
 export default function DocumentsPage() {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -150,6 +154,17 @@ export default function DocumentsPage() {
     [isMobile, t, pdfUrl] 
   );
 
+  const filesystemItems = useMemo(() => {
+    return nodes.map((node, index) => (
+      <FilesystemItem
+        key={generateStableId(node, index)}
+        node={node}
+        animated
+        onFileClick={handleFileClick}
+      />
+    ));
+  }, [nodes, handleFileClick]);
+
   useEffect(() => {
     return () => {
       if (pdfUrl) {
@@ -160,33 +175,15 @@ export default function DocumentsPage() {
 
   return (
     <div className="h-full">
-      {/* Version mobile - layout vertical classique */}
       {isMobile ? (
         <div className="flex flex-col h-full">
           <div className="w-full p-4 border-b overflow-y-auto max-h-[40vh]">
             <ul>
-              {nodes.map((node, index) => (
-                <FilesystemItem
-                  key={`${node.name}-${index}`}
-                  node={node}
-                  animated
-                  onFileClick={handleFileClick}
-                />
-              ))}
+              {filesystemItems}
             </ul>
-          </div>
-          {/* En mobile, on télécharge directement les PDFs */}
-          <div className="flex-1 p-4 flex items-center justify-center">
-            <div className="text-center">
-              <File size={32} className="text-muted-foreground/50 mb-2 mx-auto" />
-              <p className="text-muted-foreground">
-                {t("client.pages.office.myDocuments.selectDocument")}
-              </p>
-            </div>
           </div>
         </div>
       ) : (
-        /* Version desktop - layout resizable */
         <ResizablePanelGroup
           direction="horizontal"
           className="h-full rounded-lg border"
@@ -194,14 +191,7 @@ export default function DocumentsPage() {
           <ResizablePanel defaultSize={25} minSize={15} maxSize={50}>
             <div className="h-full p-4 overflow-y-auto">
               <ul>
-                {nodes.map((node, index) => (
-                  <FilesystemItem
-                    key={`${node.name}-${index}`}
-                    node={node}
-                    animated
-                    onFileClick={handleFileClick}
-                  />
-                ))}
+                {filesystemItems}
               </ul>
             </div>
           </ResizablePanel>

@@ -18,6 +18,7 @@ import {
 import { BillingsData, ProfileAPI } from "@/api/profile.api";
 import { BillingsDataTable } from "@/components/features/settings/billings/data-tables";
 import { useTranslation } from "react-i18next";
+import { Spinner } from "@/components/ui/spinner";
 
 const BillingSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -40,6 +41,7 @@ const BillingSettings: React.FC = () => {
 
   const [billingsData, setBillingsData] = useState<BillingsData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [stripeLoading, setStripeLoading] = useState<boolean>(true);
 
   useEffect(() => {
     dispatch(setBreadcrumb({
@@ -63,21 +65,27 @@ const BillingSettings: React.FC = () => {
     };
 
     const fetchStripeAccountValidity = async () => {
-      const response = await ProfileAPI.getStripeAccountValidity();
-      if (response.valid && response.enabled && !response.needs_id_card) {
-        setStripeAccountValidity({
-          valid: true,
-          enabled: true,
-          needs_id_card: false,
-          url_complete: "",
-        });
-      } else if (response.valid && !response.enabled) {
-        setStripeAccountValidity({
-          valid: true,
-          enabled: false,
-          needs_id_card: false,
-          url_complete: response.url_complete || "",
-        });
+      try {
+        const response = await ProfileAPI.getStripeAccountValidity();
+        if (response.valid && response.enabled && !response.needs_id_card) {
+          setStripeAccountValidity({
+            valid: true,
+            enabled: true,
+            needs_id_card: false,
+            url_complete: "",
+          });
+        } else if (response.valid && !response.enabled) {
+          setStripeAccountValidity({
+            valid: true,
+            enabled: false,
+            needs_id_card: false,
+            url_complete: response.url_complete || "",
+          });
+        }
+      } catch (err) {
+        console.error("Erreur lors du chargement de l'état Stripe :", err);
+      } finally {
+        setStripeLoading(false);
       }
     };
 
@@ -108,6 +116,42 @@ const BillingSettings: React.FC = () => {
       console.error("Erreur lors de la demande de virement :", err);
     }
   };
+
+  if (loading || stripeLoading) {
+    return (
+      <div className="flex flex-col gap-8">
+        <div className="mx-auto grid w-full max-w-6xl gap-2">
+          <h1 className="text-3xl font-semibold">{t("client.pages.office.settings.billings.title")}</h1>
+        </div>
+        <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
+          <nav className="grid gap-4 text-sm text-muted-foreground">
+            <Link to="/office/general-settings">{t("client.pages.office.settings.billings.nav.general")}</Link>
+            <Link to="/office/profile">{t("client.pages.office.settings.billings.nav.profile")}</Link>
+            <Link to="/office/privacy">{t("client.pages.office.settings.billings.nav.privacy")}</Link>
+            <Link to="/office/contact-details">{t("client.pages.office.settings.billings.nav.contact")}</Link>
+            {(isMerchant || isClient) && (
+              <Link to="/office/subscriptions">{t("client.pages.office.settings.billings.nav.subscriptions")}</Link>
+            )}
+            {(isProvider || isDeliveryman) && (
+              <Link to="/office/billing-settings" className="font-semibold text-primary active-link">
+                {t("client.pages.office.settings.billings.nav.billings")}
+              </Link>
+            )}
+            <Link to="/office/reports">{t("client.pages.office.settings.billings.nav.reports")}</Link>
+          </nav>
+          <div className="grid gap-6">
+            <div className="flex justify-center items-center min-h-[400px]">
+              <Spinner size="large">
+                <p className="mt-4 text-muted-foreground">
+                  {t("client.pages.office.settings.billings.loading")}
+                </p>
+              </Spinner>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -208,10 +252,16 @@ const BillingSettings: React.FC = () => {
           </div>
 
           <div className="mt-6">
-            {!loading && billingsData ? (
+            {billingsData ? (
               <BillingsDataTable billings={billingsData.billings} />
             ) : (
-              <p>{t("client.pages.office.settings.billings.loading")}</p>
+              <div className="flex justify-center items-center min-h-[200px]">
+                <Spinner size="medium">
+                  <p className="mt-4 text-muted-foreground">
+                    {t("client.pages.office.settings.billings.loading")}
+                  </p>
+                </Spinner>
+              </div>
             )}
           </div>
         </div>

@@ -108,7 +108,7 @@ export default function OnGoingServicesPage() {
       setActionLoading(true)
       await ServiceApi.endAppointment(selectedAppointment.id)
 
-      setAppointments((prev) => prev.filter((apt) => apt.id !== selectedAppointment.id))
+      await fetchAppointments()
 
       toast.success("La prestation a été terminée avec succès")
       setIsEndDialogOpen(false)

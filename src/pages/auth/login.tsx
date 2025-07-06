@@ -39,6 +39,10 @@ export default function LoginPage() {
     try {
       const res = await loginUser(email, password);
 
+
+      if (res.confirmed === false) {
+        setError("Votre compte n'est pas confirmé. Un nouvel e-mail de confirmation a été envoyé.");
+      }
       if (res.twoFactorRequired) {
         setIs2faRequired(true);
       } else {

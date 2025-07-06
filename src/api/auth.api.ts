@@ -5,6 +5,7 @@ import { login, logout } from "../redux/slices/authSlice";
 interface LoginResponse {
   access_token: string | null;
   two_factor_required?: boolean;
+  confirmed?: boolean;
 }
 
 export const getAccessToken = async () => {
@@ -37,6 +38,11 @@ export const getAccessToken = async () => {
 export const loginUser = async (email: string, password: string) => {
   try {
     const response = await axiosInstance.post<LoginResponse>("/client/auth/login", { email, password });
+
+    if (response.data.confirmed === false) {
+      return { confirmed: false };
+    }
+
 
     if (response.data.two_factor_required) {
       store.dispatch(login({ accessToken: null, twoFactorRequired: true }));
@@ -160,3 +166,13 @@ export const newPasswordA2F = async (password: string, code: string, secretCode:
     throw new Error("Erreur lors de la réinitialisation du mot de passe avec 2FA");
   }
 };
+
+export const validateAccount = async (secretCode: string) => {
+  try {
+    const response = await axiosInstance.post("/client/auth/account/validate", { secretCode });
+    return response.data;
+  } catch (error) {
+    console.error("Erreur lors de la validation du compte", error);
+    throw new Error("Erreur lors de la validation du compte");
+  }
+}

@@ -246,21 +246,13 @@ const PrivacySettings: React.FC = () => {
               </Button>
             </div>
 
-            <div className="pt-2">
-              <p className="text-sm">
-                {t("client.pages.office.settings.confidentiality.whatIs2FA")}
-                <a href="#" className="text-primary hover:underline">
-                  {t("client.pages.office.settings.confidentiality.here")}
-                </a>
-              </p>
-            </div>
-
             <div className="pt-6">
               <p className="text-sm">
-                {t("client.pages.office.settings.confidentiality.accessPrivacyPolicy")}
-                <a href="#" className="text-primary hover:underline">
-                  {t("client.pages.office.settings.confidentiality.privacyPolicy")}
-                </a>
+              {t("client.pages.office.settings.confidentiality.accessPrivacyPolicy")}
+              &nbsp;
+              <a href="#" className="text-primary hover:underline">
+                {t("client.pages.office.settings.confidentiality.privacyPolicy")}
+              </a>
               </p>
             </div>
           </div>

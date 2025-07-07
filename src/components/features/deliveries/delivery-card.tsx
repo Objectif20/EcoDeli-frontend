@@ -9,7 +9,6 @@ import { useTranslation } from "react-i18next"
 import { BarcodeScanner } from "@/components/barcodeScanner"
 import { DeliveriesAPI } from "@/api/deliveries.api"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp"
-import { CancelDeliveryDialog } from "./cancel-delivery-dialog"
 import { Button } from "@/components/ui/button"
 
 type DeliveryProps = {
@@ -71,17 +70,6 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
       onUpdate()
     } catch (error) {
       console.error("Error validating delivery:", error)
-    }
-  }
-
-  const handleCancelDelivery = async (deliveryId: string) => {
-    try {
-      // Here you would call your API to cancel the delivery
-      // For example: await DeliveriesAPI.cancelDelivery(deliveryId);
-      console.log("Delivery cancelled:", deliveryId)
-      onUpdate()
-    } catch (error) {
-      console.error("Error cancelling delivery:", error)
     }
   }
 
@@ -188,7 +176,6 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
                   <Button onClick={() => setShowScanner(true)} >
                     📦 {t("client.pages.office.deliveryman.ongoingDeliveries.scanPackage")}
                   </Button>
-                  <CancelDeliveryDialog deliveryId={delivery.id} onCancel={handleCancelDelivery} />
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-4 mt-4">
@@ -214,7 +201,6 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
               <Button onClick={handleFinishDelivery}>
                 {t("client.pages.office.deliveryman.ongoingDeliveries.finishDelivery")}
               </Button>
-              <CancelDeliveryDialog deliveryId={delivery.id} onCancel={handleCancelDelivery} />
             </div>
           )}
 
@@ -237,7 +223,6 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
                 <Button onClick={handleValidateDelivery}>
                   {t("client.pages.office.deliveryman.ongoingDeliveries.validateDelivery")}
                 </Button>
-                <CancelDeliveryDialog deliveryId={delivery.id} onCancel={handleCancelDelivery} />
               </div>
             </div>
           )}

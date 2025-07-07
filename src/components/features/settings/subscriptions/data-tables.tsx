@@ -90,12 +90,15 @@ export const columns: ColumnDef<Subscription>[] = [
   {
     id: "facture",
     header: () => <div className="text-right font-medium">Facture</div>,
-    cell: () => {
+    cell: ({ row }) => {
+      const invoiceLink = row.original.invoiceLink
       return (
         <div className="text-right">
-          <Button variant="outline" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50">
-            Télécharger <Download className="ml-2 h-4 w-4" />
-          </Button>
+          <a href={invoiceLink} target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" size="sm" className="text-green-600 hover:text-green-700 hover:bg-green-50">
+              Télécharger <Download className="ml-2 h-4 w-4" />
+            </Button>
+          </a>
         </div>
       )
     },

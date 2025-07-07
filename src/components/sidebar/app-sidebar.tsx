@@ -264,7 +264,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           )}
           {isProviderValidated && open && (
             <div className="mx-4">
-              <Button className="w-full" onClick={() => navigate("/office/create-service")}>
+              <Button className="w-full" onClick={() => navigate("/office/services/create")}>
                 {t("client.components.sidebar.createService")}
               </Button>
             </div>

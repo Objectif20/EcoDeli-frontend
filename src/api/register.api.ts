@@ -109,4 +109,34 @@ export class RegisterApi {
             throw new Error("Failed to register delivery person");
         }
     }
+
+    static async isEmailAvailable(email: string): Promise<boolean> {
+        try {
+            const response = await axiosInstance.get(`/client/register/email?email=${encodeURIComponent(email)}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error checking email availability:", error);
+            throw error;
+        }
+    }
+
+    static async isSiretAvailable(siret: string): Promise<boolean> {    
+        try {
+            const response = await axiosInstance.get(`/client/register/siret?siret=${encodeURIComponent(siret)}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error checking SIRET availability:", error);
+            throw error;
+        }
+    }
+
+    static async isDeliveryPersonEmailAvailable(email: string): Promise<boolean> {
+        try {
+            const response = await axiosInstance.get(`/client/register/emailDelivery?email=${encodeURIComponent(email)}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error checking delivery person email availability:", error);
+            throw error;
+        }
+    }
 }

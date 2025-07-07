@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,6 +14,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu"
+import { ProfileAPI } from "@/api/profile.api"
 
 interface DeleteConversationDialogProps {
   userId: string
@@ -20,10 +22,19 @@ interface DeleteConversationDialogProps {
 
 export const DeleteConversationDialog = ({ userId }: DeleteConversationDialogProps) => {
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const { t } = useTranslation()
 
-  const handleConfirm = () => {
-    console.log("Deleting conversation with user ID:", userId)
-    window.location.reload()
+  const handleConfirm = async () => {
+    try {
+      setLoading(true)
+      await ProfileAPI.deleteChat(userId)
+      window.location.reload()
+    } catch (error) {
+      console.error("Erreur lors de la suppression de la conversation :", error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -35,19 +46,21 @@ export const DeleteConversationDialog = ({ userId }: DeleteConversationDialogPro
             setOpen(true)
           }}
         >
-          Supprimer la conversation
+          {t("client.pages.office.chat.deleteConversation")}
         </DropdownMenuItem>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Supprimer la conversation</AlertDialogTitle>
+          <AlertDialogTitle>{t("client.pages.office.chat.deleteConversation")}</AlertDialogTitle>
           <AlertDialogDescription>
-            Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action est irréversible.
+            {t("client.pages.office.chat.deleteConversationConfirmation")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Annuler</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm}>Confirmer</AlertDialogAction>
+          <AlertDialogCancel disabled={loading}>{t("client.pages.office.chat.cancel")}</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm} disabled={loading}>
+            {loading ? t("client.pages.office.chat.deleting") : t("client.pages.office.chat.confirm")}
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

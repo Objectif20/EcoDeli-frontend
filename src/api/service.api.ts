@@ -113,7 +113,7 @@ export class ServiceApi {
         limit: number = 3,
         search?: string,
         city?: string
-      ): Promise<{ data: Service[]; total: number }> {
+      ): Promise<{ data: Service[]; meta : { total : number, page : number, limit : number} }> {
         const params = new URLSearchParams();
         params.append('page', String(page));
         params.append('limit', String(limit));
@@ -197,14 +197,14 @@ export class ServiceApi {
     }
 
     static async startAppointment(appointment_id: string, code : string) {
-        const response = await axiosInstance.post(`/client/service/${appointment_id}/start`, {
+        const response = await axiosInstance.post(`/client/service/appointments/${appointment_id}/start`, {
             code: code,
         });
         return response;
     }
 
     static async endAppointment(appointment_id: string) {
-        const response = await axiosInstance.post(`/client/service/${appointment_id}/finish`);
+        const response = await axiosInstance.post(`/client/service/appointments/${appointment_id}/finish`);
         return response;
     }
 

@@ -202,11 +202,6 @@ export class DashboardApi {
       return res.data
     }
   
-    static async getPackageLocation(): Promise<PackageLocation[]> {
-      const res = await axiosInstance.get("/client/dashboard/package-location")
-      return res.data
-    }
-  
     static async getMyNextEvent(): Promise<events[]> {
       const res = await axiosInstance.get("/client/dashboard/my-next-event")
       return res.data

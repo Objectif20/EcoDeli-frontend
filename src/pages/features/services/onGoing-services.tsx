@@ -47,7 +47,7 @@ export default function OnGoingServicesPage() {
   const [isEndDialogOpen, setIsEndDialogOpen] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
 
-  const limit = 6
+  const limit = 9
 
   useEffect(() => {
     dispatch(
@@ -108,7 +108,7 @@ export default function OnGoingServicesPage() {
       setActionLoading(true)
       await ServiceApi.endAppointment(selectedAppointment.id)
 
-      setAppointments((prev) => prev.filter((apt) => apt.id !== selectedAppointment.id))
+      await fetchAppointments()
 
       toast.success("La prestation a été terminée avec succès")
       setIsEndDialogOpen(false)
@@ -208,7 +208,9 @@ export default function OnGoingServicesPage() {
                       <Avatar>
                         <AvatarImage src={appointment.clientImage || undefined} />
                         <AvatarFallback>
-                          <User className="h-4 w-4" />
+                          {appointment.clientName
+                            ? appointment.clientName.charAt(0).toUpperCase()
+                            : <User className="h-4 w-4" />}
                         </AvatarFallback>
                       </Avatar>
                       <div>
@@ -257,45 +259,47 @@ export default function OnGoingServicesPage() {
                         </Button>
                       </DialogTrigger>
                         <DialogContent>
-                        <DialogHeader>
+                          <DialogHeader>
                             <DialogTitle>Démarrer la prestation</DialogTitle>
                             <DialogDescription>
-                            Demandez le code OTP au client pour démarrer la prestation "{appointment.serviceName}".
+                              Demandez le code OTP au client pour démarrer la prestation "{appointment.serviceName}".
                             </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                            <div>
-                            <Label htmlFor="otp">Code OTP</Label>
-                            <InputOTP maxLength={6} value={otpCode} onChange={(value) => setOtpCode(value)}>
-                                <InputOTPGroup>
-                                <InputOTPSlot index={0} />
-                                <InputOTPSlot index={1} />
-                                <InputOTPSlot index={2} />
-                                </InputOTPGroup>
-                                <InputOTPSeparator />
-                                <InputOTPGroup>
-                                <InputOTPSlot index={3} />
-                                <InputOTPSlot index={4} />
-                                <InputOTPSlot index={5} />
-                                </InputOTPGroup>
-                            </InputOTP>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="flex flex-col items-center">
+                              <Label htmlFor="otp">Code OTP</Label>
+                              <div className="mt-2 flex justify-center">
+                                <InputOTP maxLength={6} value={otpCode} onChange={(value) => setOtpCode(value)}>
+                                  <InputOTPGroup>
+                                    <InputOTPSlot index={0} />
+                                    <InputOTPSlot index={1} />
+                                    <InputOTPSlot index={2} />
+                                  </InputOTPGroup>
+                                  <InputOTPSeparator />
+                                  <InputOTPGroup>
+                                    <InputOTPSlot index={3} />
+                                    <InputOTPSlot index={4} />
+                                    <InputOTPSlot index={5} />
+                                  </InputOTPGroup>
+                                </InputOTP>
+                              </div>
                             </div>
-                        </div>
-                        <DialogFooter>
+                          </div>
+                          <DialogFooter>
                             <Button
-                            variant="outline"
-                            onClick={() => {
+                              variant="outline"
+                              onClick={() => {
                                 setIsStartDialogOpen(false)
                                 setOtpCode("")
                                 setSelectedAppointment(null)
-                            }}
+                              }}
                             >
-                            Annuler
+                              Annuler
                             </Button>
                             <Button onClick={handleStartAppointment} disabled={actionLoading || !otpCode.trim()}>
-                            {actionLoading ? "Démarrage..." : "Démarrer"}
+                              {actionLoading ? "Démarrage..." : "Démarrer"}
                             </Button>
-                        </DialogFooter>
+                          </DialogFooter>
                         </DialogContent>
                     </Dialog>
                   )}

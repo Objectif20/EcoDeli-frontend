@@ -5,10 +5,10 @@ import AverageRating from "@/components/features/dashboard/provider/average-rati
 import NextServicesProvider from "@/components/features/dashboard/provider/next-services"
 import MonthlyRevenue from "@/components/features/dashboard/provider/billing"
 
-export default function ProviderDashboard() {
+export default function ProviderDashboard({ name = "" }: { name?: string }) {
   return (
     <div className="w-full p-4">
-      <h1 className="text-2xl font-bold mb-6">Bienvenue sur votre espace prestataire, Frédéric</h1>
+      <h1 className="text-2xl font-bold mb-6">Bienvenue sur votre espace prestataire, {name}</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
         <CurrentBalance />
         <CompletedServices />

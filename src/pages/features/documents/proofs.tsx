@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/dialog";
 import { UserApi } from "@/api/user.api";
 import { useTranslation } from 'react-i18next';
+import axiosInstance from "@/api/axiosInstance";
 
 interface Document {
   id: string;
@@ -167,19 +168,52 @@ export default function ProofsPage() {
             <p className="text-foreground text-sm mt-1">
               {t("client.pages.office.proofs.uploadedOn")} {new Date(doc.uploadDate).toLocaleDateString()}
             </p>
-            <Button
-              className="mt-4"
-              onClick={() => {
-                const link = document.createElement("a");
-                link.href = doc.url;
-                link.download = doc.name;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-              }}
-            >
-              {t("client.pages.office.proofs.downloadDocument")}
-            </Button>
+              <Button
+                className="mt-4"
+                onClick={async () => {
+                  try {
+                    const encodedUrl = encodeURIComponent(doc.url);
+                    const requestUrl = `/client/utils/document?url=${encodedUrl}`;
+
+                    const response = await axiosInstance.get(requestUrl, {
+                      responseType: "arraybuffer",
+                    });
+
+                    const detectFileType = (fileName: string, arrayBuffer: ArrayBuffer) => {
+                      const extension = fileName?.toLowerCase().split('.').pop();
+                      const uint8Array = new Uint8Array(arrayBuffer);
+                      if (uint8Array[0] === 0x25 && uint8Array[1] === 0x50 && uint8Array[2] === 0x44 && uint8Array[3] === 0x46) return 'application/pdf';
+                      if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50 && uint8Array[2] === 0x4E && uint8Array[3] === 0x47) return 'image/png';
+                      if (uint8Array[0] === 0xFF && uint8Array[1] === 0xD8 && uint8Array[2] === 0xFF) return 'image/jpeg';
+                      switch (extension) {
+                        case 'pdf': return 'application/pdf';
+                        case 'png': return 'image/png';
+                        case 'jpg':
+                        case 'jpeg': return 'image/jpeg';
+                        case 'gif': return 'image/gif';
+                        case 'webp': return 'image/webp';
+                        default: return 'application/octet-stream';
+                      }
+                    };
+
+                    const detectedType = detectFileType(doc.name, response.data);
+                    const blob = new Blob([response.data], { type: detectedType });
+                    const objectURL = URL.createObjectURL(blob);
+
+                    const link = document.createElement("a");
+                    link.href = objectURL;
+                    link.download = doc.name;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(objectURL);
+                  } catch (error) {
+                    console.error(t("client.pages.office.proofs.errorDownloadingDocument"), error);
+                  }
+                }}
+              >
+                {t("client.pages.office.proofs.downloadDocument")}
+              </Button>
           </div>
         ))}
       </div>

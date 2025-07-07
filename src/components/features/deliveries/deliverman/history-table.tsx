@@ -37,6 +37,7 @@ import {
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
 
 export const schema = z.object({
   id: z.string(),
@@ -51,6 +52,39 @@ export const schema = z.object({
 });
 
 export const columns = (t: any, navigate: any): ColumnDef<z.infer<typeof schema>>[] => {
+  const getStatusBadge = (status: string) => {
+    const statusConfig = {
+      pending: {
+        variant: "secondary" as const,
+        className: "bg-amber-100 hover:bg-amber-100 text-amber-800 border-amber-200",
+        label: t("client.pages.office.delivery.deliveryman.history.status.pending"),
+      },
+      taken: {
+        variant: "default" as const,
+        className: "bg-purple-100 hover:bg-purple-100 text-purple-800 border-purple-200",
+        label: t("client.pages.office.delivery.deliveryman.history.status.taken"),
+      },
+      finished: {
+        variant: "default" as const,
+        className: "bg-green-100 hover:bg-green-100 text-green-800 border-green-200",
+        label: t("client.pages.office.delivery.deliveryman.history.status.finished"),
+      },
+      validated: {
+        variant: "default" as const,
+        className: "bg-blue-100 hover:bg-blue-100 text-blue-800 border-blue-200",
+        label: t("client.pages.office.delivery.deliveryman.history.status.validated"),
+      },
+    }
+
+    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.pending
+
+    return (
+      <Badge className={config.className}>
+        {config.label}
+      </Badge>
+    )
+  }
+
   return [
     {
       id: "client",
@@ -58,12 +92,18 @@ export const columns = (t: any, navigate: any): ColumnDef<z.infer<typeof schema>
       header: t("client.pages.office.delivery.deliveryman.history.table.client"),
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Avatar>
-            <AvatarImage src={row.original.client.photo_url} />
-            <AvatarFallback>{row.original.client.name[0]}</AvatarFallback>
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={row.original.client.photo_url || "/placeholder.svg"} />
+            <AvatarFallback>
+              {row.original.client.name
+                .split(" ")
+                .map((n: string) => n[0])
+                .join("")
+                .toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div>
-            <span>{row.original.client.name}</span>
+            <span className="font-medium">{row.original.client.name}</span>
           </div>
         </div>
       ),
@@ -72,34 +112,43 @@ export const columns = (t: any, navigate: any): ColumnDef<z.infer<typeof schema>
     {
       accessorKey: "departure_city",
       header: t("client.pages.office.delivery.deliveryman.history.table.departure_city"),
-      cell: ({ row }) => <span>{row.original.departure_city}</span>,
+      cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.departure_city}</span>,
     },
     {
       accessorKey: "arrival_city",
       header: t("client.pages.office.delivery.deliveryman.history.table.arrival_city"),
-      cell: ({ row }) => <span>{row.original.arrival_city}</span>,
+      cell: ({ row }) => <span className="text-sm text-muted-foreground">{row.original.arrival_city}</span>,
     },
     {
       accessorKey: "price",
       header: t("client.pages.office.delivery.deliveryman.history.table.price"),
-      cell: ({ row }) => <span>{row.original.price} €</span>,
+      cell: ({ row }) => (
+        <span className="font-semibold text-green-600 dark:text-green-400">{row.original.price} €</span>
+      ),
     },
     {
       accessorKey: "status",
       header: t("client.pages.office.delivery.deliveryman.history.table.status"),
-      cell: ({ row }) => <span>{row.original.status}</span>,
+      cell: ({ row }) => {
+        const status = (
+          ["pending", "taken", "finished", "validated"].includes(row.original.status) ? row.original.status : "pending"
+        ) as "pending" | "taken" | "finished" | "validated"
+
+        return getStatusBadge(status)
+      },
     },
     {
       id: "actions",
       header: t("client.pages.office.delivery.deliveryman.history.table.actions"),
       cell: ({ row }) => (
-        <Button onClick={() => navigate(`/office/deliveries/public/${row.original.id}`)}>
+        <Button variant="outline" size="sm" onClick={() => navigate(`/office/deliveries/public/${row.original.id}`)}>
           {t("client.pages.office.delivery.deliveryman.history.table.details")}
         </Button>
       ),
     },
-  ];
-};
+  ]
+}
+
 
 export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[] }) {
   const { t } = useTranslation();
@@ -234,10 +283,10 @@ export function DataTable({ data: initialData }: { data: z.infer<typeof schema>[
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns(t, navigate).length}
+                  colSpan={table.getVisibleLeafColumns().length}
                   className="h-24 text-center"
                 >
-                  {t("client.pages.office.delivery.deliveryman.history.table.no_results")}
+                  {t('client.pages.office.delivery.reviews.table.noResults')}
                 </TableCell>
               </TableRow>
             )}

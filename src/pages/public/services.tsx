@@ -29,18 +29,41 @@ import { Service, ServiceApi } from "@/api/service.api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import TakeAppointment from "@/components/public/services/planning";
+import { Spinner } from "@/components/ui/spinner";
+
+interface PaginationState {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
+interface SearchState {
+  search: string;
+  city: string;
+}
+
 export default function ServicesPage() {
   const { t } = useTranslation();
+  
   const [services, setServices] = useState<Service[]>([]);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const servicesPerPage = 3;
-  const [totalPages, setTotalPages] = useState(1);
-  const [searchInput, setSearchInput] = useState('');
-  const [cityInput, setCityInput] = useState('');
-  const [searchCriteria, setSearchCriteria] = useState({ search: '', city: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const [pagination, setPagination] = useState<PaginationState>({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10
+  });
+  
+  const [searchInput, setSearchInput] = useState('');
+  const [cityInput, setCityInput] = useState('');
+  const [searchCriteria, setSearchCriteria] = useState<SearchState>({ 
+    search: '', 
+    city: '' 
+  });
 
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
   const isClient = user?.profile.includes('CLIENT');
@@ -49,10 +72,34 @@ export default function ServicesPage() {
     try {
       setLoading(true);
       setError(null);
-      const response = await ServiceApi.getServices(currentPage, servicesPerPage, searchCriteria.search, searchCriteria.city);
+      
+      const response = await ServiceApi.getServices(
+        pagination.currentPage, 
+        pagination.itemsPerPage, 
+        searchCriteria.search, 
+        searchCriteria.city
+      );
+      
+      console.log('Response:', response);
+      console.log('Total services:', response?.meta?.total);
+      console.log('Services per page:', pagination.itemsPerPage);
+      console.log('Current page:', pagination.currentPage);
+      
+      const calculatedTotalPages = Math.ceil(response.meta.total / pagination.itemsPerPage);
+      console.log('Calculated total pages:', calculatedTotalPages);
+      
       setServices(response.data);
-      setTotalPages(Math.ceil(response.total / servicesPerPage));
-      setSelectedService(response.data[0] || null);
+      
+      setPagination(prev => ({
+        ...prev,
+        totalPages: calculatedTotalPages,
+        totalItems: response.meta.total
+      }));
+      
+      if (!selectedService || response.data.length > 0) {
+        setSelectedService(response.data[0] || null);
+      }
+      
     } catch (err) {
       setError('Erreur lors du chargement des services.');
       console.error(err);
@@ -63,23 +110,79 @@ export default function ServicesPage() {
 
   useEffect(() => {
     fetchServices();
-  }, [currentPage]);
+  }, [pagination.currentPage, searchCriteria]);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    if (page >= 1 && page <= pagination.totalPages) {
+      setPagination(prev => ({
+        ...prev,
+        currentPage: page
+      }));
+    }
   };
 
   const handleSearch = () => {
-    setCurrentPage(1);
-    setSearchCriteria({ search: searchInput, city: cityInput });
-    fetchServices();
+    setPagination(prev => ({
+      ...prev,
+      currentPage: 1
+    }));
+    setSearchCriteria({ 
+      search: searchInput, 
+      city: cityInput 
+    });
+  };
+
+  const handlePreviousPage = () => {
+    if (pagination.currentPage > 1) {
+      handlePageChange(pagination.currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (pagination.currentPage < pagination.totalPages) {
+      handlePageChange(pagination.currentPage + 1);
+    }
+  };
+
+  const generatePageNumbers = () => {
+    const pages = [];
+    const maxVisiblePages = 5;
+    
+    if (pagination.totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= pagination.totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      const startPage = Math.max(1, pagination.currentPage - 2);
+      const endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+      
+      if (startPage > 1) {
+        pages.push(1);
+        if (startPage > 2) {
+          pages.push('...');
+        }
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+      
+      if (endPage < pagination.totalPages) {
+        if (endPage < pagination.totalPages - 1) {
+          pages.push('...');
+        }
+        pages.push(pagination.totalPages);
+      }
+    }
+    
+    return pages;
   };
 
   return (
     <div className="container mx-auto py-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-6 text-center">
-          {t('client.pages.public.services.title', { count: services.length })}
+          {t('client.pages.public.services.title', { count: pagination.totalItems })}
         </h1>
 
         <div className="flex flex-col md:flex-row gap-4 justify-center mb-6">
@@ -90,6 +193,7 @@ export default function ServicesPage() {
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder={t('client.pages.public.services.searchPlaceholder')}
               className="pl-10"
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
           </div>
           <div className="relative flex-1 max-w-md">
@@ -99,6 +203,7 @@ export default function ServicesPage() {
               onChange={(e) => setCityInput(e.target.value)}
               placeholder={t('client.pages.public.services.locationPlaceholder')}
               className="pl-10"
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
           </div>
           <Button onClick={handleSearch}>
@@ -114,19 +219,19 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-400px)]">
+        <div className="lg:col-span-1 flex flex-col">
           {loading ? (
-            <p className="text-center">Chargement...</p>
+            <Spinner />
           ) : error ? (
             <p className="text-red-500 text-center">{error}</p>
           ) : (
-            <ScrollArea className="h-[calc(100vh-250px)]">
+            <ScrollArea className="flex-1">
               <div className="pr-4 space-y-4">
                 {services.map((service) => (
                   <Card
                     key={service.service_id}
-                    className={`overflow-hidden cursor-pointer transition-all coucou ${
+                    className={`overflow-hidden cursor-pointer transition-all ${
                       selectedService?.service_id === service?.service_id
                         ? 'border-primary'
                         : 'hover:shadow-md'
@@ -139,9 +244,9 @@ export default function ServicesPage() {
                         alt={service?.name}
                         className="w-full h-full object-cover"
                       />
-                      <div className="absolute top-2 right-2 rounded-full px-2 py-1 text-xs font-medium flex items-center bg-white shadow">
+                      <div className="absolute top-2 right-2 rounded-full px-2 py-1 text-xs font-medium flex items-center bg-accent shadow">
                         <Star className="w-3 h-3 text-yellow-500 mr-1" />
-                        {service?.rate}
+                        {Math.round((service?.rate ?? 0) * 2) / 2}
                       </div>
                     </div>
                     <CardContent className="p-4">
@@ -166,31 +271,52 @@ export default function ServicesPage() {
             </ScrollArea>
           )}
 
-          <Pagination className="mt-4">
-            <PaginationContent>
-              {currentPage > 1 && (
+          {pagination.totalPages > 1 && (
+            <Pagination className="mt-4 flex-shrink-0">
+              <PaginationContent>
                 <PaginationItem>
-                  <PaginationPrevious href="#" onClick={() => handlePageChange(currentPage - 1)} />
+                  <PaginationPrevious 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handlePreviousPage();
+                    }}
+                    className={pagination.currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
                 </PaginationItem>
-              )}
-              {Array.from({ length: totalPages }).map((_, index) => (
-                <PaginationItem key={index}>
-                  <PaginationLink
-                    href="#"
-                    onClick={() => handlePageChange(index + 1)}
-                    isActive={currentPage === index + 1}
-                  >
-                    {index + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-              {currentPage < totalPages && (
+                
+                {generatePageNumbers().map((page, index) => (
+                  <PaginationItem key={index}>
+                    {page === '...' ? (
+                      <span className="px-3 py-2">...</span>
+                    ) : (
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(page as number);
+                        }}
+                        isActive={pagination.currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    )}
+                  </PaginationItem>
+                ))}
+                
                 <PaginationItem>
-                  <PaginationNext href="#" onClick={() => handlePageChange(currentPage + 1)} />
+                  <PaginationNext 
+                    href="#" 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNextPage();
+                    }}
+                    className={pagination.currentPage === pagination.totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
                 </PaginationItem>
-              )}
-            </PaginationContent>
-          </Pagination>
+              </PaginationContent>
+            </Pagination>
+          )}
         </div>
 
         <div className="lg:col-span-2">
@@ -208,7 +334,9 @@ export default function ServicesPage() {
                     <div className="text-right">
                       <div className="flex items-center justify-end mb-1">
                         <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                        <span className="font-medium">{selectedService?.rate}</span>
+                        <span className="font-medium">
+                          {Math.round((selectedService?.rate ?? 0) * 2) / 2}
+                        </span>
                       </div>
                       <div className="flex items-center text-sm">
                         <Clock className="w-3 h-3 mr-1" />
@@ -237,14 +365,14 @@ export default function ServicesPage() {
                       </h3>
                       <div className="flex items-center">
                         <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                        <span>{selectedService?.rate}</span>
+                        <span>{Math.round((selectedService?.rate ?? 0) * 2) / 2}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="mb-6">
                     <h3 className="font-semibold text-lg mb-2">{t('client.pages.public.services.description')}</h3>
-                    <p className="text-gray-700">{selectedService?.description}</p>
+                    <p>{selectedService?.description}</p>
                     <div className="mt-4 p-4">
                       <div className="flex justify-between items-center">
                         <p className="font-medium">{t('client.pages.public.services.price')}</p>
@@ -290,11 +418,9 @@ export default function ServicesPage() {
                     </div>
                   </div>
                 </CardContent>
-                  {isClient && (
-                <TakeAppointment duration={60} service_id={selectedService.service_id}/>
-                  )}
 
                 <CardFooter className="border-t pt-4">
+                  {isClient && <TakeAppointment duration={60} service_id={selectedService.service_id} />}
                 </CardFooter>
               </div>
             ) : (
@@ -313,7 +439,7 @@ export default function ServicesPage() {
 
       <Drawer>
         <DrawerTrigger asChild>
-          <Button className="lg:hidden fixed bottom-4 right-4 text-white">
+          <Button className="lg:hidden fixed bottom-4 right-4 text-foreground">
             {t('client.pages.public.services.viewDetails')}
           </Button>
         </DrawerTrigger>
@@ -359,8 +485,8 @@ export default function ServicesPage() {
           </div>
           <DrawerFooter>
             <DrawerClose asChild>
-            {isClient && (
-                <TakeAppointment duration={60} service_id={selectedService?.service_id || ""}/>
+              {isClient && (
+                <TakeAppointment duration={60} service_id={selectedService?.service_id || ""} />
               )}
             </DrawerClose>
           </DrawerFooter>

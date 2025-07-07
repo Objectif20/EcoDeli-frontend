@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Check, ChevronsUpDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
@@ -71,18 +71,21 @@ interface LocationSelectorProps {
   disabled?: boolean
   onCountryChange?: (country: CountryProps | null) => void
   onStateChange?: (state: StateProps | null) => void
-  enableStateSelection?: boolean // New prop to enable state selection
+  enableStateSelection?: boolean
+  // Nouvelles props pour gérer la valeur initiale
+  defaultCountryName?: string
+  defaultStateName?: string
 }
 
 const LocationSelector = ({
   disabled,
   onCountryChange,
   onStateChange,
-  enableStateSelection = false, // Default to false if not provided
+  enableStateSelection = false,
+  defaultCountryName,
+  defaultStateName,
 }: LocationSelectorProps) => {
-  const [selectedCountry, setSelectedCountry] = useState<CountryProps | null>(
-    null,
-  )
+  const [selectedCountry, setSelectedCountry] = useState<CountryProps | null>(null)
   const [selectedState, setSelectedState] = useState<StateProps | null>(null)
   const [openCountryDropdown, setOpenCountryDropdown] = useState(false)
   const [openStateDropdown, setOpenStateDropdown] = useState(false)
@@ -90,6 +93,33 @@ const LocationSelector = ({
   // Cast imported JSON data to their respective types
   const countriesData = countries as CountryProps[]
   const statesData = states as StateProps[]
+
+  // Effet pour initialiser le pays sélectionné basé sur defaultCountryName
+  useEffect(() => {
+    if (defaultCountryName && !selectedCountry) {
+      const foundCountry = countriesData.find(
+        country => country.name.toLowerCase() === defaultCountryName.toLowerCase()
+      )
+      if (foundCountry) {
+        setSelectedCountry(foundCountry)
+        onCountryChange?.(foundCountry)
+      }
+    }
+  }, [defaultCountryName, selectedCountry, onCountryChange])
+
+  // Effet pour initialiser l'état sélectionné basé sur defaultStateName
+  useEffect(() => {
+    if (defaultStateName && selectedCountry && !selectedState) {
+      const foundState = statesData.find(
+        state => state.name.toLowerCase() === defaultStateName.toLowerCase() && 
+                state.country_id === selectedCountry.id
+      )
+      if (foundState) {
+        setSelectedState(foundState)
+        onStateChange?.(foundState)
+      }
+    }
+  }, [defaultStateName, selectedCountry, selectedState, onStateChange])
 
   // Filter states for selected country
   const availableStates = statesData.filter(
@@ -130,13 +160,13 @@ const LocationSelector = ({
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[300px] p-0">
+        <PopoverContent className="w-[350px] p-0 overflow-hidden">
           <Command>
             <CommandInput placeholder="Recherchez un pays..." />
             <CommandList>
               <CommandEmpty>No country found.</CommandEmpty>
               <CommandGroup>
-                <ScrollArea className="h-[300px]">
+                <ScrollArea className="h-[290px]">
                   {countriesData.map((country) => (
                     <CommandItem
                       key={country.id}
@@ -188,13 +218,13 @@ const LocationSelector = ({
               <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0">
+          <PopoverContent className="w-[350px] max-h-[350px] p-0 overflow-hidden">
             <Command>
               <CommandInput placeholder="Search state..." />
               <CommandList>
                 <CommandEmpty>No state found.</CommandEmpty>
                 <CommandGroup>
-                  <ScrollArea className="h-[300px]">
+                  <ScrollArea className="h-[290px]">
                     {availableStates.map((state) => (
                       <CommandItem
                         key={state.id}

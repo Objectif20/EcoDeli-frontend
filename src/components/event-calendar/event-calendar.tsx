@@ -18,7 +18,6 @@ import {
   ChevronRightIcon,
 } from "lucide-react";
 import {
-  addHoursToDate,
   AgendaDaysToShow,
   AgendaView,
   CalendarEvent,
@@ -132,8 +131,11 @@ export function EventCalendar({
   };
 
   const handleEventSelect = (event: CalendarEvent) => {
-    setSelectedEvent(event);
-    setIsEventDialogOpen(true);
+    // Seulement ouvrir la dialog si l'événement a un ID (donc il existe déjà)
+    if (event.id) {
+      setSelectedEvent(event);
+      setIsEventDialogOpen(true);
+    }
   };
 
   const getCleanView = (view : string) => {
@@ -163,16 +165,11 @@ export function EventCalendar({
       startTime.setSeconds(0);
       startTime.setMilliseconds(0);
     }
-
-    const newEvent: CalendarEvent = {
-      id: "",
-      title: "",
-      start: startTime,
-      end: addHoursToDate(startTime, 1),
-      allDay: false,
-    };
-    setSelectedEvent(newEvent);
-    setIsEventDialogOpen(true);
+    
+    // Ne pas ouvrir automatiquement la dialog pour les nouveaux événements
+    // Tu peux traiter la création d'événement ici selon tes besoins
+    // Par exemple, appeler directement onEventAdd ou afficher un autre type de modal
+    console.log("Nouvel événement créé à:", startTime);
   };
 
   const capitalizeFirstLetter = (string : string) => {

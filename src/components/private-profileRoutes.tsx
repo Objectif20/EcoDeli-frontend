@@ -22,7 +22,7 @@ const PrivateProfileRoutes: React.FC<PrivateProfileRoutesProps> = ({ requiredPro
     fetchData();
   }, [dispatch]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div></div>;
 
   const hasAccess = requiredProfiles.some(profile => user?.profile.includes(profile));
 

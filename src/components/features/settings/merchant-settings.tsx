@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +11,7 @@ import { ProfileAPI } from "@/api/profile.api";
 
 const MerchantSettings: React.FC = () => {
   const { t } = useTranslation();
+  const [initialData, setInitialData] = useState<any>(null);
 
   const formSchema = z.object({
     company_name: z.string().min(1, t("client.pages.office.settings.merchant.companyNameRequired")),
@@ -48,6 +49,7 @@ const MerchantSettings: React.FC = () => {
           country: settings.country || "",
           phone: settings.phone || "",
         });
+        setInitialData(settings);
       } catch (error) {
         console.error("Failed to fetch common settings:", error);
       }
@@ -144,11 +146,12 @@ const MerchantSettings: React.FC = () => {
                   <FormItem>
                     <FormLabel>{t("client.pages.office.settings.merchant.country")}</FormLabel>
                     <LocationSelector
-                      onCountryChange={(country) => {
-                        field.onChange(country?.name || '');
-                      }}
-                      enableStateSelection={false}
-                    />
+                        defaultCountryName={initialData?.country}
+                        onCountryChange={(country) => {
+                          field.onChange(country?.name || '');
+                        }}
+                        enableStateSelection={false}
+                      />
                     <FormMessage />
                   </FormItem>
                 )}

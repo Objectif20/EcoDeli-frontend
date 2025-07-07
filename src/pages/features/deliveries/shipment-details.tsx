@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { MapPin, AlertTriangle, FileText } from "lucide-react"
+import { MapPin, AlertTriangle } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -161,25 +161,19 @@ export default function ShipmentsDetailsOfficePage() {
                 </div>
                 <p className="text-sm text-foreground">{t("client.pages.office.shipment.details.initialPrice")}: {delivery.details.initial_price} €</p>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" className="flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  {t("client.pages.office.shipment.details.viewInvoice")}
-                </Button>
-              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
       <Tabs defaultValue="overview" onValueChange={setActiveTab} className="w-full mt-6">
-        <TabsList className="grid grid-cols-3 mb-6">
-          <TabsTrigger value="overview">{t("client.pages.office.shipment.details.overview")}</TabsTrigger>
-          <TabsTrigger value="packages">{t("client.pages.office.shipment.details.packages")} ({delivery.package.length})</TabsTrigger>
-          {delivery.steps.some(step => step.id !== -1) && (
-            <TabsTrigger value="steps">{t("client.pages.office.shipment.details.stepsTab")} ({delivery.steps.filter(step => step.id !== -1).length})</TabsTrigger>
-          )}
-        </TabsList>
+          <TabsList className={`grid ${delivery.steps.some(step => step.id !== -1) ? 'grid-cols-3' : 'grid-cols-2'} mb-6`}>
+            <TabsTrigger value="overview">{t("client.pages.office.shipment.details.overview")}</TabsTrigger>
+            <TabsTrigger value="packages">{t("client.pages.office.shipment.details.packages")} ({delivery.package.length})</TabsTrigger>
+            {delivery.steps.some(step => step.id !== -1) && (
+              <TabsTrigger value="steps">{t("client.pages.office.shipment.details.stepsTab")} ({delivery.steps.filter(step => step.id !== -1).length})</TabsTrigger>
+            )}
+          </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <Card>

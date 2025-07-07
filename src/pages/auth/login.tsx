@@ -16,6 +16,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/inputPassword";
 
 export default function LoginPage() {
   const dispatch = useDispatch();
@@ -38,6 +39,10 @@ export default function LoginPage() {
     try {
       const res = await loginUser(email, password);
 
+
+      if (res.confirmed === false) {
+        setError("Votre compte n'est pas confirmé. Un nouvel e-mail de confirmation a été envoyé.");
+      }
       if (res.twoFactorRequired) {
         setIs2faRequired(true);
       } else {
@@ -122,7 +127,7 @@ export default function LoginPage() {
                           {t("pages.connexion.forgotPassword")}
                         </Link>
                     </div>
-                    <Input
+                    <PasswordInput
                       id="password"
                       type="password"
                       value={password}

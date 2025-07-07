@@ -15,6 +15,7 @@ const ReportSettings: React.FC = () => {
   const user = useSelector((state: RootState & { user: { user: any } }) => state.user.user);
 
   const [description, setDescription] = useState<string>("");
+  const [key, setKey] = useState<number>(0);
 
   const isProvider = user?.profile.includes('PROVIDER');
   const isClient = user?.profile.includes('CLIENT');
@@ -28,17 +29,23 @@ const ReportSettings: React.FC = () => {
     }));
   }, [dispatch, t]);
 
-  const handleSubmit = () => {
-    console.log("Contenu du signalement :", description);
+  const handleSubmit = async () => {
+    if (!description.trim()) {
+      toast.error(t('client.pages.office.settings.reports.emptyContent') || "Le contenu du signalement ne peut pas être vide");
+      return;
+    }
+
     try {
-        ProfileAPI.createReport(description)
-          .then(() => {
-            console.log("Signalement envoyé avec succès !");
-            setDescription("");
-            toast.success(t('client.pages.office.settings.reports.success'));
-          })
+      await ProfileAPI.createReport(description);
+      console.log("Signalement envoyé avec succès !");
+      
+      setDescription("");
+      setKey(prev => prev + 1);
+      
+      toast.success(t('client.pages.office.settings.reports.success'));
     } catch (error) {
       console.error("Erreur lors de l'envoi du signalement :", error);
+      toast.error(t('client.pages.office.settings.reports.error') || "Erreur lors de l'envoi du signalement");
     }
   };
 
@@ -62,22 +69,25 @@ const ReportSettings: React.FC = () => {
           <Link to="/office/reports" className="font-semibold text-primary active-link">{t('client.pages.office.settings.reports.reports')}</Link>
         </nav>
         <div className="grid gap-6">
-            <div>
+          <div>
             <h3 className="text-lg font-medium">{t('client.pages.office.settings.reports.reportsTitle')}</h3>
             <p className="text-sm text-muted-foreground">{t('client.pages.office.settings.reports.reportsDescription')}</p>
           </div>
           <MinimalTiptapEditorTextOnly
-              value={description}
-              onChange={(value) => setDescription(value?.toString() || "")}
-              className="w-full"
-              editorContentClassName="p-5"
-              output="html"
-              placeholder={t('client.pages.office.settings.reports.placeholder')}
-              autofocus
-              editable={true}
-              editorClassName="focus:outline-none"
+            key={key}
+            value={description}
+            onChange={(value) => setDescription(value?.toString() || "")}
+            className="w-full"
+            editorContentClassName="p-5"
+            output="html"
+            placeholder={t('client.pages.office.settings.reports.placeholder')}
+            autofocus
+            editable={true}
+            editorClassName="focus:outline-none"
           />
-          <Button onClick={handleSubmit}>{t('client.pages.office.settings.reports.sendReport')}</Button>
+          <Button onClick={handleSubmit} disabled={!description.trim()}>
+            {t('client.pages.office.settings.reports.sendReport')}
+          </Button>
         </div>
       </div>
     </div>

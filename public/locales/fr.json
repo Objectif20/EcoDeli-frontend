@@ -16,6 +16,15 @@
       "erreurOtp": "Votre code OTP est invalide",
       "forgotPassword": "Mot de passe oublié ?"
     },
+    "validation": {
+      "titreChargement": "Validation du compte...",
+      "messageChargement": "Veuillez patienter pendant la validation de votre compte.",
+      "titreSucces": "Compte validé !",
+      "messageSucces": "Votre compte a bien été activé. Vous pouvez maintenant vous connecter.",
+      "boutonConnexion": "Se connecter",
+      "titreErreur": "Erreur de validation",
+      "messageErreur": "Une erreur est survenue lors de la validation du compte. Merci de réessayer plus tard."
+    },
     "erreurs": {
       "404": {
         "titre": "Erreur 404",
@@ -2484,6 +2493,12 @@
                   "price": "Prix",
                   "status": "Statut"
                 }
+              },
+              "status": {
+                "pending": "En attente",
+                "taken": "Prise en charge",
+                "finished": "Terminée",
+                "validated": "Validée"
               }
             },
             "reviews": {

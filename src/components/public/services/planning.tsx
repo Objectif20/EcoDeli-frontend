@@ -99,7 +99,6 @@ const TakeAppointment: React.FC<TakeAppointmentProps> = ({ duration, service_id 
       allSlots.push(...generateSlots(from, to, duration));
     };
 
-    // Affiche les créneaux même si morning/afternoon/evening sont false mais que les heures sont présentes
     addSlots(provider.morning_start_time, provider.morning_end_time);
     addSlots(provider.afternoon_start_time, provider.afternoon_end_time);
     addSlots(provider.evening_start_time, provider.evening_end_time);

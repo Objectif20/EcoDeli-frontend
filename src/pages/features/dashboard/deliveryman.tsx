@@ -7,10 +7,10 @@ import PackageMap from "@/components/features/dashboard/deliveryman/package-map"
 import YourPlanning from "@/components/features/dashboard/deliveryman/your-planning";
 import CurrentBalance from "@/components/features/dashboard/provider/current-balance";
 
-export default function DeliveryManDashboard() {
+export default function DeliveryManDashboard({ name = "" }: { name?: string }) {
     return (
       <div className="w-full p-4">
-        <h1 className="text-2xl font-bold mb-6">Bienvenue sur votre espace transporteur, Frédéric</h1>
+        <h1 className="text-2xl font-bold mb-6">Bienvenue sur votre espace transporteur, {name}</h1>
 
         <div className="grid grid-cols-6 lg:grid-cols-12 gap-4 w-full">
           <div className="col-span-6 lg:col-span-3  rounded-xl">

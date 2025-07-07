@@ -6,10 +6,10 @@ import Meteo from "@/components/features/dashboard/client/meteo";
 import { NumberDeliveries } from "@/components/features/dashboard/client/number-deliveries";
 import { PackageStats } from "@/components/features/dashboard/client/piechart";
 
-export default function MerchantDashboard() {
+export default function MerchantDashboard({ name = "" }: { name?: string }) {
     return (
       <div className="w-full p-4">
-          <h1 className="text-2xl font-bold mb-6">Bienvenue sur votre espace commerçant, Frédéric</h1>
+          <h1 className="text-2xl font-bold mb-6">Bienvenue sur votre espace commerçant, {name}</h1>
 
         <div className="grid grid-cols-6 lg:grid-cols-12 gap-4 w-full">
           <div className="col-span-6 lg:col-span-6 lg:row-span-2  lg:h-full rounded-xl">

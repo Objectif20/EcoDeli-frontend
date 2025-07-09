@@ -40,42 +40,32 @@ import LocationSelector from "@/components/ui/location-input";
 const createFormSchema = (t: (key: string) => string) => {
   return z
     .object({
-      first_name: z
-        .string()
-        .min(2, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.firstNameMin"
-          ),
-        }),
-      last_name: z
-        .string()
-        .min(2, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.lastNameMin"
-          ),
-        }),
-      email: z
-        .string()
-        .email({
-          message: t(
-            "client.pages.public.register.providerProfile.validation.invalidEmail"
-          ),
-        }),
-      password: z
-        .string()
-        .min(8, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.passwordMin"
-          ),
-        }),
+      first_name: z.string().min(2, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.firstNameMin"
+        ),
+      }),
+      last_name: z.string().min(2, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.lastNameMin"
+        ),
+      }),
+      email: z.string().email({
+        message: t(
+          "client.pages.public.register.providerProfile.validation.invalidEmail"
+        ),
+      }),
+      password: z.string().min(8, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.passwordMin"
+        ),
+      }),
       confirm_password: z.string(),
-      company_name: z
-        .string()
-        .min(2, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.companyNameMin"
-          ),
-        }),
+      company_name: z.string().min(2, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.companyNameMin"
+        ),
+      }),
       siret: z
         .string()
         .min(14, {
@@ -89,55 +79,41 @@ const createFormSchema = (t: (key: string) => string) => {
           "client.pages.public.register.providerProfile.validation.activitySector"
         ),
       }),
-      address: z
-        .string()
-        .min(1, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.addressRequired"
-          ),
-        }),
-      postal_code: z
-        .string()
-        .min(1, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.postalCodeRequired"
-          ),
-        }),
-      city: z
-        .string()
-        .min(1, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.cityRequired"
-          ),
-        }),
-      country: z
-        .string()
-        .min(1, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.countryRequired"
-          ),
-        }),
-      phone: z
-        .string()
-        .min(1, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.phoneRequired"
-          ),
-        }),
-      description: z
-        .string()
-        .min(1, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.descriptionRequired"
-          ),
-        }),
-      language_id: z
-        .string()
-        .min(1, {
-          message: t(
-            "client.pages.public.register.providerProfile.validation.languageRequired"
-          ),
-        }),
+      address: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.addressRequired"
+        ),
+      }),
+      postal_code: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.postalCodeRequired"
+        ),
+      }),
+      city: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.cityRequired"
+        ),
+      }),
+      country: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.countryRequired"
+        ),
+      }),
+      phone: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.phoneRequired"
+        ),
+      }),
+      description: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.descriptionRequired"
+        ),
+      }),
+      language_id: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.languageRequired"
+        ),
+      }),
       newsletter: z.boolean().default(false),
       terms: z.boolean().refine((val) => val === true, {
         message: t(

@@ -1,90 +1,118 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
-import { Truck } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { useTranslation } from "react-i18next"
-import { BarcodeScanner } from "@/components/barcodeScanner"
-import { DeliveriesAPI } from "@/api/deliveries.api"
-import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui/input-otp"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { Truck } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "react-i18next";
+import { BarcodeScanner } from "@/components/barcodeScanner";
+import { DeliveriesAPI } from "@/api/deliveries.api";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
+import { Button } from "@/components/ui/button";
+import L from "leaflet";
+import { Polyline } from "react-leaflet";
+import PackageIconUrl from "@/assets/illustrations/package.svg?url";
+
+const departureIcon = new L.Icon({
+  iconUrl: PackageIconUrl,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+  shadowUrl: undefined,
+  shadowSize: undefined,
+  shadowAnchor: undefined,
+});
+
+const arrivalIcon = new L.Icon({
+  iconUrl: PackageIconUrl,
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+  shadowUrl: undefined,
+  shadowSize: undefined,
+  shadowAnchor: undefined,
+});
 
 type DeliveryProps = {
   delivery: {
-    id: string
-    from: string
-    to: string
-    status: string
-    pickupDate: string | null
-    estimatedDeliveryDate: string | null
+    id: string;
+    from: string;
+    to: string;
+    status: string;
+    pickupDate: string | null;
+    estimatedDeliveryDate: string | null;
     coordinates: {
-      origin: [number, number]
-      destination: [number, number]
-    }
-    progress: number
-  }
-  onUpdate: () => void
-}
+      origin: [number, number];
+      destination: [number, number];
+    };
+    progress: number;
+  };
+  onUpdate: () => void;
+};
 
 export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
-  const { t } = useTranslation()
-  const [isMounted, setIsMounted] = useState(false)
-  const [showScanner, setShowScanner] = useState(false)
-  const [scannedCode, setScannedCode] = useState<string | null>(null)
-  const [otpCode, setOtpCode] = useState<string>("")
+  const { t } = useTranslation();
+  const [isMounted, setIsMounted] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scannedCode, setScannedCode] = useState<string | null>(null);
+  const [otpCode, setOtpCode] = useState<string>("");
 
   useEffect(() => {
-    setIsMounted(true)
-  }, [])
+    setIsMounted(true);
+  }, []);
 
   const handleScanResult = (code: string) => {
-    setScannedCode(code)
-    setShowScanner(false)
-  }
+    setScannedCode(code);
+    setShowScanner(false);
+  };
 
   const handleTakeDelivery = async () => {
     if (scannedCode) {
       try {
-        await DeliveriesAPI.takeDeliveryPackage(delivery.id, scannedCode)
-        onUpdate()
+        await DeliveriesAPI.takeDeliveryPackage(delivery.id, scannedCode);
+        onUpdate();
       } catch (error) {
-        console.error("Error taking delivery package:", error)
+        console.error("Error taking delivery package:", error);
       }
     }
-  }
+  };
 
   const handleFinishDelivery = async () => {
     try {
-      await DeliveriesAPI.finishedDelivery(delivery.id)
-      onUpdate()
+      await DeliveriesAPI.finishedDelivery(delivery.id);
+      onUpdate();
     } catch (error) {
-      console.error("Error finishing delivery:", error)
+      console.error("Error finishing delivery:", error);
     }
-  }
+  };
 
   const handleValidateDelivery = async () => {
     try {
-      await DeliveriesAPI.validateDeliveryWithCode(delivery.id, otpCode)
-      onUpdate()
+      await DeliveriesAPI.validateDeliveryWithCode(delivery.id, otpCode);
+      onUpdate();
     } catch (error) {
-      console.error("Error validating delivery:", error)
+      console.error("Error validating delivery:", error);
     }
-  }
+  };
 
   const getBadgeColor = (status: string) => {
     switch (status) {
       case "En cours de livraison":
-        return "bg-primary/20 text-primary hover:bg-primary/20"
+        return "bg-primary/20 text-primary hover:bg-primary/20";
       case "En transit":
-        return "bg-blue-100 text-blue-700 hover:bg-blue-100"
+        return "bg-blue-100 text-blue-700 hover:bg-blue-100";
       case "En préparation":
-        return "bg-amber-100 text-amber-700 hover:bg-amber-100"
+        return "bg-amber-100 text-amber-700 hover:bg-amber-100";
       default:
-        return "bg-gray-100 text-gray-700 hover:bg-gray-100"
+        return "bg-gray-100 text-gray-700 hover:bg-gray-100";
     }
-  }
+  };
 
   return (
     <Card className="rounded-xl">
@@ -99,7 +127,12 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
             })}
           </CardTitle>
         </div>
-        <Badge variant="outline" className={`${getBadgeColor(delivery.status)} px-4 py-1.5 rounded-full`}>
+        <Badge
+          variant="outline"
+          className={`${getBadgeColor(
+            delivery.status
+          )} px-4 py-1.5 rounded-full`}
+        >
           {t("client.pages.office.deliveryman.ongoingDeliveries.pending")}
         </Badge>
       </CardHeader>
@@ -114,16 +147,38 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
               zoomControl={false}
             >
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              <Marker position={delivery.coordinates.origin}>
+              <Marker
+                position={delivery.coordinates.origin}
+                icon={departureIcon}
+              >
                 <Popup>
-                  {t("client.pages.office.deliveryman.ongoingDeliveries.departure")} {delivery.from}
+                  {t(
+                    "client.pages.office.deliveryman.ongoingDeliveries.departure"
+                  )}{" "}
+                  {delivery.from}
                 </Popup>
               </Marker>
-              <Marker position={delivery.coordinates.destination}>
+              <Marker
+                position={delivery.coordinates.destination}
+                icon={arrivalIcon}
+              >
                 <Popup>
-                  {t("client.pages.office.deliveryman.ongoingDeliveries.arrival")} {delivery.to}
+                  {t(
+                    "client.pages.office.deliveryman.ongoingDeliveries.arrival"
+                  )}{" "}
+                  {delivery.to}
                 </Popup>
               </Marker>
+
+              <Polyline
+                positions={[
+                  delivery.coordinates.origin as L.LatLngTuple,
+                  delivery.coordinates.destination as L.LatLngTuple,
+                ]}
+                color="#2E7D32"
+                weight={3}
+                opacity={0.7}
+              />
             </MapContainer>
           )}
         </div>
@@ -150,8 +205,16 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
                 <div className="flex items-center mt-2">
                   <div className="bg-primary w-4 h-4 rounded-full"></div>
                   <div className="text-sm text-foreground ml-2">
-                    {t("client.pages.office.deliveryman.ongoingDeliveries.packageTransmitted")}
-                    <div className="font-semibold">{delivery.pickupDate || "N/A"}</div>
+                    {t(
+                      "client.pages.office.deliveryman.ongoingDeliveries.packageTransmitted"
+                    )}
+                    <div className="font-semibold">
+                      {delivery.pickupDate
+                        ? new Date(delivery.pickupDate).toLocaleDateString(
+                            "fr-FR"
+                          )
+                        : "N/A"}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -160,8 +223,16 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
                 <span className="text-xl font-semibold">{delivery.to}</span>
                 <div className="flex items-center mt-2 justify-end">
                   <div className="text-sm text-foreground mr-2 text-right">
-                    {t("client.pages.office.deliveryman.ongoingDeliveries.estimatedArrivalDate")}
-                    <div className="font-semibold">{delivery.estimatedDeliveryDate || "N/A"}</div>
+                    {t(
+                      "client.pages.office.deliveryman.ongoingDeliveries.estimatedArrivalDate"
+                    )}
+                    <div className="font-semibold">
+                      {delivery.estimatedDeliveryDate
+                        ? new Date(
+                            delivery.estimatedDeliveryDate
+                          ).toLocaleDateString("fr-FR")
+                        : "N/A"}
+                    </div>
                   </div>
                   <div className="bg-foreground w-4 h-4 rounded-full"></div>
                 </div>
@@ -173,23 +244,40 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
             <div className="mt-8">
               {!showScanner ? (
                 <div className="flex flex-wrap gap-2">
-                  <Button onClick={() => setShowScanner(true)} >
-                    📦 {t("client.pages.office.deliveryman.ongoingDeliveries.scanPackage")}
+                  <Button onClick={() => setShowScanner(true)}>
+                    📦{" "}
+                    {t(
+                      "client.pages.office.deliveryman.ongoingDeliveries.scanPackage"
+                    )}
                   </Button>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-4 mt-4">
                   <BarcodeScanner onResult={handleScanResult} />
-                  <Button onClick={() => setShowScanner(false)} variant={"destructive"}>
-                    ❌ {t("client.pages.office.deliveryman.ongoingDeliveries.cancelScan")}
+                  <Button
+                    onClick={() => setShowScanner(false)}
+                    variant={"destructive"}
+                  >
+                    ❌{" "}
+                    {t(
+                      "client.pages.office.deliveryman.ongoingDeliveries.cancelScan"
+                    )}
                   </Button>
                 </div>
               )}
               {scannedCode && (
                 <div className="mt-2">
-                  <p className="font-medium">✅ {t("client.pages.office.deliveryman.ongoingDeliveries.codeScanned")} {scannedCode}</p>
-                  <Button onClick={handleTakeDelivery} >
-                    {t("client.pages.office.deliveryman.ongoingDeliveries.takePackage")}
+                  <p className="font-medium">
+                    ✅{" "}
+                    {t(
+                      "client.pages.office.deliveryman.ongoingDeliveries.codeScanned"
+                    )}{" "}
+                    {scannedCode}
+                  </p>
+                  <Button onClick={handleTakeDelivery}>
+                    {t(
+                      "client.pages.office.deliveryman.ongoingDeliveries.takePackage"
+                    )}
                   </Button>
                 </div>
               )}
@@ -199,7 +287,9 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
           {delivery.status === "taken" && (
             <div className="mt-8 flex flex-wrap gap-2">
               <Button onClick={handleFinishDelivery}>
-                {t("client.pages.office.deliveryman.ongoingDeliveries.finishDelivery")}
+                {t(
+                  "client.pages.office.deliveryman.ongoingDeliveries.finishDelivery"
+                )}
               </Button>
             </div>
           )}
@@ -221,7 +311,9 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
               </InputOTP>
               <div className="flex flex-wrap gap-2 mt-2">
                 <Button onClick={handleValidateDelivery}>
-                  {t("client.pages.office.deliveryman.ongoingDeliveries.validateDelivery")}
+                  {t(
+                    "client.pages.office.deliveryman.ongoingDeliveries.validateDelivery"
+                  )}
                 </Button>
               </div>
             </div>
@@ -229,5 +321,5 @@ export default function DeliveryCard({ delivery, onUpdate }: DeliveryProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

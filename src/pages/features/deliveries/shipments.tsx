@@ -184,7 +184,7 @@ export default function ShipmentsListPage() {
                         {shipment.departure.city}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {formatDate(shipment.departure_date)}
+                        {formatDate(shipment.theoretical_departure_date)}
                       </p>
                     </div>
                   </div>

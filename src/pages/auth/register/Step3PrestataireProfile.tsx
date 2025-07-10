@@ -1,66 +1,150 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { useContext, useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import { RegisterContext } from "./RegisterContext"
-import { Textarea } from "@/components/ui/textarea"
-import { Language, RegisterApi } from "@/api/register.api"
-import LocationSelector from "@/components/ui/location-input"
+import { RegisterContext } from "./RegisterContext";
+import { Textarea } from "@/components/ui/textarea";
+import { Language, RegisterApi } from "@/api/register.api";
+import LocationSelector from "@/components/ui/location-input";
 
 const createFormSchema = (t: (key: string) => string) => {
-  return z.object({
-    first_name: z.string().min(2, { message: t('client.pages.public.register.providerProfile.validation.firstNameMin') }),
-    last_name: z.string().min(2, { message: t('client.pages.public.register.providerProfile.validation.lastNameMin') }),
-    email: z.string().email({ message: t('client.pages.public.register.providerProfile.validation.invalidEmail') }),
-    password: z.string().min(8, { message: t('client.pages.public.register.providerProfile.validation.passwordMin') }),
-    confirm_password: z.string(),
-    company_name: z.string().min(2, { message: t('client.pages.public.register.providerProfile.validation.companyNameMin') }),
-    siret: z.string().min(14, { message: t('client.pages.public.register.providerProfile.validation.siretLength') }).max(14),
-    service_type: z.string({ required_error: t('client.pages.public.register.providerProfile.validation.activitySector') }),
-    address: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.addressRequired') }),
-    postal_code: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.postalCodeRequired') }),
-    city: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.cityRequired') }),
-    country: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.countryRequired') }),
-    phone: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.phoneRequired') }),
-    description: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.descriptionRequired') }),
-    language_id: z.string().min(1, { message: t('client.pages.public.register.providerProfile.validation.languageRequired') }),
-    newsletter: z.boolean().default(false),
-    terms: z.boolean().refine((val) => val === true, {
-      message: t('client.pages.public.register.providerProfile.validation.acceptTerms'),
-    }),
-  }).refine((data) => data.password === data.confirm_password, {
-    message: t('client.pages.public.register.providerProfile.validation.passwordMismatch'),
-    path: ["confirm_password"],
-  })
-}
+  return z
+    .object({
+      first_name: z.string().min(2, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.firstNameMin"
+        ),
+      }),
+      last_name: z.string().min(2, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.lastNameMin"
+        ),
+      }),
+      email: z.string().email({
+        message: t(
+          "client.pages.public.register.providerProfile.validation.invalidEmail"
+        ),
+      }),
+      password: z.string().min(8, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.passwordMin"
+        ),
+      }),
+      confirm_password: z.string(),
+      company_name: z.string().min(2, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.companyNameMin"
+        ),
+      }),
+      siret: z
+        .string()
+        .min(14, {
+          message: t(
+            "client.pages.public.register.providerProfile.validation.siretLength"
+          ),
+        })
+        .max(14),
+      service_type: z.string({
+        required_error: t(
+          "client.pages.public.register.providerProfile.validation.activitySector"
+        ),
+      }),
+      address: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.addressRequired"
+        ),
+      }),
+      postal_code: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.postalCodeRequired"
+        ),
+      }),
+      city: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.cityRequired"
+        ),
+      }),
+      country: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.countryRequired"
+        ),
+      }),
+      phone: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.phoneRequired"
+        ),
+      }),
+      description: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.descriptionRequired"
+        ),
+      }),
+      language_id: z.string().min(1, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.languageRequired"
+        ),
+      }),
+      newsletter: z.boolean().default(false),
+      terms: z.boolean().refine((val) => val === true, {
+        message: t(
+          "client.pages.public.register.providerProfile.validation.acceptTerms"
+        ),
+      }),
+    })
+    .refine((data) => data.password === data.confirm_password, {
+      message: t(
+        "client.pages.public.register.providerProfile.validation.passwordMismatch"
+      ),
+      path: ["confirm_password"],
+    });
+};
 
 export default function Step3PrestataireProfile() {
   const { t } = useTranslation();
   const formSchema = createFormSchema(t);
 
-  const { nextStep, setPrestataireInfo } = useContext(RegisterContext)
-  const [languages, setLanguages] = useState<Language[]>([])
-  const [, setCountry] = useState('FR');
-  const [, setCountryName] = useState('');
+  const { nextStep, setPrestataireInfo } = useContext(RegisterContext);
+  const [languages, setLanguages] = useState<Language[]>([]);
+  const [, setCountry] = useState("FR");
+  const [, setCountryName] = useState("");
 
   useEffect(() => {
     async function fetchLanguages() {
-      const languages = await RegisterApi.getLanguage()
-      setLanguages(languages.filter(lang => lang.active))
+      const languages = await RegisterApi.getLanguage();
+      setLanguages(languages.filter((lang) => lang.active));
     }
-    fetchLanguages()
-  }, [])
+    fetchLanguages();
+  }, []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -82,7 +166,7 @@ export default function Step3PrestataireProfile() {
       newsletter: false,
       terms: false,
     },
-  })
+  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { confirm_password, terms, ...dataToStore } = values;
@@ -97,7 +181,9 @@ export default function Step3PrestataireProfile() {
     if (!emailAvailable) {
       form.setError("email", {
         type: "manual",
-        message: t('client.pages.public.register.merchantProfile.emailAlreadyUsed'),
+        message: t(
+          "client.pages.public.register.merchantProfile.emailAlreadyUsed"
+        ),
       });
       hasError = true;
     }
@@ -105,7 +191,9 @@ export default function Step3PrestataireProfile() {
     if (!siretAvailable) {
       form.setError("siret", {
         type: "manual",
-        message: t('client.pages.public.register.merchantProfile.siretAlreadyUsed'),
+        message: t(
+          "client.pages.public.register.merchantProfile.siretAlreadyUsed"
+        ),
       });
       hasError = true;
     }
@@ -121,10 +209,10 @@ export default function Step3PrestataireProfile() {
       <Card className="max-w-2xl mx-auto">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center">
-            {t('client.pages.public.register.providerProfile.completeProfile')}
+            {t("client.pages.public.register.providerProfile.completeProfile")}
           </CardTitle>
           <CardDescription className="text-center">
-            {t('client.pages.public.register.providerProfile.fillInfo')}
+            {t("client.pages.public.register.providerProfile.fillInfo")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -136,9 +224,18 @@ export default function Step3PrestataireProfile() {
                   name="last_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.providerProfile.lastName')}</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.providerProfile.lastName"
+                        )}
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.lastName')} {...field} />
+                        <Input
+                          placeholder={t(
+                            "client.pages.public.register.providerProfile.placeholders.lastName"
+                          )}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -149,9 +246,18 @@ export default function Step3PrestataireProfile() {
                   name="first_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.providerProfile.firstName')}</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.providerProfile.firstName"
+                        )}
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.firstName')} {...field} />
+                        <Input
+                          placeholder={t(
+                            "client.pages.public.register.providerProfile.placeholders.firstName"
+                          )}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -164,9 +270,17 @@ export default function Step3PrestataireProfile() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('client.pages.public.register.providerProfile.email')}</FormLabel>
+                    <FormLabel>
+                      {t("client.pages.public.register.providerProfile.email")}
+                    </FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder={t('client.pages.public.register.providerProfile.placeholders.email')} {...field} />
+                      <Input
+                        type="email"
+                        placeholder={t(
+                          "client.pages.public.register.providerProfile.placeholders.email"
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -179,9 +293,19 @@ export default function Step3PrestataireProfile() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.providerProfile.password')}</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.providerProfile.password"
+                        )}
+                      </FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder={t('client.pages.public.register.providerProfile.placeholders.password')} {...field} />
+                        <Input
+                          type="password"
+                          placeholder={t(
+                            "client.pages.public.register.providerProfile.placeholders.password"
+                          )}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -192,9 +316,19 @@ export default function Step3PrestataireProfile() {
                   name="confirm_password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.providerProfile.confirmPassword')}</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.providerProfile.confirmPassword"
+                        )}
+                      </FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder={t('client.pages.public.register.providerProfile.placeholders.confirmPassword')} {...field} />
+                        <Input
+                          type="password"
+                          placeholder={t(
+                            "client.pages.public.register.providerProfile.placeholders.confirmPassword"
+                          )}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -207,9 +341,18 @@ export default function Step3PrestataireProfile() {
                 name="company_name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('client.pages.public.register.providerProfile.companyName')}</FormLabel>
+                    <FormLabel>
+                      {t(
+                        "client.pages.public.register.providerProfile.companyName"
+                      )}
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.companyName')} {...field} />
+                      <Input
+                        placeholder={t(
+                          "client.pages.public.register.providerProfile.placeholders.companyName"
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -221,9 +364,18 @@ export default function Step3PrestataireProfile() {
                 name="siret"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('client.pages.public.register.providerProfile.siretNumber')}</FormLabel>
+                    <FormLabel>
+                      {t(
+                        "client.pages.public.register.providerProfile.siretNumber"
+                      )}
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.siretNumber')} {...field} />
+                      <Input
+                        placeholder={t(
+                          "client.pages.public.register.providerProfile.placeholders.siretNumber"
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -235,18 +387,75 @@ export default function Step3PrestataireProfile() {
                 name="service_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t('client.pages.public.register.providerProfile.activitySector')}</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormLabel>
+                      {t(
+                        "client.pages.public.register.providerProfile.activitySector"
+                      )}
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t('client.pages.public.register.providerProfile.selectActivitySector')} />
+                          <SelectValue
+                            placeholder={t(
+                              "client.pages.public.register.providerProfile.selectActivitySector"
+                            )}
+                          />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="restaurant">Restaurant gastronomique</SelectItem>
-                        <SelectItem value="commerce">Commerce alimentaire</SelectItem>
+                        <SelectItem value="restaurant">
+                          Restaurant gastronomique
+                        </SelectItem>
+                        <SelectItem value="commerce">
+                          Commerce alimentaire
+                        </SelectItem>
                         <SelectItem value="agriculture">Agriculture</SelectItem>
-                        <SelectItem value="other">Autre</SelectItem>
+                        <SelectItem value="multimedia">Multimédia</SelectItem>
+                        <SelectItem value="voyage">
+                          Voyage / Tourisme
+                        </SelectItem>
+                        <SelectItem value="promenade">
+                          Promenade / Loisirs
+                        </SelectItem>
+                        <SelectItem value="sante">Santé / Bien-être</SelectItem>
+                        <SelectItem value="education">
+                          Éducation / Formation
+                        </SelectItem>
+                        <SelectItem value="informatique">
+                          Informatique / Développement
+                        </SelectItem>
+                        <SelectItem value="batiment">
+                          Bâtiment / Travaux publics
+                        </SelectItem>
+                        <SelectItem value="transport">
+                          Transport / Logistique
+                        </SelectItem>
+                        <SelectItem value="evenementiel">
+                          Événementiel
+                        </SelectItem>
+                        <SelectItem value="services_personne">
+                          Services à la personne
+                        </SelectItem>
+                        <SelectItem value="nettoyage">
+                          Nettoyage / Entretien
+                        </SelectItem>
+                        <SelectItem value="juridique">
+                          Juridique / Conseil
+                        </SelectItem>
+                        <SelectItem value="finance">
+                          Finance / Comptabilité
+                        </SelectItem>
+                        <SelectItem value="immobilier">Immobilier</SelectItem>
+                        <SelectItem value="communication">
+                          Communication / Marketing
+                        </SelectItem>
+                        <SelectItem value="artisanat">Artisanat</SelectItem>
+                        <SelectItem value="mode">Mode / Beauté</SelectItem>
+                        <SelectItem value="sport">Sport / Coaching</SelectItem>
+                        <SelectItem value="autre">Autre</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -260,9 +469,18 @@ export default function Step3PrestataireProfile() {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.providerProfile.address')}</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.providerProfile.address"
+                        )}
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.address')} {...field} />
+                        <Input
+                          placeholder={t(
+                            "client.pages.public.register.providerProfile.placeholders.address"
+                          )}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -275,9 +493,18 @@ export default function Step3PrestataireProfile() {
                     name="postal_code"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('client.pages.public.register.providerProfile.postalCode')}</FormLabel>
+                        <FormLabel>
+                          {t(
+                            "client.pages.public.register.providerProfile.postalCode"
+                          )}
+                        </FormLabel>
                         <FormControl>
-                          <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.postalCode')} {...field} />
+                          <Input
+                            placeholder={t(
+                              "client.pages.public.register.providerProfile.placeholders.postalCode"
+                            )}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -289,9 +516,18 @@ export default function Step3PrestataireProfile() {
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('client.pages.public.register.providerProfile.city')}</FormLabel>
+                        <FormLabel>
+                          {t(
+                            "client.pages.public.register.providerProfile.city"
+                          )}
+                        </FormLabel>
                         <FormControl>
-                          <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.city')} {...field} />
+                          <Input
+                            placeholder={t(
+                              "client.pages.public.register.providerProfile.placeholders.city"
+                            )}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -303,12 +539,16 @@ export default function Step3PrestataireProfile() {
                     name="country"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('client.pages.public.register.providerProfile.country')}</FormLabel>
+                        <FormLabel>
+                          {t(
+                            "client.pages.public.register.providerProfile.country"
+                          )}
+                        </FormLabel>
                         <LocationSelector
                           onCountryChange={(country) => {
-                            setCountry(country?.iso2 || 'FR');
-                            setCountryName(country?.name || '');
-                            field.onChange(country?.name || '');
+                            setCountry(country?.iso2 || "FR");
+                            setCountryName(country?.name || "");
+                            field.onChange(country?.name || "");
                           }}
                           enableStateSelection={false}
                         />
@@ -325,9 +565,18 @@ export default function Step3PrestataireProfile() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.providerProfile.phone')}</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.providerProfile.phone"
+                        )}
+                      </FormLabel>
                       <FormControl>
-                        <Input placeholder={t('client.pages.public.register.providerProfile.placeholders.phone')} {...field} />
+                        <Input
+                          placeholder={t(
+                            "client.pages.public.register.providerProfile.placeholders.phone"
+                          )}
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -339,16 +588,30 @@ export default function Step3PrestataireProfile() {
                   name="language_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.providerProfile.language')}</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.providerProfile.language"
+                        )}
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder={t('client.pages.public.register.providerProfile.selectLanguage')} />
+                            <SelectValue
+                              placeholder={t(
+                                "client.pages.public.register.providerProfile.selectLanguage"
+                              )}
+                            />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {languages.map(lang => (
-                            <SelectItem key={lang.language_id} value={lang.language_id}>
+                          {languages.map((lang) => (
+                            <SelectItem
+                              key={lang.language_id}
+                              value={lang.language_id}
+                            >
                               {lang.language_name}
                             </SelectItem>
                           ))}
@@ -364,9 +627,19 @@ export default function Step3PrestataireProfile() {
                   name="description"
                   render={({ field }) => (
                     <FormItem className="col-span-1 md:col-span-2">
-                      <FormLabel>{t('client.pages.public.register.providerProfile.description')}</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.providerProfile.description"
+                        )}
+                      </FormLabel>
                       <FormControl>
-                        <Textarea placeholder={t('client.pages.public.register.providerProfile.placeholders.description')} className="resize-none" {...field} />
+                        <Textarea
+                          placeholder={t(
+                            "client.pages.public.register.providerProfile.placeholders.description"
+                          )}
+                          className="resize-none"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -380,10 +653,17 @@ export default function Step3PrestataireProfile() {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                     <FormControl>
-                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </FormControl>
                     <div className="space-y-1 leading-none">
-                      <FormLabel>{t('client.pages.public.register.providerProfile.subscribeNewsletter')}</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.providerProfile.subscribeNewsletter"
+                        )}
+                      </FormLabel>
                     </div>
                   </FormItem>
                 )}
@@ -395,11 +675,25 @@ export default function Step3PrestataireProfile() {
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                     <FormControl>
-                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
                     </FormControl>
                     <div className="space-y-1 leading-none">
                       <FormLabel>
-                        {t('client.pages.public.register.providerProfile.acceptTerms', { link: <a href="#" className="text-primary underline">{t('client.pages.public.register.providerProfile.termsLink')}</a> })}
+                        {t(
+                          "client.pages.public.register.providerProfile.acceptTerms",
+                          {
+                            link: (
+                              <a href="#" className="text-primary underline">
+                                {t(
+                                  "client.pages.public.register.providerProfile.termsLink"
+                                )}
+                              </a>
+                            ),
+                          }
+                        )}
                       </FormLabel>
                       <FormMessage />
                     </div>
@@ -408,12 +702,12 @@ export default function Step3PrestataireProfile() {
               />
 
               <Button type="submit" className="w-full">
-                {t('client.pages.public.register.providerProfile.continue')}
+                {t("client.pages.public.register.providerProfile.continue")}
               </Button>
             </form>
           </Form>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

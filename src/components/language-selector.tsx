@@ -1,115 +1,137 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { cn } from "@/lib/utils"
-import { RegisterApi } from "@/api/register.api"
-import { useDispatch, useSelector } from "react-redux"
-import { RootState } from "@/redux/store"
-import { updateLang } from "@/redux/slices/userSlice"
-import { UserApi } from "@/api/user.api"
-import { changeLanguageWithReload } from "@/i18n"
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { RegisterApi } from "@/api/register.api";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { updateLang } from "@/redux/slices/userSlice";
+import { UserApi } from "@/api/user.api";
+import { changeLanguageWithReload } from "@/i18n";
 
 interface Language {
-  language_id: string
-  language_name: string
-  iso_code: string
-  active: boolean
+  language_id: string;
+  language_name: string;
+  iso_code: string;
+  active: boolean;
 }
 
 interface LanguageSelectorProps {
-  mode: "text" | "flag" | "sidebar"
-  className?: string
+  mode: "text" | "flag" | "sidebar";
+  className?: string;
 }
 
-export default function LanguageSelector({ mode = "text", className }: LanguageSelectorProps) {
-  const [languages, setLanguages] = useState<Language[]>([])
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("fr")
-  const [isChangingLanguage, setIsChangingLanguage] = useState(false) 
-  const { i18n } = useTranslation()
-  const dispatch = useDispatch()
+export default function LanguageSelector({
+  mode = "text",
+  className,
+}: LanguageSelectorProps) {
+  const [languages, setLanguages] = useState<Language[]>([]);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>("fr");
+  const [isChangingLanguage, setIsChangingLanguage] = useState(false);
+  const { i18n } = useTranslation();
+  const dispatch = useDispatch();
 
-  const user = useSelector((state: RootState) => state.user.user)
+  const user = useSelector((state: RootState) => state.user.user);
 
   useEffect(() => {
     async function fetchLanguages() {
       try {
-        const response = await RegisterApi.getLanguage()
-        const activeLanguages = response.filter((lang) => lang.active)
-        setLanguages(activeLanguages)
+        const response = await RegisterApi.getLanguage();
+        const activeLanguages = response.filter((lang) => lang.active);
+        setLanguages(activeLanguages);
 
-        const currentLang = i18n.language || "fr"
-        const matchedLang = activeLanguages.find((lang) => lang.iso_code === currentLang)
-        const initialLang = matchedLang ? matchedLang.iso_code : "fr"
+        const currentLang = i18n.language || "fr";
+        const matchedLang = activeLanguages.find(
+          (lang) => lang.iso_code === currentLang
+        );
+        const initialLang = matchedLang ? matchedLang.iso_code : "fr";
 
-        setSelectedLanguage(initialLang)
+        setSelectedLanguage(initialLang);
       } catch (error) {
-        console.error("Failed to fetch languages:", error)
+        console.error("Failed to fetch languages:", error);
       }
     }
 
-    fetchLanguages()
-  }, [i18n.language])
+    fetchLanguages();
+  }, [i18n.language]);
 
   useEffect(() => {
     if (i18n.language && i18n.language !== selectedLanguage) {
-      setSelectedLanguage(i18n.language)
+      setSelectedLanguage(i18n.language);
     }
-  }, [i18n.language])
+  }, [i18n.language]);
 
   const getFlag = (isoCode: string) => {
-    if (!isoCode || isoCode.length !== 2) return "🌐"
-    const codePoints = Array.from(isoCode.toUpperCase()).map((char) => 127397 + char.charCodeAt(0))
-    return String.fromCodePoint(...codePoints)
-  }
+    if (!isoCode || isoCode.length !== 2) return "🌐";
+    const codePoints = Array.from(isoCode.toUpperCase()).map(
+      (char) => 127397 + char.charCodeAt(0)
+    );
+    return String.fromCodePoint(...codePoints);
+  };
 
   const handleLanguageChange = async (isoCode: string) => {
-    if (isChangingLanguage || isoCode === selectedLanguage) return
-    
-    
-    setIsChangingLanguage(true)
-    
+    if (isChangingLanguage || isoCode === selectedLanguage) return;
+
+    setIsChangingLanguage(true);
+
     try {
-      setSelectedLanguage(isoCode)
-      
-      dispatch(updateLang(isoCode))
-      
-      await changeLanguageWithReload(isoCode)
-      
+      setSelectedLanguage(isoCode);
+
+      dispatch(updateLang(isoCode));
+
+      await changeLanguageWithReload(isoCode);
+
       if (user) {
-        const selectedLang = languages.find((lang) => lang.iso_code === isoCode)
+        const selectedLang = languages.find(
+          (lang) => lang.iso_code === isoCode
+        );
         if (selectedLang) {
           try {
-            await UserApi.updateLanguage(selectedLang.language_id)
+            await UserApi.updateLanguage(selectedLang.language_id);
           } catch (apiError) {
-            console.warn("⚠️ Erreur mise à jour profil utilisateur :", apiError)
+            console.warn(
+              "⚠️ Erreur mise à jour profil utilisateur :",
+              apiError
+            );
           }
         }
       }
-      
     } catch (error) {
-      console.error("❌ Erreur lors du changement de langue :", error)
-      setSelectedLanguage(i18n.language || "fr")
+      console.error("❌ Erreur lors du changement de langue :", error);
+      setSelectedLanguage(i18n.language || "fr");
     } finally {
-      setIsChangingLanguage(false)
+      setIsChangingLanguage(false);
     }
-  }
+  };
   if (mode === "text") {
     return (
-      <Select value={selectedLanguage} onValueChange={handleLanguageChange} disabled={isChangingLanguage}>
+      <Select
+        value={selectedLanguage}
+        onValueChange={handleLanguageChange}
+        disabled={isChangingLanguage}
+      >
         <SelectTrigger className={cn(className)}>
           <SelectValue>
             <div className="flex items-center gap-2">
               <span>{getFlag(selectedLanguage)}</span>
-              <span>{languages.find((l) => l.iso_code === selectedLanguage)?.language_name || selectedLanguage}</span>
+              <span>
+                {languages.find((l) => l.iso_code === selectedLanguage)
+                  ?.language_name || selectedLanguage}
+              </span>
               {isChangingLanguage}
             </div>
           </SelectValue>
@@ -125,7 +147,7 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
           ))}
         </SelectContent>
       </Select>
-    )
+    );
   }
 
   return (
@@ -144,7 +166,6 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuSeparator />
         {languages.map((language) => (
           <DropdownMenuItem
             key={language.language_id}
@@ -158,5 +179,5 @@ export default function LanguageSelector({ mode = "text", className }: LanguageS
         ))}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

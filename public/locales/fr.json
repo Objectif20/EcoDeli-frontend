@@ -30,8 +30,8 @@
         "titre": "Erreur 404",
         "message": "La page que vous cherchez n'existe pas.",
         "bouton": "Revenir en arrière"
-      }, 
-      "403" : {
+      },
+      "403": {
         "titre": "Erreur 403",
         "message": "Vous n'avez pas l'autorisation d'accéder à cette page.",
         "bouton": "Revenir en arrière"
@@ -41,11 +41,11 @@
       "breadcrumb": {
         "accueil": "Accueil",
         "parametres": "Général",
-        "doubleAuth" : "Double Authentification"
+        "doubleAuth": "Double Authentification"
       },
       "titre": "Paramètres",
-      "general" : "Général",
-      "doubleAuth" : "Double Authentification",
+      "general": "Général",
+      "doubleAuth": "Double Authentification",
       "sousTitre": "Personnalisez votre expérience EcoDeli.",
       "imageAlt": "Image de profil",
       "imageAction": "Changer l'image",
@@ -877,7 +877,7 @@
       "validated": "Validé",
       "price": "Prix",
       "duration": "min",
-      "profile" : "Profil"
+      "profile": "Profil"
     },
     "merchant-details": {
       "breadcrumb": {
@@ -906,7 +906,7 @@
         "home": "Accueil",
         "merchants": "Commerçants"
       },
-      "colonnes" : "Colonnes",
+      "colonnes": "Colonnes",
       "title": "Les commerçants sur EcoDeli",
       "columns": {
         "merchant": "Commerçant",
@@ -1003,13 +1003,13 @@
       "active": "Actif",
       "inactive": "Inactif",
       "view-delivery-profile": "Voir profil transporteur",
-      "columns" : {
-        "profile" : "Particuliers",
-        "email" : "Email",
-        "nbDemandeDeLivraison" : "Nb Demandes de Livraison",
-        "nomAbonnement" : "Nom Abonnement",
-        "nbSignalements" : "Nb Signalements",
-        "actions" : "Détails"
+      "columns": {
+        "profile": "Particuliers",
+        "email": "Email",
+        "nbDemandeDeLivraison": "Nb Demandes de Livraison",
+        "nomAbonnement": "Nom Abonnement",
+        "nbSignalements": "Nb Signalements",
+        "actions": "Détails"
       }
     },
     "client": {
@@ -1431,9 +1431,9 @@
           "selectService": "Sélectionnez une prestation pour voir les détails.",
           "selectServiceDescription": "Vous pouvez cliquer sur une des prestations à gauche pour afficher ses informations.",
           "viewDetails": "Voir les détails",
-          "accueil"  : "Accueil",
-          "myServices" : "Mes prestations",
-          "services-details" : "Prestations"
+          "accueil": "Accueil",
+          "myServices": "Mes prestations",
+          "services-details": "Prestations"
         },
         "register": {
           "firstProfileChoice": {
@@ -1819,52 +1819,52 @@
             "message": "Veuillez vérifier votre boîte de réception pour réinitialiser votre mot de passe."
           }
         },
-      "deliveries-details": {
-        "title": "{{name}}",
-        "reference": "Référence N°{{id}}",
-        "departureDate": "Départ prévu:",
-        "arrivalDate": "Arrivée prévue:",
-        "departure": "Départ",
-        "arrival": "Arrivée",
-        "progress": "Progression",
-        "proposedPrice": "Prix proposé",
-        "takeDelivery": "Prendre la livraison",
-        "partialDelivery": "Prise en charge partielle",
-        "overview": "Aperçu",
-        "packages": "Colis ({{count}})",
-        "additionalInfo": "Informations complémentaires",
-        "deliveryStatus": "État de la livraison",
-        "packageOverview": "Aperçu des colis",
-        "shippingDetails": "Détails de l'expédition",
-        "statut": "Statut",
-        "status" : {
-          "pending": "En attente",
-          "inProgress": "En cours",
-          "finished": "Terminé"
-        },
-        "distance": "Distance",
-        "totalWeight": "Poids total",
-        "packageDetails": "Détails des colis",
-        "weight": "Poids",
-        "volume": "Volume",
-        "fragile": "Fragile",
-        "fullCoverage": "Le transporteur assure toute la distance",
-        "partialCoverage": "Le transporteur assure une partie de la distance",
-        "remainingCoverage": "Le transporteur assure le reste de la distance",
-        "noSteps": "Aucune étape pour le moment",
-        "urgent": "URGENT",
-        "bookSuccess": "Réservation réussie !",
-        "bookError": "Erreur de réservation:",
-        "negotiationError": "Erreur de négociation:",
-        "eligibilityError": "Erreur d'éligibilité:",
-        "loadingError": "Erreur de chargement de la livraison:",
-        "missingId": "Erreur : ID de livraison manquant",
-        "loading": "Chargement...",
-        "yes": "Oui",
-        "no": "Non",
-        "fullDelivery": "Prise en charge complète",
-        "partialDeliveryMessage": "Vous serez redirigé vers la messagerie pour en discuter."
-      }
+        "deliveries-details": {
+          "title": "{{name}}",
+          "reference": "Référence N°{{id}}",
+          "departureDate": "Départ prévu:",
+          "arrivalDate": "Arrivée prévue:",
+          "departure": "Départ",
+          "arrival": "Arrivée",
+          "progress": "Progression",
+          "proposedPrice": "Prix proposé",
+          "takeDelivery": "Prendre la livraison",
+          "partialDelivery": "Prise en charge partielle",
+          "overview": "Aperçu",
+          "packages": "Colis ({{count}})",
+          "additionalInfo": "Informations complémentaires",
+          "deliveryStatus": "État de la livraison",
+          "packageOverview": "Aperçu des colis",
+          "shippingDetails": "Détails de l'expédition",
+          "statut": "Statut",
+          "status": {
+            "pending": "En attente",
+            "inProgress": "En cours",
+            "finished": "Terminé"
+          },
+          "distance": "Distance",
+          "totalWeight": "Poids total",
+          "packageDetails": "Détails des colis",
+          "weight": "Poids",
+          "volume": "Volume",
+          "fragile": "Fragile",
+          "fullCoverage": "Le transporteur assure toute la distance",
+          "partialCoverage": "Le transporteur assure une partie de la distance",
+          "remainingCoverage": "Le transporteur assure le reste de la distance",
+          "noSteps": "Aucune étape pour le moment",
+          "urgent": "URGENT",
+          "bookSuccess": "Réservation réussie !",
+          "bookError": "Erreur de réservation:",
+          "negotiationError": "Erreur de négociation:",
+          "eligibilityError": "Erreur d'éligibilité:",
+          "loadingError": "Erreur de chargement de la livraison:",
+          "missingId": "Erreur : ID de livraison manquant",
+          "loading": "Chargement...",
+          "yes": "Oui",
+          "no": "Non",
+          "fullDelivery": "Prise en charge complète",
+          "partialDeliveryMessage": "Vous serez redirigé vers la messagerie pour en discuter."
+        }
       },
       "office": {
         "myDocuments": {
@@ -1980,7 +1980,7 @@
             "options": "Options",
             "unblockUser": "Débloquer l'utilisateur",
             "noBlockedUsers": "Vous n'avez bloqué aucun utilisateur.",
-            "updateProfileImage" : "Mettre à jour l'image de profil"
+            "updateProfileImage": "Mettre à jour l'image de profil"
           },
           "confidentiality": {
             "home": "Accueil",
@@ -2109,10 +2109,10 @@
             "errorFetchingAvailability": "Erreur lors de la récupération des disponibilités",
             "errorUpdatingAvailability": "Erreur lors de la mise à jour des disponibilités",
             "loading": "Chargement...",
-            "noDisponibility" : "Aucune disponibilité sélectionnée",
+            "noDisponibility": "Aucune disponibilité sélectionnée",
             "addDisponibility": "Ajoutez des jours de disponibilité pour permettre aux clients de prendre rendez-vous avec vous.",
-            "breadCrumb_accueil"  : "Accueil",
-            "breadCrumb_disponibility" : "Mes disponibilités"
+            "breadCrumb_accueil": "Accueil",
+            "breadCrumb_disponibility": "Mes disponibilités"
           },
           "reports": {
             "title": "Signalements",
@@ -2282,6 +2282,45 @@
             "fragile": "Fragile",
             "deliveryDate": "{date} • {name}",
             "deliverer": "Livreur"
+          },
+          "details": {
+            "breadcrumb": {
+              "home": "Accueil",
+              "deliveries": "Livraisons",
+              "deliveryDetails": "Détails de la livraison"
+            },
+            "status": {
+              "pending": "En attente",
+              "taken": "Prise en charge",
+              "finished": "Terminée",
+              "validated": "Validée"
+            },
+            "title": "Détails de la livraison",
+            "route": "Itinéraire",
+            "deliveryInfo": "Informations de livraison",
+            "departure": "Départ",
+            "arrival": "Arrivée",
+            "departureDate": "Date de départ",
+            "arrivalDate": "Date d'arrivée",
+            "totalPrice": "Prix total",
+            "cartDropped": "Lâcher de chariot",
+            "departureDetails": "Détails du point de départ",
+            "arrivalDetails": "Détails du point d'arrivée",
+            "address": "Adresse",
+            "postalCode": "Code postal",
+            "floor": "Étage",
+            "elevator": "Ascenseur",
+            "handling": "Manutention",
+            "warehouse": "Entrepôt",
+            "box": "Box/Casier",
+            "packages": "Colis",
+            "price": "Prix",
+            "weight": "Poids",
+            "volume": "Volume",
+            "fragile": "Fragile",
+            "error": {
+              "loading": "Erreur lors du chargement de la livraison."
+            }
           },
           "deliveryHistory": {
             "title": "Historique des livraisons",
@@ -2626,41 +2665,40 @@
             "takePackage": "Prendre le colis",
             "finishDelivery": "Terminer la livraison",
             "validateDelivery": "Valider la livraison"
-
           },
           "my-routes": {
-              "routeManagement": "Gestion des Trajets",
-              "addRoute": "Ajouter un trajet",
-              "errorFetchingRoutes": "Erreur lors de la récupération des trajets:",
-              "errorAddingRoute": "Erreur lors de l'ajout du trajet:",
-              "activeAndPermanentRoutes": "Trajets actifs et permanents",
-              "noActiveOrPermanentRoutes": "Aucun trajet actif ou permanent",
-              "pastRoutes": "Trajets passés",
-              "departure": "Départ",
-              "arrival": "Arrivée",
-              "coordinates": "Coordonnées",
-              "day": "Jour",
-              "date": "Date",
-              "toleranceRadius": "Rayon de tolérance",
-              "return": "Retour",
-              "sameDay": "Le même jour",
-              "nextDay": "Le lendemain",
-              "type": "Type",
-              "permanent": "Permanent",
-              "oneTime": "Ponctuel",
-              "departureRequired": "Le lieu de départ est requis",
-              "arrivalRequired": "Le lieu d'arrivée est requis",
-              "radiusPositive": "Le rayon doit être positif",
-              "weekdayOrDateRequired": "Un jour de la semaine est requis pour les trajets permanents, une date pour les trajets ponctuels",
-              "days": {
-                "monday": "Lundi",
-                "tuesday": "Mardi",
-                "wednesday": "Mercredi",
-                "thursday": "Jeudi",
-                "friday": "Vendredi",
-                "saturday": "Samedi",
-                "sunday": "Dimanche"
-              }
+            "routeManagement": "Gestion des Trajets",
+            "addRoute": "Ajouter un trajet",
+            "errorFetchingRoutes": "Erreur lors de la récupération des trajets:",
+            "errorAddingRoute": "Erreur lors de l'ajout du trajet:",
+            "activeAndPermanentRoutes": "Trajets actifs et permanents",
+            "noActiveOrPermanentRoutes": "Aucun trajet actif ou permanent",
+            "pastRoutes": "Trajets passés",
+            "departure": "Départ",
+            "arrival": "Arrivée",
+            "coordinates": "Coordonnées",
+            "day": "Jour",
+            "date": "Date",
+            "toleranceRadius": "Rayon de tolérance",
+            "return": "Retour",
+            "sameDay": "Le même jour",
+            "nextDay": "Le lendemain",
+            "type": "Type",
+            "permanent": "Permanent",
+            "oneTime": "Ponctuel",
+            "departureRequired": "Le lieu de départ est requis",
+            "arrivalRequired": "Le lieu d'arrivée est requis",
+            "radiusPositive": "Le rayon doit être positif",
+            "weekdayOrDateRequired": "Un jour de la semaine est requis pour les trajets permanents, une date pour les trajets ponctuels",
+            "days": {
+              "monday": "Lundi",
+              "tuesday": "Mardi",
+              "wednesday": "Mercredi",
+              "thursday": "Jeudi",
+              "friday": "Vendredi",
+              "saturday": "Samedi",
+              "sunday": "Dimanche"
+            }
           }
         },
         "services": {
@@ -2975,8 +3013,8 @@
         "register": "S'inscrire",
         "login": "Se connecter",
         "goToDashboard": "Accéder à mon espace",
-        "game" : "Découvrez notre jeu vidéo ! EcoQuest !",
-        "gameLink" : "Accéder au jeu"
+        "game": "Découvrez notre jeu vidéo ! EcoQuest !",
+        "gameLink": "Accéder au jeu"
       },
       "sidebar": {
         "becomeDeliveryman": "Devenir Transporteur ?",
@@ -3107,12 +3145,12 @@
     "reset": "Réinitialiser",
     "close": "Fermer"
   },
-  "game" : {
-    "score" : "Score : ",
-    "boxes" : "Colis : ",
-    "resultTitle" : "Voici vos résultats !",
-    "retryButton" : "Réessayer",
-    "title" : "Game Over",
-    "back" : "Retour sur Ecodeli"
+  "game": {
+    "score": "Score : ",
+    "boxes": "Colis : ",
+    "resultTitle": "Voici vos résultats !",
+    "retryButton": "Réessayer",
+    "title": "Game Over",
+    "back": "Retour sur Ecodeli"
   }
 }

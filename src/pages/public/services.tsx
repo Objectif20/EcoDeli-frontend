@@ -352,7 +352,7 @@ export default function ServicesPage() {
           )}
         </div>
 
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 hidden lg:block">
           <Card className="h-full">
             {selectedService ? (
               <div className="h-full flex flex-col">

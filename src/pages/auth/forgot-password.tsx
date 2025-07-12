@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import logo from "@/assets/logo.svg";
-import forgotPasswordSvg from "@/assets/illustrations/auth1.svg";
+import forgotPasswordSvg from "@/assets/illustrations/reset-password.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { requestPasswordReset } from "@/api/auth.api";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState<string>("");
@@ -27,7 +27,7 @@ export default function ForgotPasswordPage() {
       setSuccess(true);
       navigate("/info/newPasswordSend");
     } catch (err) {
-      setError(t('client.pages.public.auth.forgotPassword.error'));
+      setError(t("client.pages.public.auth.forgotPassword.error"));
     } finally {
       setLoading(false);
     }
@@ -38,7 +38,11 @@ export default function ForgotPasswordPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <Link to="/" className="flex items-center gap-2 font-medium">
-            <img src={logo} alt={t('client.pages.public.auth.forgotPassword.logoAlt')} className="h-16 w-16" />
+            <img
+              src={logo}
+              alt={t("client.pages.public.auth.forgotPassword.logoAlt")}
+              className="h-16 w-16"
+            />
             EcoDeli
           </Link>
         </div>
@@ -47,18 +51,24 @@ export default function ForgotPasswordPage() {
           <div className="w-full max-w-xs">
             <form className="flex flex-col gap-6" onSubmit={newPassword}>
               <div className="flex flex-col items-center gap-2 text-center">
-                <h1 className="text-2xl font-bold">{t('client.pages.public.auth.forgotPassword.title')}</h1>
+                <h1 className="text-2xl font-bold">
+                  {t("client.pages.public.auth.forgotPassword.title")}
+                </h1>
                 <p className="text-balance text-sm text-muted-foreground">
-                  {t('client.pages.public.auth.forgotPassword.description')}
+                  {t("client.pages.public.auth.forgotPassword.description")}
                 </p>
               </div>
               <div className="grid gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">{t('client.pages.public.auth.forgotPassword.emailLabel')}</Label>
+                  <Label htmlFor="email">
+                    {t("client.pages.public.auth.forgotPassword.emailLabel")}
+                  </Label>
                   <Input
                     id="email"
                     type="email"
-                    placeholder={t('client.pages.public.auth.forgotPassword.emailPlaceholder')}
+                    placeholder={t(
+                      "client.pages.public.auth.forgotPassword.emailPlaceholder"
+                    )}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -67,11 +77,15 @@ export default function ForgotPasswordPage() {
                 {error && <p className="text-red-500 text-sm">{error}</p>}
                 {success && (
                   <p className="text-green-500 text-sm">
-                    {t('client.pages.public.auth.forgotPassword.successMessage')}
+                    {t(
+                      "client.pages.public.auth.forgotPassword.successMessage"
+                    )}
                   </p>
                 )}
                 <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? t('client.pages.public.auth.forgotPassword.sending') : t('client.pages.public.auth.forgotPassword.send')}
+                  {loading
+                    ? t("client.pages.public.auth.forgotPassword.sending")
+                    : t("client.pages.public.auth.forgotPassword.send")}
                 </Button>
               </div>
             </form>
@@ -82,7 +96,7 @@ export default function ForgotPasswordPage() {
       <div className="relative hidden lg:block bg-primary">
         <img
           src={forgotPasswordSvg}
-          alt={t('client.pages.public.auth.forgotPassword.illustrationAlt')}
+          alt={t("client.pages.public.auth.forgotPassword.illustrationAlt")}
           className="absolute inset-0 object-cover w-3/5 h-auto mx-auto my-auto"
         />
       </div>

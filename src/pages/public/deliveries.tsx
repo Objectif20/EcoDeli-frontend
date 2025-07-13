@@ -42,7 +42,12 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
 
 export interface City {
   value: string;
@@ -51,32 +56,34 @@ export interface City {
   lon: number;
 }
 
-const createIcon = (className: string, price: string | null) => L.divIcon({
-  className,
-  html: `<div class="icon-text bg-background font-bold text-sm px-4 py-1 rounded-xl text-center">${price ?? ''} €</div>`,
-  iconSize: [80, 20],
-  iconAnchor: [30, 20],
-});
+const createIcon = (className: string, price: string | null) =>
+  L.divIcon({
+    className,
+    html: `<div class="icon-text bg-background font-bold text-sm px-4 py-1 rounded-xl text-center">${
+      price ?? ""
+    } €</div>`,
+    iconSize: [80, 20],
+    iconAnchor: [30, 20],
+  });
 
-const urgentIcon = (price: string | null) => createIcon('', price);
-const nonUrgentIcon = (price: string | null) => createIcon('', price);
+const urgentIcon = (price: string | null) => createIcon("", price);
+const nonUrgentIcon = (price: string | null) => createIcon("", price);
 
 const departure = L.divIcon({
-  className: 'non-urgent-icon',
+  className: "non-urgent-icon",
   html: '<div class="icon-text bg-background text-sm px-4 py-1 rounded-xl text-center">Départ</div>',
   iconSize: [75, 20],
   iconAnchor: [30, 20],
 });
 
 const arrival = L.divIcon({
-  className: 'non-urgent-icon',
+  className: "non-urgent-icon",
   html: '<div class="icon-text bg-background  text-sm px-4 py-1 rounded-xl text-center">Arrivé</div>',
   iconSize: [70, 20],
   iconAnchor: [30, 20],
 });
 
 function DeliveriesPage() {
-
   const { t } = useTranslation();
 
   const franceBounds: LatLngBoundsExpression = useMemo(
@@ -116,7 +123,6 @@ function DeliveriesPage() {
   const [deliveryType, setDeliveryType] = useState<string | null>(null);
   const [isReset, setIsReset] = useState<boolean>(false);
 
-
   const mapRef = useRef<L.Map | null>(null);
   const polylineRef = useRef<L.Polyline | null>(null);
 
@@ -128,11 +134,11 @@ function DeliveriesPage() {
         setPage(1);
         setHasMore(true);
       }
-  
+
       if (loading || !hasMore) {
         return;
       }
-  
+
       setLoading(true);
       try {
         const coordinates =
@@ -149,7 +155,7 @@ function DeliveriesPage() {
                 routeEndLongitude: routeEndCity?.lon,
                 routeRadius: radius * 1000,
               };
-  
+
         const apiFilter = {
           ...(selectedOption === "around"
             ? {
@@ -172,9 +178,9 @@ function DeliveriesPage() {
           maxWeight: weightRange[1],
           deliveryType: deliveryType || undefined,
         } as DeliveriesFilter;
-  
+
         const response = await DeliveriesAPI.getDeliveries(apiFilter);
-  
+
         if (Array.isArray(response)) {
           if (response.length > 0) {
             setDeliveries((prevDeliveries) => {
@@ -223,7 +229,6 @@ function DeliveriesPage() {
       deliveryType,
     ]
   );
-  
 
   useEffect(() => {
     fetchDeliveries();
@@ -327,7 +332,7 @@ function DeliveriesPage() {
   useEffect(() => {
     if (isReset) {
       fetchDeliveries(true, 1);
-      setIsReset(false); 
+      setIsReset(false);
     }
   }, [isReset]);
 
@@ -337,7 +342,7 @@ function DeliveriesPage() {
         <div className="p-6 flex flex-col justify-between items-center shadow-md overflow-auto w-full md:w-2/5">
           <div className="w-full mb-4">
             <h2 className="text-xl font-bold mb-4">
-              {t('client.pages.public.deliveries.findPackage')}
+              {t("client.pages.public.deliveries.findPackage")}
             </h2>
             <RadioGroup
               value={selectedOption}
@@ -346,11 +351,15 @@ function DeliveriesPage() {
               <div className="flex justify-between mb-4">
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="around" id="around" />
-                  <Label htmlFor="around">{t('client.pages.public.deliveries.around')}</Label>
+                  <Label htmlFor="around">
+                    {t("client.pages.public.deliveries.around")}
+                  </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="onRoute" id="onRoute" />
-                  <Label htmlFor="onRoute">{t('client.pages.public.deliveries.onRoute')}</Label>
+                  <Label htmlFor="onRoute">
+                    {t("client.pages.public.deliveries.onRoute")}
+                  </Label>
                 </div>
               </div>
             </RadioGroup>
@@ -363,7 +372,9 @@ function DeliveriesPage() {
                 <div className="mt-4 w-full">
                   <div className="space-y-4 min-w-[300px]">
                     <div className="flex items-center justify-between gap-2">
-                      <Label>{t('client.pages.public.deliveries.radius')}</Label>
+                      <Label>
+                        {t("client.pages.public.deliveries.radius")}
+                      </Label>
                       <output className="text-sm font-medium tabular-nums">
                         {radius}
                       </output>
@@ -383,17 +394,19 @@ function DeliveriesPage() {
                 <CityAsyncSelectDemo
                   onCitySelect={handleRouteStartCitySelect}
                   labelValue={routeStartCity?.label || ""}
-                  placeholder={t('client.pages.public.deliveries.departure')}
+                  placeholder={t("client.pages.public.deliveries.departure")}
                 />
                 <CityAsyncSelectDemo
                   onCitySelect={handleRouteEndCitySelect}
                   labelValue={routeEndCity?.label || ""}
-                  placeholder={t('client.pages.public.deliveries.arrival')}
+                  placeholder={t("client.pages.public.deliveries.arrival")}
                 />
                 <div className="mt-4 w-full">
                   <div className="space-y-4 min-w-[300px]">
                     <div className="flex items-center justify-between gap-2">
-                      <Label>{t('client.pages.public.deliveries.radius')}</Label>
+                      <Label>
+                        {t("client.pages.public.deliveries.radius")}
+                      </Label>
                       <output className="text-sm font-medium tabular-nums">
                         {radius}
                       </output>
@@ -412,7 +425,7 @@ function DeliveriesPage() {
               onClick={handleApplyFilters}
               className="bg-primary text-primary-foreground px-4 py-2 rounded mt-4"
             >
-              {t('client.pages.public.deliveries.applyFilters')}
+              {t("client.pages.public.deliveries.applyFilters")}
             </button>
           </div>
 
@@ -420,12 +433,12 @@ function DeliveriesPage() {
             <div className="flex w-full flex-col items-center gap-3 mr-4 pr-4">
               {deliveries.length === 0 && page === 1 ? (
                 <div>
-                  {t('client.pages.public.deliveries.noDataFound')}
+                  {t("client.pages.public.deliveries.noDataFound")}
                   <Button
                     onClick={handleResetFilters}
                     className="underline ml-2"
                   >
-                    {t('client.pages.public.deliveries.resetFilters')}
+                    {t("client.pages.public.deliveries.resetFilters")}
                   </Button>
                 </div>
               ) : (
@@ -456,20 +469,22 @@ function DeliveriesPage() {
                         </Badge>
                       </div>
                       <p className="mt-2">
-                        {t('client.pages.public.deliveries.cityToCity', {
+                        {t("client.pages.public.deliveries.cityToCity", {
                           departureCity: delivery.departure_city,
                           arrivalCity: delivery.arrival_city,
                         })}
                       </p>
                       <div className="flex flex-wrap gap-2 mt-2">
                         <Badge className="badge badge-outline">
-                          {t('client.pages.public.deliveries.weightKg', {
+                          {t("client.pages.public.deliveries.weightKg", {
                             weight: delivery.weight,
                           })}
                         </Badge>
                         <Badge>
-                          {t('client.pages.public.deliveries.urgency', {
-                            urgency: delivery.urgent ? t('client.pages.public.deliveries.urgent') : t('client.pages.public.deliveries.nonUrgent'),
+                          {t("client.pages.public.deliveries.urgency", {
+                            urgency: delivery.urgent
+                              ? t("client.pages.public.deliveries.urgent")
+                              : t("client.pages.public.deliveries.nonUrgent"),
                           })}
                         </Badge>
                       </div>
@@ -485,7 +500,7 @@ function DeliveriesPage() {
                 {loading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  t('client.pages.public.deliveries.more')
+                  t("client.pages.public.deliveries.more")
                 )}
               </button>
             </div>
@@ -495,57 +510,68 @@ function DeliveriesPage() {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
                 <button className="bg-primary text-primary-foreground px-4 py-2 rounded">
-                  {t('client.pages.public.deliveries.moreFilters')}
+                  {t("client.pages.public.deliveries.moreFilters")}
                 </button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle>{t('client.pages.public.deliveries.filters')}</DialogTitle>
+                  <DialogTitle>
+                    {t("client.pages.public.deliveries.filters")}
+                  </DialogTitle>
                   <DialogDescription>
-                    {t('client.pages.public.deliveries.useThisSpace')}
+                    {t("client.pages.public.deliveries.useThisSpace")}
                   </DialogDescription>
                 </DialogHeader>
                 <Accordion type="single" collapsible>
                   <AccordionItem value="price-filter">
-                    <AccordionTrigger>{t('client.pages.public.deliveries.price')}</AccordionTrigger>
+                    <AccordionTrigger>
+                      {t("client.pages.public.deliveries.price")}
+                    </AccordionTrigger>
                     <AccordionContent>
                       <DualRangeSlider
                         value={priceRange}
                         onValueChange={setPriceRange}
-                        label={t('client.pages.public.deliveries.price')}
+                        label={t("client.pages.public.deliveries.price")}
                       />
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="weight-filter">
-                    <AccordionTrigger>{t('client.pages.public.deliveries.weight')}</AccordionTrigger>
+                    <AccordionTrigger>
+                      {t("client.pages.public.deliveries.weight")}
+                    </AccordionTrigger>
                     <AccordionContent>
                       <DualRangeSlider
                         value={weightRange}
                         onValueChange={setWeightRange}
-                        label={t('client.pages.public.deliveries.weight')}
+                        label={t("client.pages.public.deliveries.weight")}
                       />
                     </AccordionContent>
                   </AccordionItem>
                   <AccordionItem value="type-filter">
-                    <AccordionTrigger>{t('client.pages.public.deliveries.deliveryType')}</AccordionTrigger>
+                    <AccordionTrigger>
+                      {t("client.pages.public.deliveries.deliveryType")}
+                    </AccordionTrigger>
                     <AccordionContent>
-
-                      <Select defaultValue="all" onValueChange={(value) => setDeliveryType(value)}>
+                      <Select
+                        defaultValue="all"
+                        onValueChange={(value) => setDeliveryType(value)}
+                      >
                         <SelectTrigger className="w-full">
-                          <Label>{t('client.pages.public.deliveries.deliveryType')}</Label>
+                          <Label>
+                            {t("client.pages.public.deliveries.deliveryType")}
+                          </Label>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">
-                            {t('client.pages.public.deliveries.all')}
+                            {t("client.pages.public.deliveries.all")}
                           </SelectItem>
                           <SelectItem value="urgent">
-                            {t('client.pages.public.deliveries.urgent')}
+                            {t("client.pages.public.deliveries.urgent")}
                           </SelectItem>
                           <SelectItem value="non-urgent">
-                            {t('client.pages.public.deliveries.nonUrgent')}
+                            {t("client.pages.public.deliveries.nonUrgent")}
                           </SelectItem>
                         </SelectContent>
-
                       </Select>
                     </AccordionContent>
                   </AccordionItem>
@@ -556,7 +582,7 @@ function DeliveriesPage() {
                       onClick={handleApplyFilters}
                       className="bg-primary text-primary-foreground px-4 py-2 rounded mt-4 w-full"
                     >
-                      {t('client.pages.public.deliveries.apply')}
+                      {t("client.pages.public.deliveries.apply")}
                     </button>
                   </DialogClose>
                 </DialogFooter>
@@ -581,7 +607,15 @@ function DeliveriesPage() {
                     delivery.departure_location.coordinates[1],
                     delivery.departure_location.coordinates[0],
                   ]}
-                  icon={delivery.urgent ? urgentIcon(delivery.estimated_total_price?.toString() ?? "N/A") : nonUrgentIcon(delivery.estimated_total_price?.toString() ?? "N/A")}
+                  icon={
+                    delivery.urgent
+                      ? urgentIcon(
+                          delivery.estimated_total_price?.toString() ?? "N/A"
+                        )
+                      : nonUrgentIcon(
+                          delivery.estimated_total_price?.toString() ?? "N/A"
+                        )
+                  }
                   eventHandlers={{
                     click: () => handleMarkerClick(delivery),
                   }}
@@ -590,7 +624,8 @@ function DeliveriesPage() {
                     <div>
                       <strong>{delivery.description}</strong>
                       <br />
-                      {t('client.pages.public.deliveries.totalPrice')}: {delivery.estimated_total_price ?? "N/A"} €
+                      {t("client.pages.public.deliveries.totalPrice")}:{" "}
+                      {delivery.estimated_total_price ?? "N/A"} €
                     </div>
                   </Popup>
                 </Marker>
@@ -604,7 +639,7 @@ function DeliveriesPage() {
                   ]}
                   icon={departure}
                 >
-                  <Popup>{t('client.pages.public.deliveries.departure')}</Popup>
+                  <Popup>{t("client.pages.public.deliveries.departure")}</Popup>
                 </Marker>
                 <Marker
                   position={[
@@ -613,7 +648,7 @@ function DeliveriesPage() {
                   ]}
                   icon={arrival}
                 >
-                  <Popup>{t('client.pages.public.deliveries.arrival')}</Popup>
+                  <Popup>{t("client.pages.public.deliveries.arrival")}</Popup>
                 </Marker>
                 <Polyline
                   positions={[
@@ -632,52 +667,62 @@ function DeliveriesPage() {
             )}
           </MapContainer>
           {selectedDelivery && (
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-background p-4 shadow-md z-10 max-w-md w-full rounded-lg">
-          <Button
-            onClick={handleResetView}
-            className="absolute top-2 right-2 p-2 z-10 rounded-full h-8 w-8"
-            variant="ghost"
-            size="icon"
-          >
-            <X className="h-4 w-4" />
-          </Button>
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-background p-4 shadow-md z-10 max-w-md w-full rounded-lg">
+              <Button
+                onClick={handleResetView}
+                className="absolute top-2 right-2 p-2 z-10 rounded-full h-8 w-8"
+                variant="ghost"
+                size="icon"
+              >
+                <X className="h-4 w-4" />
+              </Button>
 
-          <div className="flex items-center w-full">
-            <div className="w-36 h-24 rounded mr-4 flex-shrink-0 flex items-center justify-center">
-              {selectedDelivery.image ? (
-                <img
-                  src={selectedDelivery.image || "/placeholder.svg"}
-                  alt="Delivery"
-                  className="w-full h-full object-cover rounded"
-                />
-              ) : (
-                <></>
-              )}
-            </div>
-            <div className="flex-1 flex flex-col justify-between">
-              <h3 className="text-xl font-bold">{selectedDelivery.description}</h3>
-              <p>
-                {t("client.pages.public.deliveries.cityToCity", {
-                  departureCity: selectedDelivery.departure_city,
-                  arrivalCity: selectedDelivery.arrival_city,
-                })}
-              </p>
-              <div className="flex flex-wrap gap-2 mt-2">
-                <Badge>{selectedDelivery.estimated_total_price ?? "N/A"} €</Badge>
-                <Badge>{selectedDelivery.weight}</Badge>
-                <Badge>
-                  {selectedDelivery.urgent
-                    ? t("client.pages.public.deliveries.urgent")
-                    : t("client.pages.public.deliveries.nonUrgent")}
-                </Badge>
+              <div className="flex items-center w-full">
+                <div className="w-36 h-24 rounded mr-4 flex-shrink-0 flex items-center justify-center">
+                  {selectedDelivery.image ? (
+                    <img
+                      src={selectedDelivery.image || "/placeholder.svg"}
+                      alt="Delivery"
+                      className="w-full h-full object-cover rounded"
+                    />
+                  ) : (
+                    <></>
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col justify-between">
+                  <h3 className="text-xl font-bold">
+                    {selectedDelivery.description}
+                  </h3>
+                  <p>
+                    {t("client.pages.public.deliveries.cityToCity", {
+                      departureCity: selectedDelivery.departure_city,
+                      arrivalCity: selectedDelivery.arrival_city,
+                    })}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <Badge>
+                      {selectedDelivery.estimated_total_price ?? "N/A"} €
+                    </Badge>
+                    <Badge>{selectedDelivery.weight}</Badge>
+                    <Badge>
+                      {selectedDelivery.urgent
+                        ? t("client.pages.public.deliveries.urgent")
+                        : t("client.pages.public.deliveries.nonUrgent")}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="ml-4 flex-shrink-0">
+                  <Button
+                    onClick={() =>
+                      navigate(`/deliveries/${selectedDelivery.shipment_id}`)
+                    }
+                  >
+                    Détails
+                  </Button>
+                </div>
               </div>
             </div>
-            <div className="ml-4 flex-shrink-0">
-              <Button onClick={() => navigate(`/deliveries/${selectedDelivery.shipment_id}`)}>Détails</Button>
-            </div>
-          </div>
-        </div>
-      )}
+          )}
         </div>
       </div>
     </div>

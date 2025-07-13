@@ -17,7 +17,12 @@ interface CityAsyncSelectDemoProps {
   className?: string;
 }
 
-function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder, className }: CityAsyncSelectDemoProps) {
+function CityAsyncSelectDemo({
+  onCitySelect,
+  labelValue,
+  placeholder,
+  className,
+}: CityAsyncSelectDemoProps) {
   const [cities, setCities] = useState<City[]>([]);
   const [_, setIsLoading] = useState(false);
   const [selectedValue, setSelectedValue] = useState(labelValue || "");
@@ -49,15 +54,18 @@ function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder, className 
   const searchCities = async (query: string): Promise<City[]> => {
     if (!query) return [];
 
-    const response = await axios.get("https://nominatim.openstreetmap.org/search", {
-      params: {
-        q: query,
-        format: "json",
-        limit: 5,
-      },
-    });
+    const response = await axios.get(
+      "https://nominatim.openstreetmap.org/search",
+      {
+        params: {
+          q: query,
+          format: "json",
+          limit: 5,
+        },
+      }
+    );
 
-   const temp =  response.data.map((item: any) => ({
+    const temp = response.data.map((item: any) => ({
       value: item.place_id,
       label: item.display_name,
       lat: parseFloat(item.lat),
@@ -67,14 +75,14 @@ function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder, className 
   };
 
   const handleChange = (value: string) => {
-    setSelectedValue(value);  
+    setSelectedValue(value);
     const selected = cities.find((city) => {
-      if (typeof city.label === 'string') {
+      if (typeof city.label === "string") {
         return city.label.toLowerCase() === value.toLowerCase();
       }
       return false;
     });
-  
+
     if (selected) {
       onCitySelect(selected);
     }
@@ -82,10 +90,9 @@ function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder, className 
 
   const update = (str: string) => {
     return str.length > MAX_PLACEHOLDER_CHARACTERS
-      ? str.substring(0, MAX_PLACEHOLDER_CHARACTERS) + '...'
+      ? str.substring(0, MAX_PLACEHOLDER_CHARACTERS) + "..."
       : str;
   };
-  
 
   useEffect(() => {
     if (selectedValue) {
@@ -102,17 +109,17 @@ function CityAsyncSelectDemo({ onCitySelect, labelValue, placeholder, className 
           setSearchQuery(query || "");
           return cities;
         }}
-        renderOption={(city) => (
-          <div className="font-medium">{city.label}</div>
-        )}
+        renderOption={(city) => <div className="font-medium">{city.label}</div>}
         getOptionValue={(city) => city.value}
         getDisplayValue={(city) => city.label}
-        notFound={<div className="py-6 text-center text-sm">Aucune ville trouvée</div>}
+        notFound={
+          <div className="py-6 text-center text-sm">Aucune ville trouvée</div>
+        }
         label="City"
         placeholder={selectedValue ? update(labelValue || "") : placeholder}
         value={selectedValue}
         onChange={handleChange}
-        width="375px"
+        width="200px"
         className={className}
       />
     </div>

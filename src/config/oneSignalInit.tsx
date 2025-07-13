@@ -5,92 +5,125 @@ import OneSignal from "react-onesignal";
 import { ProfileAPI } from "@/api/profile.api";
 import { useTranslation } from "react-i18next";
 
+declare global {
+  interface Window {
+    requestNotificationPermission?: () => Promise<void>;
+  }
+}
+
 export default function OneSignalInit() {
   const { i18n } = useTranslation();
 
   useEffect(() => {
     const initOneSignal = async () => {
-      await OneSignal.init({
-        appId: import.meta.env.VITE_ONE_SIGNAL_APP_ID,
-        language: i18n.language || "fr",
-        serviceWorkerPath: "myPath/OneSignalSDKWorker.js",
-        serviceWorkerParam: { scope: "/myPath/myCustomScope/" },
-        
-        
+      try {
+        if (!("Notification" in window)) {
+          console.log("Ce navigateur ne supporte pas les notifications");
+          return;
+        }
 
+        const currentPermission = Notification.permission;
 
+        if (currentPermission === "denied") {
+          return;
+        }
 
-      });
-      {/* 
-                promptOptions: {
-          slidedown: {
-            prompts: [
-              {
-                type: "push",
-                autoPrompt: true,
-                delay: {
-                  pageViews: 1,
-                  timeDelay: 5,
-                },
-                text: {
-                  actionMessage: t("pages.notif.slidedown.actionMessage"),
-                  acceptButton: t("pages.notif.slidedown.acceptButton"),
-                  cancelMessage: t("pages.notif.slidedown.cancelMessage"),
-                  confirmMessage: t("pages.notif.slidedown.confirmMessage"),
-                  emailLabel: t("pages.notif.slidedown.emailLabel"),
-                  negativeUpdateButton: t("pages.notif.slidedown.negativeUpdateButton"),
-                  positiveUpdateButton: t("pages.notif.slidedown.positiveUpdateButton"),
-                  smsLabel: t("pages.notif.slidedown.smsLabel"),
-                  updateMessage: t("pages.notif.slidedown.updateMessage"),
-                },
-                categories: []
-              },
-            ],
+        await OneSignal.init({
+          appId: import.meta.env.VITE_ONE_SIGNAL_APP_ID,
+          language: i18n.language || "fr",
+          serviceWorkerPath: "/OneSignalSDKWorker.js",
+          allowLocalhostAsSecureOrigin: true,
+          notifyButton: {
+            enable: true,
+            size: "medium",
+            position: "bottom-right",
+            prenotify: true,
+            showCredit: false,
+            text: {
+              "tip.state.unsubscribed":
+                "Cliquez pour recevoir les notifications",
+              "tip.state.subscribed": "Vous êtes abonné aux notifications",
+              "tip.state.blocked": "Vous avez bloqué les notifications",
+              "message.prenotify":
+                "Cliquez pour vous inscrire aux notifications",
+              "message.action.subscribed": "Merci de vous être abonné !",
+              "message.action.resubscribed":
+                "Vous êtes réabonné aux notifications",
+              "message.action.unsubscribed":
+                "Vous ne recevrez plus de notifications",
+              "dialog.main.title": "Notifications",
+              "dialog.main.button.subscribe": "S'abonner",
+              "dialog.main.button.unsubscribe": "Se désabonner",
+              "dialog.blocked.message": "L'action est bloquée",
+              "dialog.blocked.title": "Bloqué",
+              "message.action.subscribing": "Vous venez de vous abonner !",
+            },
           },
-        },
+        });
 
-        welcomeNotification: {
-          title: t("pages.notif.welcome.title"),
-          message: t("pages.notif.welcome.message"),
-          url: "https://ton-site.fr",
-        },
+        OneSignal.Debug.setLogLevel("0");
 
-        notifyButton: {
-          enable: true,
-          prenotify: true,
-          showCredit: false,
-          position: "bottom-right",
-          text: {
-            "dialog.blocked.message": t("pages.notif.dialog.blocked.message"),
-            "dialog.blocked.title": t("pages.notif.dialog.blocked.title"),
-            "dialog.main.button.subscribe": t("pages.notif.dialog.main.button.subscribe"),
-            "dialog.main.button.unsubscribe": t("pages.notif.dialog.main.button.unsubscribe"),
-            "dialog.main.title": t("pages.notif.dialog.main.title"),
-            "message.action.resubscribed": t("pages.notif.message.action.resubscribed"),
-            "message.action.subscribed": t("pages.notif.message.action.subscribed"),
-            "message.action.subscribing": t("pages.notif.message.action.subscribing"),
-            "message.action.unsubscribed": t("pages.notif.message.action.unsubscribed"),
-            "message.prenotify": t("pages.notif.message.prenotify"),
-            "tip.state.blocked": t("pages.notif.tip.state.blocked"),
-            "tip.state.subscribed": t("pages.notif.tip.state.subscribed"),
-            "tip.state.unsubscribed": t("pages.notif.tip.state.unsubscribed"),
-          },
-        },*/}
+        OneSignal.Notifications.addEventListener(
+          "permissionChange",
+          (permission) => {
+            if (permission) {
+              handleNotificationRegistration();
+            }
+          }
+        );
 
-      OneSignal.Debug.setLogLevel("0");
+        OneSignal.User.PushSubscription.addEventListener("change", (event) => {
+          console.log("Abonnement push changé:", event);
+          if (event.current.id) {
+            handleNotificationRegistration();
+          }
+        });
 
-      const isPushEnabled = OneSignal.Notifications.permission === true;
-      if (isPushEnabled) {
-        const userId = OneSignal.User.PushSubscription.id;
-        if (userId) {
-          try {
-            await ProfileAPI.registerNotification(userId);
-          } catch (error) {
-            console.error("Notification registration failed:", error);
+        await handleNotificationRegistration();
+      } catch (error) {}
+    };
+
+    const handleNotificationRegistration = async () => {
+      try {
+        const isPushEnabled = OneSignal.Notifications.permission === true;
+
+        if (isPushEnabled) {
+          const userId = OneSignal.User.PushSubscription.id;
+          console.log("User ID OneSignal:", userId);
+
+          if (userId) {
+            try {
+              await ProfileAPI.registerNotification(userId);
+            } catch (error) {
+              console.error(
+                "Échec de l'enregistrement de notification:",
+                error
+              );
+            }
           }
         }
+      } catch (error) {
+        console.error(
+          "Erreur lors de l'enregistrement des notifications:",
+          error
+        );
       }
     };
+
+    const requestNotificationPermission = async () => {
+      try {
+        if (OneSignal.Notifications) {
+          await OneSignal.Notifications.requestPermission();
+          if (OneSignal.Notifications.permission === true) {
+            await handleNotificationRegistration();
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors de la demande de permission:", error);
+      }
+    };
+
+    window.requestNotificationPermission = requestNotificationPermission;
 
     initOneSignal();
   }, [i18n.language]);

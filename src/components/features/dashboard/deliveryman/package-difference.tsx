@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { TrendingUp } from "lucide-react"
-import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts"
+import * as React from "react";
+import { TrendingUp } from "lucide-react";
+import { Label, PolarRadiusAxis, RadialBar, RadialBarChart } from "recharts";
 
 import {
   Card,
@@ -11,34 +11,37 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-import { DashboardApi, clientStats as client } from "@/api/dashboard.api"
-
+} from "@/components/ui/chart";
+import { DashboardApi, clientStats as client } from "@/api/dashboard.api";
+import { Spinner } from "@/components/ui/spinner";
 
 export function DeliveryDistribution() {
-  const [clientStats, setClientStats] = React.useState<client | null>(null)
-  const [loading, setLoading] = React.useState(true)
+  const [clientStats, setClientStats] = React.useState<client | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     const fetchClientStats = async () => {
       try {
-        const data = await DashboardApi.getClientStats()
-        setClientStats(data[0])
+        const data = await DashboardApi.getClientStats();
+        setClientStats(data[0]);
       } catch (err) {
-        console.error("Erreur lors du chargement des statistiques client:", err)
+        console.error(
+          "Erreur lors du chargement des statistiques client:",
+          err
+        );
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchClientStats()
-  }, [])
+    fetchClientStats();
+  }, []);
 
   if (loading) {
     return (
@@ -47,10 +50,10 @@ export function DeliveryDistribution() {
           <CardTitle>Répartition des Colis Livrés - Par Profil</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Chargement...</p>
+          <Spinner />
         </CardContent>
       </Card>
-    )
+    );
   }
 
   if (!clientStats) {
@@ -63,10 +66,10 @@ export function DeliveryDistribution() {
           <p>Aucune donnée disponible.</p>
         </CardContent>
       </Card>
-    )
+    );
   }
 
-  const totalVisitors = clientStats.merchant + clientStats.client
+  const totalVisitors = clientStats.merchant + clientStats.client;
 
   const chartData = [
     {
@@ -74,7 +77,7 @@ export function DeliveryDistribution() {
       merchant: clientStats.merchant,
       client: clientStats.client,
     },
-  ]
+  ];
 
   const chartConfig = {
     merchant: {
@@ -85,13 +88,15 @@ export function DeliveryDistribution() {
       label: "Particulier",
       color: "hsl(var(--chart-2))",
     },
-  } satisfies ChartConfig
+  } satisfies ChartConfig;
 
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="items-center pb-0">
         <CardTitle>Répartition des Colis Livrés - Par Profil</CardTitle>
-        <CardDescription>Répartition des livraisons entre commerçants et particuliers</CardDescription>
+        <CardDescription>
+          Répartition des livraisons entre commerçants et particuliers
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 items-center pb-0">
         <ChartContainer
@@ -129,7 +134,7 @@ export function DeliveryDistribution() {
                           Visiteurs
                         </tspan>
                       </text>
-                    )
+                    );
                   }
                 }}
               />
@@ -160,5 +165,5 @@ export function DeliveryDistribution() {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

@@ -1,6 +1,10 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import creatAccount from "@/assets/illustrations/create-account.svg";
+import deliveryManAsk from "@/assets/illustrations/delivery-man-ask.svg";
+import checkAsk from "@/assets/illustrations/check-ask.svg";
+import vehicle from "@/assets/illustrations/vehicle.svg";
 
 export default function BecomeDeliverymanPage() {
   const { t } = useTranslation();
@@ -8,9 +12,11 @@ export default function BecomeDeliverymanPage() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-4xl">
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold mb-4">{t('client.pages.public.becomeDeliveryman.title')}</h1>
+        <h1 className="text-3xl font-bold mb-4">
+          {t("client.pages.public.becomeDeliveryman.title")}
+        </h1>
         <p className="text-foreground max-w-2xl mx-auto">
-          {t('client.pages.public.becomeDeliveryman.intro')}
+          {t("client.pages.public.becomeDeliveryman.intro")}
         </p>
       </div>
 
@@ -19,8 +25,10 @@ export default function BecomeDeliverymanPage() {
           <div className="md:w-1/3 flex justify-center">
             <div className="relative w-48 h-48">
               <img
-                src="/placeholder.svg?height=192&width=192"
-                alt={t('client.pages.public.becomeDeliveryman.steps.step1.title')}
+                src={creatAccount}
+                alt={t(
+                  "client.pages.public.becomeDeliveryman.steps.step1.title"
+                )}
                 width={192}
                 height={192}
                 className="object-contain"
@@ -28,9 +36,13 @@ export default function BecomeDeliverymanPage() {
             </div>
           </div>
           <div className="md:w-2/3">
-            <h2 className="text-xl font-bold mb-4">{t('client.pages.public.becomeDeliveryman.steps.step1.title')}</h2>
+            <h2 className="text-xl font-bold mb-4">
+              {t("client.pages.public.becomeDeliveryman.steps.step1.title")}
+            </h2>
             <p className="text-foreground">
-              {t('client.pages.public.becomeDeliveryman.steps.step1.description')}
+              {t(
+                "client.pages.public.becomeDeliveryman.steps.step1.description"
+              )}
             </p>
           </div>
         </div>
@@ -39,8 +51,10 @@ export default function BecomeDeliverymanPage() {
           <div className="md:w-1/3 flex justify-center">
             <div className="relative w-48 h-48">
               <img
-                src="/placeholder.svg?height=192&width=192"
-                alt={t('client.pages.public.becomeDeliveryman.steps.step2.title')}
+                src={deliveryManAsk}
+                alt={t(
+                  "client.pages.public.becomeDeliveryman.steps.step2.title"
+                )}
                 width={192}
                 height={192}
                 className="object-contain"
@@ -48,9 +62,13 @@ export default function BecomeDeliverymanPage() {
             </div>
           </div>
           <div className="md:w-2/3">
-            <h2 className="text-xl font-bold mb-4">{t('client.pages.public.becomeDeliveryman.steps.step2.title')}</h2>
+            <h2 className="text-xl font-bold mb-4">
+              {t("client.pages.public.becomeDeliveryman.steps.step2.title")}
+            </h2>
             <p className="text-foreground">
-              {t('client.pages.public.becomeDeliveryman.steps.step2.description')}
+              {t(
+                "client.pages.public.becomeDeliveryman.steps.step2.description"
+              )}
             </p>
           </div>
         </div>
@@ -59,8 +77,10 @@ export default function BecomeDeliverymanPage() {
           <div className="md:w-1/3 flex justify-center">
             <div className="relative w-48 h-48">
               <img
-                src="/placeholder.svg?height=192&width=192"
-                alt={t('client.pages.public.becomeDeliveryman.steps.step3.title')}
+                src={checkAsk}
+                alt={t(
+                  "client.pages.public.becomeDeliveryman.steps.step3.title"
+                )}
                 width={192}
                 height={192}
                 className="object-contain"
@@ -68,9 +88,13 @@ export default function BecomeDeliverymanPage() {
             </div>
           </div>
           <div className="md:w-2/3">
-            <h2 className="text-xl font-bold mb-4">{t('client.pages.public.becomeDeliveryman.steps.step3.title')}</h2>
+            <h2 className="text-xl font-bold mb-4">
+              {t("client.pages.public.becomeDeliveryman.steps.step3.title")}
+            </h2>
             <p className="text-foreground">
-              {t('client.pages.public.becomeDeliveryman.steps.step3.description')}
+              {t(
+                "client.pages.public.becomeDeliveryman.steps.step3.description"
+              )}
             </p>
           </div>
         </div>
@@ -79,8 +103,10 @@ export default function BecomeDeliverymanPage() {
           <div className="md:w-1/3 flex justify-center">
             <div className="relative w-48 h-48">
               <img
-                src="/placeholder.svg?height=192&width=192"
-                alt={t('client.pages.public.becomeDeliveryman.steps.step4.title')}
+                src={vehicle}
+                alt={t(
+                  "client.pages.public.becomeDeliveryman.steps.step4.title"
+                )}
                 width={192}
                 height={192}
                 className="object-contain"
@@ -88,18 +114,26 @@ export default function BecomeDeliverymanPage() {
             </div>
           </div>
           <div className="md:w-2/3">
-            <h2 className="text-xl font-bold mb-4">{t('client.pages.public.becomeDeliveryman.steps.step4.title')}</h2>
+            <h2 className="text-xl font-bold mb-4">
+              {t("client.pages.public.becomeDeliveryman.steps.step4.title")}
+            </h2>
             <p className="text-foreground">
-              {t('client.pages.public.becomeDeliveryman.steps.step4.description')}
+              {t(
+                "client.pages.public.becomeDeliveryman.steps.step4.description"
+              )}
             </p>
           </div>
         </div>
       </div>
 
       <div className="mt-16 text-center">
-        <h3 className="text-xl font-semibold mb-4">{t('client.pages.public.becomeDeliveryman.ready.title')}</h3>
+        <h3 className="text-xl font-semibold mb-4">
+          {t("client.pages.public.becomeDeliveryman.ready.title")}
+        </h3>
         <Button asChild size="lg" className="px-8">
-          <Link to="/auth/register">{t('client.pages.public.becomeDeliveryman.ready.button')}</Link>
+          <Link to="/auth/register">
+            {t("client.pages.public.becomeDeliveryman.ready.button")}
+          </Link>
         </Button>
       </div>
     </div>

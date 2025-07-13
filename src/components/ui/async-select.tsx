@@ -92,7 +92,9 @@ export function AsyncSelect<T>({
         setOriginalOptions(data);
         setOptions(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch options');
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch options"
+        );
       } finally {
         setLoading(false);
       }
@@ -104,20 +106,30 @@ export function AsyncSelect<T>({
       fetchOptions();
     } else if (preload) {
       if (debouncedSearchTerm) {
-        setOptions(originalOptions.filter((option) => filterFn ? filterFn(option, debouncedSearchTerm) : true));
+        setOptions(
+          originalOptions.filter((option) =>
+            filterFn ? filterFn(option, debouncedSearchTerm) : true
+          )
+        );
       } else {
         setOptions(originalOptions);
       }
     }
   }, [fetcher, debouncedSearchTerm, mounted, preload, filterFn]);
 
-  const handleSelect = useCallback((currentValue: string) => {
-    const newValue = clearable && currentValue === selectedValue ? "" : currentValue;
-    setSelectedValue(newValue);
-    setSelectedOption(options.find((option) => getOptionValue(option) === newValue) || null);
-    onChange(newValue);
-    setOpen(false);
-  }, [selectedValue, onChange, clearable, options, getOptionValue]);
+  const handleSelect = useCallback(
+    (currentValue: string) => {
+      const newValue =
+        clearable && currentValue === selectedValue ? "" : currentValue;
+      setSelectedValue(newValue);
+      setSelectedOption(
+        options.find((option) => getOptionValue(option) === newValue) || null
+      );
+      onChange(newValue);
+      setOpen(false);
+    },
+    [selectedValue, onChange, clearable, options, getOptionValue]
+  );
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -132,16 +144,17 @@ export function AsyncSelect<T>({
             triggerClassName
           )}
           disabled={disabled}
+          style={{ width: width }}
         >
-          {selectedOption ? (
-            getDisplayValue(selectedOption)
-          ) : (
-            placeholder
-          )}
+          {selectedOption ? getDisplayValue(selectedOption) : placeholder}
           <ChevronsUpDown className="opacity-50" size={10} />
         </Button>
       </PopoverTrigger>
-      <PopoverContent style={{ width: width }} className={cn("p-0", className)}>
+      <PopoverContent
+        style={{ width: 400 }}
+        className={cn("p-0 test", className)}
+        align="start"
+      >
         <Command>
           <div className="relative border-b w-full">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -159,16 +172,19 @@ export function AsyncSelect<T>({
           </div>
           <CommandList>
             {error && (
-              <div className="p-4 text-destructive text-center">
-                {error}
-              </div>
+              <div className="p-4 text-destructive text-center">{error}</div>
             )}
-            {loading && options.length === 0 && (
-              loadingSkeleton || <DefaultLoadingSkeleton />
-            )}
-            {!loading && !error && options.length === 0 && (
-              notFound || <CommandEmpty>{noResultsMessage ?? `No ${label.toLowerCase()} found.`}</CommandEmpty>
-            )}
+            {loading &&
+              options.length === 0 &&
+              (loadingSkeleton || <DefaultLoadingSkeleton />)}
+            {!loading &&
+              !error &&
+              options.length === 0 &&
+              (notFound || (
+                <CommandEmpty>
+                  {noResultsMessage ?? `No ${label.toLowerCase()} found.`}
+                </CommandEmpty>
+              ))}
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
@@ -180,7 +196,9 @@ export function AsyncSelect<T>({
                   <Check
                     className={cn(
                       "ml-auto h-3 w-3",
-                      selectedValue === getOptionValue(option) ? "opacity-100" : "opacity-0"
+                      selectedValue === getOptionValue(option)
+                        ? "opacity-100"
+                        : "opacity-0"
                     )}
                   />
                 </CommandItem>

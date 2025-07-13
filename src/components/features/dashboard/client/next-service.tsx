@@ -1,46 +1,60 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useNavigate } from "react-router-dom"
-import { DashboardApi } from "@/api/dashboard.api"
+import * as React from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { DashboardApi } from "@/api/dashboard.api";
+import { Spinner } from "@/components/ui/spinner";
 
 interface NextService {
-  title: string
-  date: string
-  image: string
+  title: string;
+  date: string;
+  image: string;
 }
 
 export default function NextService() {
-  const navigate = useNavigate()
-  const [nextService, setNextService] = React.useState<NextService | null>(null)
-  const [loading, setLoading] = React.useState(true)
+  const navigate = useNavigate();
+  const [nextService, setNextService] = React.useState<NextService | null>(
+    null
+  );
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     const fetchNextService = async () => {
       try {
-        const res = await DashboardApi.getNextServiceAsClient()
-        setNextService(res)
+        const res = await DashboardApi.getNextServiceAsClient();
+        setNextService(res);
       } catch (err) {
-        console.error("Erreur lors du chargement de la prochaine prestation :", err)
-        setNextService(null)
+        console.error(
+          "Erreur lors du chargement de la prochaine prestation :",
+          err
+        );
+        setNextService(null);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchNextService()
-  }, [])
+    };
+    fetchNextService();
+  }, []);
 
   return (
     <Card className="h-full flex flex-col justify-between">
       <CardHeader>
-        <CardTitle className="text-base font-medium">Prochaine prestation</CardTitle>
+        <CardTitle className="text-base font-medium">
+          Prochaine prestation
+        </CardTitle>
       </CardHeader>
 
       {loading ? (
         <CardContent>
-          <p className="text-sm text-muted-foreground">Chargement en cours...</p>
+          <Spinner />
         </CardContent>
       ) : nextService ? (
         <>
@@ -56,12 +70,17 @@ export default function NextService() {
             </div>
             <div className="text-sm text-center">
               <p className="font-medium">{nextService.title}</p>
-              <p className="text-muted-foreground text-xs">{nextService.date}</p>
+              <p className="text-muted-foreground text-xs">
+                {nextService.date}
+              </p>
             </div>
           </CardContent>
 
           <CardFooter>
-            <Button className="w-full" onClick={() => navigate("/office/planning")}>
+            <Button
+              className="w-full"
+              onClick={() => navigate("/office/planning")}
+            >
               Accéder au planning
             </Button>
           </CardFooter>
@@ -69,7 +88,9 @@ export default function NextService() {
       ) : (
         <>
           <CardContent>
-            <p className="text-sm text-muted-foreground">Aucune prestation prévue.</p>
+            <p className="text-sm text-muted-foreground">
+              Aucune prestation prévue.
+            </p>
           </CardContent>
           <CardFooter>
             <Button className="w-full" onClick={() => navigate("/services")}>
@@ -79,5 +100,5 @@ export default function NextService() {
         </>
       )}
     </Card>
-  )
+  );
 }

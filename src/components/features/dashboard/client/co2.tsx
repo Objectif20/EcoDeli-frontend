@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { TrendingUp } from "lucide-react"
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
+import { useEffect, useState } from "react";
+import { TrendingUp } from "lucide-react";
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
 import {
   Card,
@@ -11,37 +11,37 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-import { co2Saved, DashboardApi } from "@/api/dashboard.api"
+} from "@/components/ui/chart";
+import { co2Saved, DashboardApi } from "@/api/dashboard.api";
 
 const chartConfig: ChartConfig = {
   co2Saved: {
     label: "CO2 Évité (kg)",
     color: "hsl(var(--chart-1))",
   },
-}
+};
 
 export function Co2Chart() {
-  const [data, setData] = useState<co2Saved[]>([])
+  const [data, setData] = useState<co2Saved[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await DashboardApi.getCo2Saved()
-        setData(result)
+        const result = await DashboardApi.getCo2Saved();
+        setData(result);
       } catch (err) {
-        console.error("Erreur lors du chargement du CO2 évité :", err)
+        console.error("Erreur lors du chargement du CO2 évité :", err);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   return (
     <Card className="h-full">
@@ -88,5 +88,5 @@ export function Co2Chart() {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 }

@@ -1,36 +1,38 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { format } from "date-fns"
-import { fr } from "date-fns/locale"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar } from "@/components/ui/calendar"
-import { DashboardApi, events as myEvents } from "@/api/dashboard.api"
+import * as React from "react";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import { DashboardApi, events as myEvents } from "@/api/dashboard.api";
 
 export default function YourPlanning() {
-  const [dateRange, setDateRange] = React.useState<Date | undefined>(undefined)
-  const [events, setEvents] = React.useState<myEvents[]>([])
+  const [dateRange, setDateRange] = React.useState<Date | undefined>(undefined);
+  const [events, setEvents] = React.useState<myEvents[]>([]);
 
   React.useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const fetchedEvents = await DashboardApi.getMyNextEvent()
-        setEvents(fetchedEvents)
+        const fetchedEvents = await DashboardApi.getMyNextEvent();
+        setEvents(fetchedEvents);
       } catch (error) {
-        console.error("Failed to fetch events:", error)
+        console.error("Failed to fetch events:", error);
       }
-    }
+    };
 
-    fetchEvents()
-  }, []) 
+    fetchEvents();
+  }, []);
 
   const handleDateSelect = (date: Date | undefined) => {
-    setDateRange(date)
-  }
+    setDateRange(date);
+  };
 
   const isEventDay = (date: Date) => {
-    return events.some((event) => format(event.date, "yyyy-MM-dd") === format(date, "yyyy-MM-dd"))
-  }
+    return events.some(
+      (event) => format(event.date, "yyyy-MM-dd") === format(date, "yyyy-MM-dd")
+    );
+  };
 
   return (
     <Card className="h-full flex flex-col">
@@ -57,5 +59,5 @@ export default function YourPlanning() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

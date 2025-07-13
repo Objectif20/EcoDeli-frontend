@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Euro } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DashboardApi, CurrentBalance as Balance } from "@/api/dashboard.api"
-
+import * as React from "react";
+import { Euro } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardApi, CurrentBalance as Balance } from "@/api/dashboard.api";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function CurrentBalance() {
-  const [balance, setBalance] = React.useState<Balance | null>(null)
-  const [loading, setLoading] = React.useState(true)
+  const [balance, setBalance] = React.useState<Balance | null>(null);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     const fetchBalance = async () => {
       try {
-        const res = await DashboardApi.getCurrentBalance()
-        setBalance(res)
+        const res = await DashboardApi.getCurrentBalance();
+        setBalance(res);
       } catch (err) {
-        console.error("Erreur lors du chargement du solde :", err)
-        setBalance(null)
+        console.error("Erreur lors du chargement du solde :", err);
+        setBalance(null);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
-    fetchBalance()
-  }, [])
+    };
+    fetchBalance();
+  }, []);
 
   if (loading) {
     return (
@@ -32,10 +32,10 @@ export default function CurrentBalance() {
           <CardTitle className="text-base font-medium">Votre solde</CardTitle>
         </CardHeader>
         <CardContent>
-          <p>Chargement...</p>
+          <Spinner />
         </CardContent>
       </Card>
-    )
+    );
   }
 
   return (
@@ -48,13 +48,21 @@ export default function CurrentBalance() {
           {balance ? (
             <>
               <div className="flex items-center">
-                <span className="text-3xl font-bold text-primary">{balance.amount}</span>
-                <span className="text-xl font-bold text-primary ml-1">{balance.currency}</span>
+                <span className="text-3xl font-bold text-primary">
+                  {balance.amount}
+                </span>
+                <span className="text-xl font-bold text-primary ml-1">
+                  {balance.currency}
+                </span>
               </div>
-              <span className="text-xs text-muted-foreground mt-1">actuellement dans votre solde</span>
+              <span className="text-xs text-muted-foreground mt-1">
+                actuellement dans votre solde
+              </span>
             </>
           ) : (
-            <span className="text-xs text-muted-foreground">Solde indisponible</span>
+            <span className="text-xs text-muted-foreground">
+              Solde indisponible
+            </span>
           )}
         </div>
         <div className="flex items-center justify-center p-2 rounded-full">
@@ -62,5 +70,5 @@ export default function CurrentBalance() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

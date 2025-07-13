@@ -1,49 +1,64 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { MapPin, Package, Truck, Clock, Calendar, BarChart } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { DashboardApi, NextDelivery as NextDeliveryProps } from "@/api/dashboard.api"
+import * as React from "react";
+import {
+  MapPin,
+  Package,
+  Truck,
+  Clock,
+  Calendar,
+  BarChart,
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  DashboardApi,
+  NextDelivery as NextDeliveryProps,
+} from "@/api/dashboard.api";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function NextDelivery() {
-  const [delivery, setDelivery] = React.useState<NextDeliveryProps | null>(null)
+  const [delivery, setDelivery] = React.useState<NextDeliveryProps | null>(
+    null
+  );
 
-  
   React.useEffect(() => {
     const fetchNextDelivery = async () => {
       try {
-        const data = await DashboardApi.getNextDelivery()
-        setDelivery(data)
+        const data = await DashboardApi.getNextDelivery();
+        setDelivery(data);
       } catch (error) {
-        console.error("Erreur lors de la récupération de la livraison :", error)
+        console.error(
+          "Erreur lors de la récupération de la livraison :",
+          error
+        );
       }
-    }
+    };
 
-    fetchNextDelivery()
-  }, [])
+    fetchNextDelivery();
+  }, []);
 
   if (!delivery) {
-    return <div>Chargement...</div> 
+    return <Spinner />;
   }
 
   const {
     origin,
     destination,
-    date, 
+    date,
     status,
     trackingNumber,
     carrier,
     weight,
     estimatedTime,
-  } = delivery
+  } = delivery;
 
-  const parsedDate = new Date(date)
-  
+  const parsedDate = new Date(date);
+
   if (isNaN(parsedDate.getTime())) {
-    console.error("Date invalide reçue : ", date)
-    return <div>Erreur de date.</div>
+    console.error("Date invalide reçue : ", date);
+    return <div>Erreur de date.</div>;
   }
 
   const formattedDate = new Intl.DateTimeFormat("fr-FR", {
@@ -52,34 +67,43 @@ export default function NextDelivery() {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(parsedDate)
+  }).format(parsedDate);
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "wait":
-        return "bg-gray-500"
+        return "bg-gray-500";
       case "take":
-        return "bg-yellow-500"
+        return "bg-yellow-500";
       case "going":
-        return "bg-blue-500"
+        return "bg-blue-500";
       case "finished":
-        return "bg-green-500"
+        return "bg-green-500";
       default:
-        return "bg-gray-500"
+        return "bg-gray-500";
     }
-  }
+  };
 
   return (
     <Card className="h-full border-2 border-primary/10 shadow-lg">
       <CardHeader className="pb-2 bg-primary/5 rounded-t-lg">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg font-bold">Suivi de livraison</CardTitle>
+          <CardTitle className="text-lg font-bold">
+            Suivi de livraison
+          </CardTitle>
           <Badge variant="outline" className="capitalize font-medium">
-            <span className={`mr-2 w-2 h-2 rounded-full ${getStatusColor(status || "wait")}`}></span>
-            {status === "wait" ? "En attente" : 
-             status === "take" ? "Prise en charge" : 
-             status === "going" ? "En cours de livraison" : 
-             "Livraison terminée"}
+            <span
+              className={`mr-2 w-2 h-2 rounded-full ${getStatusColor(
+                status || "wait"
+              )}`}
+            ></span>
+            {status === "wait"
+              ? "En attente"
+              : status === "take"
+              ? "Prise en charge"
+              : status === "going"
+              ? "En cours de livraison"
+              : "Livraison terminée"}
           </Badge>
         </div>
       </CardHeader>
@@ -139,5 +163,5 @@ export default function NextDelivery() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

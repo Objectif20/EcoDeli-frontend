@@ -8,7 +8,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import DeliveryCard from "@/components/features/deliveries/delivery-card";
 import PackageIcon from "@/assets/illustrations/package.svg";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { DeliveriesAPI } from "@/api/deliveries.api";
 
 export interface DeliveryOnGoing {
@@ -34,7 +34,10 @@ export default function OngoingDeliveries() {
   useEffect(() => {
     dispatch(
       setBreadcrumb({
-        segments: [ t('client.pages.office.deliveryman.ongoingDeliveries.home'), t('client.pages.office.deliveryman.ongoingDeliveries.title')],
+        segments: [
+          t("client.pages.office.deliveryman.ongoingDeliveries.home"),
+          t("client.pages.office.deliveryman.ongoingDeliveries.title"),
+        ],
         links: ["/office/dashboard"],
       })
     );
@@ -47,7 +50,8 @@ export default function OngoingDeliveries() {
 
     const fetchDeliveries = async () => {
       try {
-        const deliveries = await DeliveriesAPI.getMyOngoingDeliveriesAsDeliveryman();
+        const deliveries =
+          await DeliveriesAPI.getMyOngoingDeliveriesAsDeliveryman();
         setDeliveriesData(deliveries);
       } catch (error) {
         console.error("Error fetching ongoing deliveries:", error);
@@ -62,7 +66,8 @@ export default function OngoingDeliveries() {
   const handleUpdateDeliveries = async () => {
     setLoading(true);
     try {
-      const deliveries = await DeliveriesAPI.getMyOngoingDeliveriesAsDeliveryman();
+      const deliveries =
+        await DeliveriesAPI.getMyOngoingDeliveriesAsDeliveryman();
       setDeliveriesData(deliveries);
     } catch (error) {
       console.error("Error fetching ongoing deliveries:", error);
@@ -77,23 +82,33 @@ export default function OngoingDeliveries() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{t('client.pages.office.deliveryman.ongoingDeliveries.title')}</h1>
+      <h1 className="text-2xl font-bold">
+        {t("client.pages.office.deliveryman.ongoingDeliveries.title")}
+      </h1>
 
       {deliveriesData.length === 0 ? (
         <Card className="rounded-xl shadow-lg border bg-background">
           <CardHeader className="text-center">
             <CardTitle className="text-xl font-semibold text-foreground">
-              {t('client.pages.office.deliveryman.ongoingDeliveries.noDeliveries')}
+              {t(
+                "client.pages.office.deliveryman.ongoingDeliveries.noDeliveries"
+              )}
             </CardTitle>
             <p>
-              {t('client.pages.office.deliveryman.ongoingDeliveries.noDeliveriesDescription')}
+              {t(
+                "client.pages.office.deliveryman.ongoingDeliveries.noDeliveriesDescription"
+              )}
             </p>
           </CardHeader>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {deliveriesData.map((delivery) => (
-            <DeliveryCard key={delivery.id} delivery={delivery} onUpdate={handleUpdateDeliveries} />
+            <DeliveryCard
+              key={delivery.id}
+              delivery={delivery}
+              onUpdate={handleUpdateDeliveries}
+            />
           ))}
         </div>
       )}

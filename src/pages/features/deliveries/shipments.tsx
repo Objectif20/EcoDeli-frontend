@@ -216,7 +216,7 @@ export default function ShipmentsListPage() {
                     <span>
                       {t("client.pages.office.shipment.onGoing.progress")}
                     </span>
-                    <span>{shipment.progress}%</span>
+                    <span>{Math.round(shipment.progress)}%</span>
                   </div>
                   <Progress value={shipment.progress} className="h-2" />
                 </div>

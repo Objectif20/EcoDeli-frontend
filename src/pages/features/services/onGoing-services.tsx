@@ -1,12 +1,17 @@
-"use client"
+"use client";
 
-import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice"
-import { useEffect, useState } from "react"
-import { useDispatch } from "react-redux"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
   DialogContent,
@@ -15,14 +20,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/input-otp";
+import { Label } from "@/components/ui/label";
 import {
   Pagination,
   PaginationContent,
@@ -30,124 +35,140 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/pagination"
-import { Calendar, Clock, Play, Square, User } from "lucide-react"
-import { toast } from 'sonner';
-import { FutureAppointmentProvider, ServiceApi } from "@/api/service.api"
+} from "@/components/ui/pagination";
+import { Calendar, Clock, HandHelping, Play, Square, User } from "lucide-react";
+import { toast } from "sonner";
+import { FutureAppointmentProvider, ServiceApi } from "@/api/service.api";
 
 export default function OnGoingServicesPage() {
-  const dispatch = useDispatch()
-  const [appointments, setAppointments] = useState<FutureAppointmentProvider[]>([])
-  const [loading, setLoading] = useState(true)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const [otpCode, setOtpCode] = useState("")
-  const [selectedAppointment, setSelectedAppointment] = useState<FutureAppointmentProvider | null>(null)
-  const [isStartDialogOpen, setIsStartDialogOpen] = useState(false)
-  const [isEndDialogOpen, setIsEndDialogOpen] = useState(false)
-  const [actionLoading, setActionLoading] = useState(false)
+  const dispatch = useDispatch();
+  const [appointments, setAppointments] = useState<FutureAppointmentProvider[]>(
+    []
+  );
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [otpCode, setOtpCode] = useState("");
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<FutureAppointmentProvider | null>(null);
+  const [isStartDialogOpen, setIsStartDialogOpen] = useState(false);
+  const [isEndDialogOpen, setIsEndDialogOpen] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
-  const limit = 9
+  const limit = 9;
 
   useEffect(() => {
     dispatch(
       setBreadcrumb({
         segments: ["Accueil", "Mes prestations en cours"],
         links: ["/office/dashboard"],
-      }),
-    )
-  }, [dispatch])
+      })
+    );
+  }, [dispatch]);
 
   useEffect(() => {
-    fetchAppointments()
-  }, [currentPage])
+    fetchAppointments();
+  }, [currentPage]);
 
   const fetchAppointments = async () => {
     try {
-      setLoading(true)
-      const response = await ServiceApi.getFutureAppointmentsProvider(currentPage, limit)
-      setAppointments(response.data)
-      setTotalPages(response.totalPages)
+      setLoading(true);
+      const response = await ServiceApi.getFutureAppointmentsProvider(
+        currentPage,
+        limit
+      );
+      setAppointments(response.data);
+      setTotalPages(response.totalPages);
     } catch (error) {
-      toast.error("Impossible de charger les prestations en cours")
+      toast.error("Impossible de charger les prestations en cours");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleStartAppointment = async () => {
     if (!selectedAppointment || !otpCode.trim()) {
-      toast.error("Veuillez entrer le code OTP pour démarrer la prestation.")
-      return
+      toast.error("Veuillez entrer le code OTP pour démarrer la prestation.");
+      return;
     }
 
     try {
-      setActionLoading(true)
-      await ServiceApi.startAppointment(selectedAppointment.id, otpCode)
+      setActionLoading(true);
+      await ServiceApi.startAppointment(selectedAppointment.id, otpCode);
 
       setAppointments((prev) =>
-        prev.map((apt) => (apt.id === selectedAppointment.id ? { ...apt, status: "in_progress" } : apt)),
-      )
+        prev.map((apt) =>
+          apt.id === selectedAppointment.id
+            ? { ...apt, status: "in_progress" }
+            : apt
+        )
+      );
 
-      toast.success("La prestation a été démarrée avec succès")
+      toast.success("La prestation a été démarrée avec succès");
 
-      setIsStartDialogOpen(false)
-      setOtpCode("")
-      setSelectedAppointment(null)
+      setIsStartDialogOpen(false);
+      setOtpCode("");
+      setSelectedAppointment(null);
     } catch (error) {
-      toast.success("Impossible de démarrer la prestation")
+      toast.success("Impossible de démarrer la prestation");
     } finally {
-      setActionLoading(false)
+      setActionLoading(false);
     }
-  }
+  };
 
   const handleEndAppointment = async () => {
-    if (!selectedAppointment) return
+    if (!selectedAppointment) return;
 
     try {
-      setActionLoading(true)
-      await ServiceApi.endAppointment(selectedAppointment.id)
+      setActionLoading(true);
+      await ServiceApi.endAppointment(selectedAppointment.id);
 
-      await fetchAppointments()
+      await fetchAppointments();
 
-      toast.success("La prestation a été terminée avec succès")
-      setIsEndDialogOpen(false)
-      setSelectedAppointment(null)
+      toast.success("La prestation a été terminée avec succès");
+      setIsEndDialogOpen(false);
+      setSelectedAppointment(null);
     } catch (error) {
-      toast.error("Impossible de terminer la prestation")
+      toast.error("Impossible de terminer la prestation");
     } finally {
-      setActionLoading(false)
+      setActionLoading(false);
     }
-  }
+  };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "pending":
         return (
-          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+          <Badge
+            variant="outline"
+            className="bg-yellow-50 text-yellow-700 border-yellow-200"
+          >
             En attente
           </Badge>
-        )
+        );
       case "in_progress":
         return (
-          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+          <Badge
+            variant="outline"
+            className="bg-green-50 text-green-700 border-green-200"
+          >
             En cours
           </Badge>
-        )
+        );
       default:
-        return <Badge variant="outline">{status}</Badge>
+        return <Badge variant="outline">{status}</Badge>;
     }
-  }
+  };
 
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
+    const date = new Date(dateString);
     return date.toLocaleDateString("fr-FR", {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
-    })
-  }
+    });
+  };
 
   if (loading) {
     return (
@@ -177,7 +198,7 @@ export default function OnGoingServicesPage() {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -192,29 +213,42 @@ export default function OnGoingServicesPage() {
       {appointments.length === 0 ? (
         <Card className="text-center py-12">
           <CardContent>
-            <Calendar className="mx-auto h-12 w-12  mb-4" />
-            <h3 className="text-lg font-medium mb-2">Aucune prestation en cours</h3>
-            <p>Vous n'avez actuellement aucune prestation programmée ou en cours.</p>
+            <HandHelping className="mx-auto h-12 w-12 mb-4 text-muted-foreground" />
+            <h3 className="text-lg font-medium mb-2">
+              Aucune prestation en cours
+            </h3>
+            <p>
+              Vous n'avez actuellement aucune prestation programmée ou en cours.
+            </p>
           </CardContent>
         </Card>
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {appointments.map((appointment) => (
-              <Card key={appointment.id} className="hover:shadow-lg transition-shadow">
+              <Card
+                key={appointment.id}
+                className="hover:shadow-lg transition-shadow"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <Avatar>
-                        <AvatarImage src={appointment.clientImage || undefined} />
+                        <AvatarImage
+                          src={appointment.clientImage || undefined}
+                        />
                         <AvatarFallback>
-                          {appointment.clientName
-                            ? appointment.clientName.charAt(0).toUpperCase()
-                            : <User className="h-4 w-4" />}
+                          {appointment.clientName ? (
+                            appointment.clientName.charAt(0).toUpperCase()
+                          ) : (
+                            <User className="h-4 w-4" />
+                          )}
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <h3 className="font-semibold text-sm">{appointment.clientName}</h3>
+                        <h3 className="font-semibold text-sm">
+                          {appointment.clientName}
+                        </h3>
                         {getStatusBadge(appointment.status)}
                       </div>
                     </div>
@@ -223,10 +257,10 @@ export default function OnGoingServicesPage() {
 
                 <CardContent className="space-y-3">
                   <div>
-                    <h4 className="font-medium ">{appointment.serviceName}</h4>
+                    <h4 className="font-medium">{appointment.serviceName}</h4>
                   </div>
 
-                  <div className="space-y-2 text-sm ">
+                  <div className="space-y-2 text-sm">
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4" />
                       <span>{formatDate(appointment.date)}</span>
@@ -241,14 +275,16 @@ export default function OnGoingServicesPage() {
                 <CardFooter>
                   {appointment.status === "pending" && (
                     <Dialog
-                      open={isStartDialogOpen && selectedAppointment?.id === appointment.id}
+                      open={
+                        isStartDialogOpen &&
+                        selectedAppointment?.id === appointment.id
+                      }
                       onOpenChange={(open) => {
-                        setIsStartDialogOpen(open)
-                        if (open) {
-                          setSelectedAppointment(appointment)
-                        } else {
-                          setSelectedAppointment(null)
-                          setOtpCode("")
+                        setIsStartDialogOpen(open);
+                        if (open) setSelectedAppointment(appointment);
+                        else {
+                          setSelectedAppointment(null);
+                          setOtpCode("");
                         }
                       }}
                     >
@@ -258,66 +294,78 @@ export default function OnGoingServicesPage() {
                           Démarrer
                         </Button>
                       </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Démarrer la prestation</DialogTitle>
-                            <DialogDescription>
-                              Demandez le code OTP au client pour démarrer la prestation "{appointment.serviceName}".
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            <div className="flex flex-col items-center">
-                              <Label htmlFor="otp">Code OTP</Label>
-                              <div className="mt-2 flex justify-center">
-                                <InputOTP maxLength={6} value={otpCode} onChange={(value) => setOtpCode(value)}>
-                                  <InputOTPGroup>
-                                    <InputOTPSlot index={0} />
-                                    <InputOTPSlot index={1} />
-                                    <InputOTPSlot index={2} />
-                                  </InputOTPGroup>
-                                  <InputOTPSeparator />
-                                  <InputOTPGroup>
-                                    <InputOTPSlot index={3} />
-                                    <InputOTPSlot index={4} />
-                                    <InputOTPSlot index={5} />
-                                  </InputOTPGroup>
-                                </InputOTP>
-                              </div>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Démarrer la prestation</DialogTitle>
+                          <DialogDescription>
+                            Demandez le code OTP au client pour démarrer la
+                            prestation "{appointment.serviceName}".
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div className="flex flex-col items-center">
+                            <Label htmlFor="otp">Code OTP</Label>
+                            <div className="mt-2 flex justify-center">
+                              <InputOTP
+                                maxLength={6}
+                                value={otpCode}
+                                onChange={setOtpCode}
+                              >
+                                <InputOTPGroup>
+                                  <InputOTPSlot index={0} />
+                                  <InputOTPSlot index={1} />
+                                  <InputOTPSlot index={2} />
+                                </InputOTPGroup>
+                                <InputOTPSeparator />
+                                <InputOTPGroup>
+                                  <InputOTPSlot index={3} />
+                                  <InputOTPSlot index={4} />
+                                  <InputOTPSlot index={5} />
+                                </InputOTPGroup>
+                              </InputOTP>
                             </div>
                           </div>
-                          <DialogFooter>
-                            <Button
-                              variant="outline"
-                              onClick={() => {
-                                setIsStartDialogOpen(false)
-                                setOtpCode("")
-                                setSelectedAppointment(null)
-                              }}
-                            >
-                              Annuler
-                            </Button>
-                            <Button onClick={handleStartAppointment} disabled={actionLoading || !otpCode.trim()}>
-                              {actionLoading ? "Démarrage..." : "Démarrer"}
-                            </Button>
-                          </DialogFooter>
-                        </DialogContent>
+                        </div>
+                        <DialogFooter>
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setIsStartDialogOpen(false);
+                              setOtpCode("");
+                              setSelectedAppointment(null);
+                            }}
+                          >
+                            Annuler
+                          </Button>
+                          <Button
+                            onClick={handleStartAppointment}
+                            disabled={actionLoading || !otpCode.trim()}
+                          >
+                            {actionLoading ? "Démarrage..." : "Démarrer"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
                     </Dialog>
                   )}
 
                   {appointment.status === "in_progress" && (
                     <Dialog
-                      open={isEndDialogOpen && selectedAppointment?.id === appointment.id}
+                      open={
+                        isEndDialogOpen &&
+                        selectedAppointment?.id === appointment.id
+                      }
                       onOpenChange={(open) => {
-                        setIsEndDialogOpen(open)
-                        if (open) {
-                          setSelectedAppointment(appointment)
-                        } else {
-                          setSelectedAppointment(null)
-                        }
+                        setIsEndDialogOpen(open);
+                        if (open) setSelectedAppointment(appointment);
+                        else setSelectedAppointment(null);
                       }}
                     >
                       <DialogTrigger asChild>
-                        <Button variant="destructive" className="w-full" size="sm">
+                        <Button
+                          variant="destructive"
+                          className="w-full"
+                          size="sm"
+                        >
                           <Square className="h-4 w-4 mr-2" />
                           Terminer
                         </Button>
@@ -326,7 +374,8 @@ export default function OnGoingServicesPage() {
                         <DialogHeader>
                           <DialogTitle>Terminer la prestation</DialogTitle>
                           <DialogDescription>
-                            Êtes-vous sûr de vouloir terminer la prestation "{appointment.serviceName}" avec{" "}
+                            Êtes-vous sûr de vouloir terminer la prestation "
+                            {appointment.serviceName}" avec{" "}
                             {appointment.clientName} ?
                           </DialogDescription>
                         </DialogHeader>
@@ -334,13 +383,17 @@ export default function OnGoingServicesPage() {
                           <Button
                             variant="outline"
                             onClick={() => {
-                              setIsEndDialogOpen(false)
-                              setSelectedAppointment(null)
+                              setIsEndDialogOpen(false);
+                              setSelectedAppointment(null);
                             }}
                           >
                             Annuler
                           </Button>
-                          <Button variant="destructive" onClick={handleEndAppointment} disabled={actionLoading}>
+                          <Button
+                            variant="destructive"
+                            onClick={handleEndAppointment}
+                            disabled={actionLoading}
+                          >
                             {actionLoading ? "Finalisation..." : "Terminer"}
                           </Button>
                         </DialogFooter>
@@ -360,36 +413,45 @@ export default function OnGoingServicesPage() {
                     <PaginationPrevious
                       href="#"
                       onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage > 1) setCurrentPage(currentPage - 1)
+                        e.preventDefault();
+                        if (currentPage > 1) setCurrentPage(currentPage - 1);
                       }}
-                      className={currentPage <= 1 ? "pointer-events-none opacity-50" : ""}
+                      className={
+                        currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                      }
                     />
                   </PaginationItem>
 
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <PaginationItem key={page}>
-                      <PaginationLink
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          setCurrentPage(page)
-                        }}
-                        isActive={currentPage === page}
-                      >
-                        {page}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ))}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(page);
+                          }}
+                          isActive={currentPage === page}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
 
                   <PaginationItem>
                     <PaginationNext
                       href="#"
                       onClick={(e) => {
-                        e.preventDefault()
-                        if (currentPage < totalPages) setCurrentPage(currentPage + 1)
+                        e.preventDefault();
+                        if (currentPage < totalPages)
+                          setCurrentPage(currentPage + 1);
                       }}
-                      className={currentPage >= totalPages ? "pointer-events-none opacity-50" : ""}
+                      className={
+                        currentPage >= totalPages
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -399,5 +461,5 @@ export default function OnGoingServicesPage() {
         </>
       )}
     </div>
-  )
+  );
 }

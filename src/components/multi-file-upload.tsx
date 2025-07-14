@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   AlertCircleIcon,
@@ -11,18 +11,15 @@ import {
   ImageIcon,
   VideoIcon,
   XIcon,
-} from "lucide-react"
+} from "lucide-react";
 
-import {
-  formatBytes,
-  useFileUpload,
-} from "@/hooks/use-file-upload"
-import { Button } from "@/components/ui/button"
-import React from "react"
+import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
+import { Button } from "@/components/ui/button";
+import React from "react";
 
 const getFileIcon = (file: { file: File | { type: string; name: string } }) => {
-  const fileType = file.file instanceof File ? file.file.type : file.file.type
-  const fileName = file.file instanceof File ? file.file.name : file.file.name
+  const fileType = file.file instanceof File ? file.file.type : file.file.type;
+  const fileName = file.file instanceof File ? file.file.name : file.file.name;
 
   if (
     fileType.includes("pdf") ||
@@ -31,37 +28,43 @@ const getFileIcon = (file: { file: File | { type: string; name: string } }) => {
     fileName.endsWith(".doc") ||
     fileName.endsWith(".docx")
   ) {
-    return <FileTextIcon className="size-4 opacity-60" />
+    return <FileTextIcon className="size-4 opacity-60" />;
   } else if (
     fileType.includes("zip") ||
     fileType.includes("archive") ||
     fileName.endsWith(".zip") ||
     fileName.endsWith(".rar")
   ) {
-    return <FileArchiveIcon className="size-4 opacity-60" />
+    return <FileArchiveIcon className="size-4 opacity-60" />;
   } else if (
     fileType.includes("excel") ||
     fileName.endsWith(".xls") ||
     fileName.endsWith(".xlsx")
   ) {
-    return <FileSpreadsheetIcon className="size-4 opacity-60" />
+    return <FileSpreadsheetIcon className="size-4 opacity-60" />;
   } else if (fileType.includes("video/")) {
-    return <VideoIcon className="size-4 opacity-60" />
+    return <VideoIcon className="size-4 opacity-60" />;
   } else if (fileType.includes("audio/")) {
-    return <HeadphonesIcon className="size-4 opacity-60" />
+    return <HeadphonesIcon className="size-4 opacity-60" />;
   } else if (fileType.startsWith("image/")) {
-    return <ImageIcon className="size-4 opacity-60" />
+    return <ImageIcon className="size-4 opacity-60" />;
   }
-  return <FileIcon className="size-4 opacity-60" />
-}
+  return <FileIcon className="size-4 opacity-60" />;
+};
 
 interface FileUploadComponentProps {
   maxSize?: number;
   maxFiles?: number;
-  onFilesChange?: (files: (File | { type: string; name: string; size: number })[]) => void;
+  onFilesChange?: (
+    files: (File | { type: string; name: string; size: number })[]
+  ) => void;
 }
 
-const FileUploadComponent = ({ maxSize = 100 * 1024 * 1024, maxFiles = 10, onFilesChange }: FileUploadComponentProps) => {
+const FileUploadComponent = ({
+  maxSize = 100 * 1024 * 1024,
+  maxFiles = 10,
+  onFilesChange,
+}: FileUploadComponentProps) => {
   const [
     { files, isDragging, errors },
     {
@@ -78,11 +81,17 @@ const FileUploadComponent = ({ maxSize = 100 * 1024 * 1024, maxFiles = 10, onFil
     multiple: true,
     maxFiles,
     maxSize,
-  })
+  });
 
   React.useEffect(() => {
     if (onFilesChange) {
-      onFilesChange(files.map((file: { file: File | { type: string; name: string; size: number } }) => file.file));
+      onFilesChange(
+        files.map(
+          (file: {
+            file: File | { type: string; name: string; size: number };
+          }) => file.file
+        )
+      );
     }
   }, [files, onFilesChange]);
 
@@ -101,7 +110,7 @@ const FileUploadComponent = ({ maxSize = 100 * 1024 * 1024, maxFiles = 10, onFil
         <input
           {...getInputProps()}
           className="sr-only"
-          aria-label="Upload files"
+          aria-label="Téléverser des fichiers"
         />
 
         <div className="flex flex-col items-center justify-center text-center">
@@ -111,16 +120,18 @@ const FileUploadComponent = ({ maxSize = 100 * 1024 * 1024, maxFiles = 10, onFil
           >
             <FileUpIcon className="size-4 opacity-60" />
           </div>
-          <p className="mb-1.5 text-sm font-medium">Upload files</p>
+          <p className="mb-1.5 text-sm font-medium">Téléverser des fichiers</p>
           <p className="text-muted-foreground mb-2 text-xs">
-            Drag & drop or click to browse
+            Glissez-déposez ou cliquez pour parcourir vos fichiers
           </p>
           <div className="text-muted-foreground/70 flex flex-wrap justify-center gap-1 text-xs">
-            <span>All files</span>
+            <span>Tous types de fichiers</span>
             <span>∙</span>
-            <span>Max {maxFiles} files</span>
+            <span>
+              Max {maxFiles} fichier{maxFiles > 1 ? "s" : ""}
+            </span>
             <span>∙</span>
-            <span>Up to {formatBytes(maxSize)}</span>
+            <span>Jusqu'à {formatBytes(maxSize)}</span>
           </div>
         </div>
       </div>
@@ -137,54 +148,59 @@ const FileUploadComponent = ({ maxSize = 100 * 1024 * 1024, maxFiles = 10, onFil
 
       {files.length > 0 && (
         <div className="space-y-2">
-          {files.map((file: { id: string; file: File | { type: string; name: string; size: number } }) => (
-            <div
-              key={file.id}
-              className="bg-background flex items-center justify-between gap-2 rounded-lg border p-2 pe-3"
-            >
-              <div className="flex items-center gap-3 overflow-hidden">
-                <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded border">
-                  {getFileIcon(file)}
-                </div>
-                <div className="flex min-w-0 flex-col gap-0.5">
-                  <p className="truncate text-[13px] font-medium">
-                    {file.file instanceof File
-                      ? file.file.name
-                      : file.file.name}
-                  </p>
-                  <p className="text-muted-foreground text-xs">
-                    {formatBytes(
-                      file.file instanceof File
-                        ? file.file.size
-                        : file.file.size
-                    )}
-                  </p>
-                </div>
-              </div>
-
-              <Button
-                size="icon"
-                variant="ghost"
-                className="text-muted-foreground/80 hover:text-foreground -me-2 size-8 hover:bg-transparent"
-                onClick={() => removeFile(file.id)}
-                aria-label="Remove file"
+          {files.map(
+            (file: {
+              id: string;
+              file: File | { type: string; name: string; size: number };
+            }) => (
+              <div
+                key={file.id}
+                className="bg-background flex items-center justify-between gap-2 rounded-lg border p-2 pe-3"
               >
-                <XIcon className="size-4" aria-hidden="true" />
-              </Button>
-            </div>
-          ))}
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <div className="flex aspect-square size-10 shrink-0 items-center justify-center rounded border">
+                    {getFileIcon(file)}
+                  </div>
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <p className="truncate text-[13px] font-medium">
+                      {file.file instanceof File
+                        ? file.file.name
+                        : file.file.name}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {formatBytes(
+                        file.file instanceof File
+                          ? file.file.size
+                          : file.file.size
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="text-muted-foreground/80 hover:text-foreground -me-2 size-8 hover:bg-transparent"
+                  onClick={() => removeFile(file.id)}
+                  aria-label="Supprimer le fichier"
+                >
+                  <XIcon className="size-4" aria-hidden="true" />
+                </Button>
+              </div>
+            )
+          )}
 
           {files.length > 1 && (
             <div>
               <Button size="sm" variant="outline" onClick={clearFiles}>
-                Remove all files
+                Supprimer tous les fichiers
               </Button>
             </div>
           )}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default FileUploadComponent
+export default FileUploadComponent;

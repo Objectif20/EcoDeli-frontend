@@ -368,6 +368,7 @@ function DeliveriesPage() {
                 <CityAsyncSelectDemo
                   onCitySelect={handleCitySelect}
                   labelValue={selectedCity?.label || ""}
+                  width="400px"
                 />
                 <div className="mt-4 w-full">
                   <div className="space-y-4 min-w-[300px]">
@@ -395,11 +396,13 @@ function DeliveriesPage() {
                   onCitySelect={handleRouteStartCitySelect}
                   labelValue={routeStartCity?.label || ""}
                   placeholder={t("client.pages.public.deliveries.departure")}
+                  width="400px"
                 />
                 <CityAsyncSelectDemo
                   onCitySelect={handleRouteEndCitySelect}
                   labelValue={routeEndCity?.label || ""}
                   placeholder={t("client.pages.public.deliveries.arrival")}
+                  width="400px"
                 />
                 <div className="mt-4 w-full">
                   <div className="space-y-4 min-w-[300px]">

@@ -3,13 +3,13 @@
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import DeliveryCard from "@/components/features/deliveries/delivery-card";
 import PackageIcon from "@/assets/illustrations/package.svg";
 import { useTranslation } from "react-i18next";
 import { DeliveriesAPI } from "@/api/deliveries.api";
+import { Truck } from "lucide-react";
 
 export interface DeliveryOnGoing {
   id: string;
@@ -87,20 +87,21 @@ export default function OngoingDeliveries() {
       </h1>
 
       {deliveriesData.length === 0 ? (
-        <Card className="rounded-xl shadow-lg border bg-background">
-          <CardHeader className="text-center">
-            <CardTitle className="text-xl font-semibold text-foreground">
+        <div className="flex items-center justify-center h-[50vh]">
+          <div className="flex flex-col items-center text-center text-muted-foreground">
+            <Truck size={40} className="mb-4" />
+            <h3 className="text-lg font-medium">
               {t(
                 "client.pages.office.deliveryman.ongoingDeliveries.noDeliveries"
               )}
-            </CardTitle>
-            <p>
+            </h3>
+            <p className="text-sm">
               {t(
                 "client.pages.office.deliveryman.ongoingDeliveries.noDeliveriesDescription"
               )}
             </p>
-          </CardHeader>
-        </Card>
+          </div>
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {deliveriesData.map((delivery) => (

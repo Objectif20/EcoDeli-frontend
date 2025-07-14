@@ -1,15 +1,22 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { MapPin, AlertTriangle } from "lucide-react"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Calendar } from "@/components/ui/calendar";
+import { MapPin, AlertTriangle, CalendarIcon } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogClose,
@@ -19,84 +26,130 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { toast } from "sonner"
-import { DeliveriesAPI, type Shipment } from "@/api/deliveries.api"
-import { DeliverymanApi } from "@/api/deliveryman.api"
-import { useNavigate, useParams } from "react-router-dom"
+} from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { DeliveriesAPI, type Shipment } from "@/api/deliveries.api";
+import { DeliverymanApi } from "@/api/deliveryman.api";
+import { useNavigate, useParams } from "react-router-dom";
+import type { DateRange } from "react-day-picker";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+
+// Type étendu pour inclure les nouvelles dates
+interface ExtendedShipment extends Shipment {
+  startDeliveryDate: string;
+  endDeliveryDate: string;
+}
 
 export default function DeliveryDetailsPage() {
-  const { t } = useTranslation()
-  const [_, setActiveTab] = useState("overview")
-  const [delivery, setDelivery] = useState<Shipment>()
-  const [isDeliveryman, setIsDeliveryman] = useState(false)
-  const [isBooked, setIsBooked] = useState(false)
-
-  const navigate = useNavigate()
-  const { id } = useParams()
+  const { t } = useTranslation();
+  const [_, setActiveTab] = useState("overview");
+  const [delivery, setDelivery] = useState<ExtendedShipment>();
+  const [isDeliveryman, setIsDeliveryman] = useState(false);
+  const [isBooked, setIsBooked] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState<
+    DateRange | undefined
+  >();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const navigate = useNavigate();
+  const { id } = useParams();
 
   useEffect(() => {
-    if (!id) return
+    if (!id) return;
 
     const fetchShipment = async () => {
       try {
-        const data = await DeliveriesAPI.getShipmentDetailsById(id)
-        setDelivery(data)
+        const data = await DeliveriesAPI.getShipmentDetailsById(id);
+        setDelivery({
+          ...data,
+          startDeliveryDate: data.details?.startDeliveryDate ?? "",
+          endDeliveryDate: data.details?.endDeliveryDate ?? "",
+        });
       } catch (error) {
-        console.error(t("client.pages.public.deliveries-details.loadingError"), error)
+        console.error(
+          t("client.pages.public.deliveries-details.loadingError"),
+          error
+        );
       }
-    }
+    };
 
     const checkEligibility = async () => {
       try {
-        const eligible = await DeliverymanApi.isDeliverymanAvailableForThisDeliveries(id)
-        setIsDeliveryman(eligible)
+        const eligible =
+          await DeliverymanApi.isDeliverymanAvailableForThisDeliveries(id);
+        setIsDeliveryman(eligible);
       } catch (error) {
-        console.error(t("client.pages.public.deliveries-details.eligibilityError"), error)
+        console.error(
+          t("client.pages.public.deliveries-details.eligibilityError"),
+          error
+        );
       }
-    }
+    };
 
-    fetchShipment()
-    checkEligibility()
-  }, [id, t])
+    fetchShipment();
+    checkEligibility();
+  }, [id, t]);
 
-  if (!id) return <div>{t("client.pages.public.deliveries-details.missingId")}</div>
-  if (!delivery) return <div>{t("client.pages.public.deliveries-details.loading")}</div>
+  if (!id)
+    return <div>{t("client.pages.public.deliveries-details.missingId")}</div>;
+  if (!delivery)
+    return <div>{t("client.pages.public.deliveries-details.loading")}</div>;
 
-  const lastStep = delivery.steps[delivery.steps.length - 1]
-  let progress = 0
-
+  const lastStep = delivery.steps[delivery.steps.length - 1];
+  let progress = 0;
   if (lastStep?.id === -1) {
-    progress = 0
+    progress = 0;
   } else if (lastStep?.id === 0 || lastStep?.id === 1000) {
-    progress = 100
+    progress = 100;
   } else if (lastStep?.id >= 1 && lastStep?.id <= 999) {
     const maxStepId = Math.max(
-      ...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id),
-    )
-    const totalSteps = maxStepId + 1
-    progress = (maxStepId / totalSteps) * 100
+      ...delivery.steps
+        .filter((step) => step.id >= 1 && step.id <= 999)
+        .map((step) => step.id)
+    );
+    const totalSteps = maxStepId + 1;
+    progress = (maxStepId / totalSteps) * 100;
   }
 
+  // Dates limites pour le calendrier
+  const minDate = new Date(delivery.startDeliveryDate);
+  const maxDate = new Date(delivery.endDeliveryDate);
+
   const handleBook = async () => {
-    try {
-      await DeliveriesAPI.bookShipment(id)
-      toast.success(t("client.pages.public.deliveries-details.bookSuccess"))
-      setIsBooked(true)
-    } catch (error) {
-      console.error(t("client.pages.public.deliveries-details.bookError"), error)
+    if (!selectedDateRange?.from || !selectedDateRange?.to) {
+      toast.error("Veuillez sélectionner une période de livraison");
+      return;
     }
-  }
+
+    try {
+      const startDate = format(selectedDateRange.from, "yyyy-MM-dd");
+      const endDate = format(selectedDateRange.to, "yyyy-MM-dd");
+
+      await DeliveriesAPI.bookShipment(id, startDate, endDate);
+      toast.success(t("client.pages.public.deliveries-details.bookSuccess"));
+      setIsBooked(true);
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error(
+        t("client.pages.public.deliveries-details.bookError"),
+        error
+      );
+      toast.error(t("client.pages.public.deliveries-details.bookError"));
+    }
+  };
 
   const handlePartialBook = async () => {
     try {
-      await DeliveriesAPI.askToNegotiate(id)
-      navigate("/office/messaging")
-      setIsBooked(true)
+      await DeliveriesAPI.askToNegotiate(id);
+      navigate("/office/messaging");
+      setIsBooked(true);
     } catch (error) {
-      console.error(t("client.pages.public.deliveries-details.negotiationError"), error)
+      console.error(
+        t("client.pages.public.deliveries-details.negotiationError"),
+        error
+      );
     }
-  }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -104,27 +157,46 @@ export default function DeliveryDetailsPage() {
         <CardHeader className="bg-gradient-to-r from-primary to-primary/90 text-foreground rounded-t-lg py-8">
           <div>
             <CardTitle className="text-2xl md:text-3xl font-bold flex items-center">
-              {t("client.pages.public.deliveries-details.title", { name: delivery.details.name })}
-              {delivery.details.urgent && <Badge className="ml-2 bg-red-500 text-white border-none">{t("client.pages.public.deliveries-details.urgent")}</Badge>}
+              {t("client.pages.public.deliveries-details.title", {
+                name: delivery.details.name,
+              })}
+              {delivery.details.urgent && (
+                <Badge className="ml-2 bg-red-500 text-white border-none">
+                  {t("client.pages.public.deliveries-details.urgent")}
+                </Badge>
+              )}
             </CardTitle>
             <CardDescription className="text-primary-foreground/90 mt-1">
-              {t("client.pages.public.deliveries-details.reference", { id: delivery.details.id })}
+              {t("client.pages.public.deliveries-details.reference", {
+                id: delivery.details.id,
+              })}
             </CardDescription>
-            {(delivery.details.departure_date || delivery.details.arrival_date) && (
+            {(delivery.details.departure_date ||
+              delivery.details.arrival_date) && (
               <div className="flex flex-wrap gap-x-6 gap-y-2 mt-3 text-sm text-primary-foreground/80">
                 {delivery.details.departure_date && (
                   <div className="flex items-center gap-2">
-                    <span>{t("client.pages.public.deliveries-details.departureDate")}</span>
+                    <span>
+                      {t(
+                        "client.pages.public.deliveries-details.departureDate"
+                      )}
+                    </span>
                     <span className="font-medium">
-                      {new Date(delivery.details.departure_date).toLocaleDateString("fr-FR")}
+                      {new Date(
+                        delivery.details.departure_date
+                      ).toLocaleDateString("fr-FR")}
                     </span>
                   </div>
                 )}
                 {delivery.details.arrival_date && (
                   <div className="flex items-center gap-2">
-                    <span>{t("client.pages.public.deliveries-details.arrivalDate")}</span>
+                    <span>
+                      {t("client.pages.public.deliveries-details.arrivalDate")}
+                    </span>
                     <span className="font-medium">
-                      {new Date(delivery.details.arrival_date).toLocaleDateString("fr-FR")}
+                      {new Date(
+                        delivery.details.arrival_date
+                      ).toLocaleDateString("fr-FR")}
                     </span>
                   </div>
                 )}
@@ -132,6 +204,7 @@ export default function DeliveryDetailsPage() {
             )}
           </div>
         </CardHeader>
+
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-6">
@@ -141,8 +214,12 @@ export default function DeliveryDetailsPage() {
                     <div className="w-2 h-2 rounded-full bg-background"></div>
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{t("client.pages.public.deliveries-details.departure")}</p>
-                    <h3 className="text-lg font-semibold">{delivery.details.departure.city}</h3>
+                    <p className="text-sm font-medium">
+                      {t("client.pages.public.deliveries-details.departure")}
+                    </p>
+                    <h3 className="text-lg font-semibold">
+                      {delivery.details.departure.city}
+                    </h3>
                   </div>
                 </div>
                 <div className="relative">
@@ -150,81 +227,179 @@ export default function DeliveryDetailsPage() {
                     <MapPin className="w-3 h-3 text-foreground" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{t("client.pages.public.deliveries-details.arrival")}</p>
-                    <h3 className="text-lg font-semibold">{delivery.details.arrival.city}</h3>
+                    <p className="text-sm font-medium">
+                      {t("client.pages.public.deliveries-details.arrival")}
+                    </p>
+                    <h3 className="text-lg font-semibold">
+                      {delivery.details.arrival.city}
+                    </h3>
                   </div>
                 </div>
               </div>
             </div>
+
             <div className="space-y-6">
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium">{t("client.pages.public.deliveries-details.progress")}</span>
-                  <span className="text-sm font-medium">{Math.round(progress)}%</span>
+                  <span className="text-sm font-medium">
+                    {t("client.pages.public.deliveries-details.progress")}
+                  </span>
+                  <span className="text-sm font-medium">
+                    {Math.round(progress)}%
+                  </span>
                 </div>
                 <Progress value={progress} className="h-2" />
                 <p className="text-xs text-muted-foreground">
                   {lastStep?.id === -1
                     ? t("client.pages.public.deliveries-details.noSteps")
                     : lastStep?.id === 0
-                      ? t("client.pages.public.deliveries-details.fullCoverage")
-                      : lastStep?.id === 1000
-                        ? t("client.pages.public.deliveries-details.remainingCoverage")
-                        : `${delivery.steps.length} étape${delivery.steps.length > 1 ? "s" : ""} sur ${Math.max(...delivery.steps.filter((step) => step.id >= 1 && step.id <= 999).map((step) => step.id)) + 1}`}
+                    ? t("client.pages.public.deliveries-details.fullCoverage")
+                    : lastStep?.id === 1000
+                    ? t(
+                        "client.pages.public.deliveries-details.remainingCoverage"
+                      )
+                    : `${delivery.steps.length} étape${
+                        delivery.steps.length > 1 ? "s" : ""
+                      } sur ${
+                        Math.max(
+                          ...delivery.steps
+                            .filter((step) => step.id >= 1 && step.id <= 999)
+                            .map((step) => step.id)
+                        ) + 1
+                      }`}
                 </p>
               </div>
+
               <div className="bg-background p-4 rounded-lg">
                 <div className="flex justify-between">
-                  <span className="font-medium">{t("client.pages.public.deliveries-details.proposedPrice")}</span>
-                  <span className="text-xl font-bold">{delivery.details.initial_price} €</span>
+                  <span className="font-medium">
+                    {t("client.pages.public.deliveries-details.proposedPrice")}
+                  </span>
+                  <span className="text-xl font-bold">
+                    {delivery.details.initial_price} €
+                  </span>
                 </div>
               </div>
+
               {isDeliveryman && !isBooked && !delivery.details.finished && (
                 <div className="space-y-2">
-                  <Dialog>
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button className="w-full">{t("client.pages.public.deliveries-details.takeDelivery")}</Button>
+                      <Button className="w-full">
+                        {t(
+                          "client.pages.public.deliveries-details.takeDelivery"
+                        )}
+                      </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="max-w-md">
                       <DialogHeader>
-                        <DialogTitle>{t("client.pages.public.deliveries-details.fullDelivery")}</DialogTitle>
-                        <DialogDescription>{t("client.pages.public.deliveries-details.fullDelivery")}</DialogDescription>
+                        <DialogTitle>
+                          {t(
+                            "client.pages.public.deliveries-details.fullDelivery"
+                          )}
+                        </DialogTitle>
+                        <DialogDescription>
+                          Sélectionnez la période pendant laquelle vous
+                          souhaitez effectuer cette livraison
+                        </DialogDescription>
                       </DialogHeader>
+
+                      <div className="space-y-4">
+                        <div className="text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 mb-2">
+                            <CalendarIcon className="w-4 h-4" />
+                            <span>Période disponible :</span>
+                          </div>
+                          <div className="pl-6">
+                            Du {format(minDate, "dd MMMM yyyy", { locale: fr })}{" "}
+                            au {format(maxDate, "dd MMMM yyyy", { locale: fr })}
+                          </div>
+                        </div>
+
+                        <div className="flex justify-center">
+                          <Calendar
+                            mode="range"
+                            selected={selectedDateRange}
+                            onSelect={setSelectedDateRange}
+                            disabled={(date) =>
+                              date < minDate || date > maxDate
+                            }
+                            locale={fr}
+                            className="rounded-md border"
+                          />
+                        </div>
+
+                        {selectedDateRange?.from && selectedDateRange?.to && (
+                          <div className="text-sm bg-muted p-3 rounded-lg">
+                            <strong>Période sélectionnée :</strong>
+                            <br />
+                            Du{" "}
+                            {format(selectedDateRange.from, "dd MMMM yyyy", {
+                              locale: fr,
+                            })}{" "}
+                            au{" "}
+                            {format(selectedDateRange.to, "dd MMMM yyyy", {
+                              locale: fr,
+                            })}
+                          </div>
+                        )}
+                      </div>
+
                       <DialogFooter>
                         <DialogClose asChild>
-                          <Button onClick={handleBook}>{t("client.pages.public.deliveries-details.yes")}</Button>
+                          <Button variant="outline">
+                            {t("client.pages.public.deliveries-details.no")}
+                          </Button>
                         </DialogClose>
-                        <DialogClose asChild>
-                          <Button variant="outline">{t("client.pages.public.deliveries-details.no")}</Button>
-                        </DialogClose>
+                        <Button
+                          onClick={handleBook}
+                          disabled={
+                            !selectedDateRange?.from || !selectedDateRange?.to
+                          }
+                        >
+                          {t("client.pages.public.deliveries-details.yes")}
+                        </Button>
                       </DialogFooter>
                     </DialogContent>
                   </Dialog>
 
-                  { delivery.details.trolleydrop === false && (
-
+                  {delivery.details.trolleydrop === false && (
                     <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="w-full">{t("client.pages.public.deliveries-details.partialDelivery")}</Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>{t("client.pages.public.deliveries-details.partialDelivery")}</DialogTitle>
-                        <DialogDescription>{t("client.pages.public.deliveries-details.partialDeliveryMessage")}</DialogDescription>
-                      </DialogHeader>
-                      <DialogFooter>
-                        <DialogClose asChild>
-                          <Button onClick={handlePartialBook}>{t("client.pages.public.deliveries-details.yes")}</Button>
-                        </DialogClose>
-                        <DialogClose asChild>
-                          <Button variant="outline">{t("client.pages.public.deliveries-details.no")}</Button>
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-
+                      <DialogTrigger asChild>
+                        <Button className="w-full">
+                          {t(
+                            "client.pages.public.deliveries-details.partialDelivery"
+                          )}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            {t(
+                              "client.pages.public.deliveries-details.partialDelivery"
+                            )}
+                          </DialogTitle>
+                          <DialogDescription>
+                            {t(
+                              "client.pages.public.deliveries-details.partialDeliveryMessage"
+                            )}
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button onClick={handlePartialBook}>
+                              {t("client.pages.public.deliveries-details.yes")}
+                            </Button>
+                          </DialogClose>
+                          <DialogClose asChild>
+                            <Button variant="outline">
+                              {t("client.pages.public.deliveries-details.no")}
+                            </Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                   )}
-
                 </div>
               )}
             </div>
@@ -232,61 +407,98 @@ export default function DeliveryDetailsPage() {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="overview" onValueChange={setActiveTab} className="w-full mt-6">
+      <Tabs
+        defaultValue="overview"
+        onValueChange={setActiveTab}
+        className="w-full mt-6"
+      >
         <TabsList className="grid grid-cols-2 mb-6">
-          <TabsTrigger value="overview">{t("client.pages.public.deliveries-details.overview")}</TabsTrigger>
-          <TabsTrigger value="packages">{t("client.pages.public.deliveries-details.packages", { count: delivery.package.length })}</TabsTrigger>
+          <TabsTrigger value="overview">
+            {t("client.pages.public.deliveries-details.overview")}
+          </TabsTrigger>
+          <TabsTrigger value="packages">
+            {t("client.pages.public.deliveries-details.packages", {
+              count: delivery.package.length,
+            })}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">{t("client.pages.public.deliveries-details.additionalInfo")}</CardTitle>
+              <CardTitle className="text-xl">
+                {t("client.pages.public.deliveries-details.additionalInfo")}
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <p>{delivery.details.complementary_info}</p>
               <Separator className="my-6" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">{t("client.pages.public.deliveries-details.deliveryStatus")}</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    {t("client.pages.public.deliveries-details.deliveryStatus")}
+                  </h3>
                   <Card className="border-none shadow-md bg-gradient-to-br from-background to-muted">
                     <CardContent className="pt-6">
                       <div className="flex items-start gap-4">
                         <Avatar className="h-12 w-12 border-2 border-primary shadow-md">
                           <AvatarImage
-                            src={lastStep?.courier?.photoUrl || "/placeholder.svg"}
+                            src={
+                              lastStep?.courier?.photoUrl || "/placeholder.svg"
+                            }
                             alt={lastStep?.courier?.name || "Livreur"}
                           />
-                          <AvatarFallback>{lastStep?.courier?.name?.charAt(0) || "?"}</AvatarFallback>
+                          <AvatarFallback>
+                            {lastStep?.courier?.name?.charAt(0) || "?"}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold">{lastStep?.courier?.name || "Transporteur"}</p>
+                            <p className="font-semibold">
+                              {lastStep?.courier?.name || "Transporteur"}
+                            </p>
                             <Badge
                               variant="outline"
-                              className={delivery.details.urgent ? "bg-red-50 text-red-700 border-red-200" : "hidden"}
+                              className={
+                                delivery.details.urgent
+                                  ? "bg-red-50 text-red-700 border-red-200"
+                                  : "hidden"
+                              }
                             >
-                              {t("client.pages.public.deliveries-details.urgent")}
+                              {t(
+                                "client.pages.public.deliveries-details.urgent"
+                              )}
                             </Badge>
                           </div>
                           <p className="text-sm text-foreground mt-1">
                             {lastStep?.id === -1
-                              ? t("client.pages.public.deliveries-details.noSteps")
+                              ? t(
+                                  "client.pages.public.deliveries-details.noSteps"
+                                )
                               : lastStep?.id === 0
-                                ? t("client.pages.public.deliveries-details.fullCoverage")
-                                : lastStep?.id === 1000
-                                  ? t("client.pages.public.deliveries-details.remainingCoverage")
-                                  : t("client.pages.public.deliveries-details.partialCoverage")}
+                              ? t(
+                                  "client.pages.public.deliveries-details.fullCoverage"
+                                )
+                              : lastStep?.id === 1000
+                              ? t(
+                                  "client.pages.public.deliveries-details.remainingCoverage"
+                                )
+                              : t(
+                                  "client.pages.public.deliveries-details.partialCoverage"
+                                )}
                           </p>
                           {lastStep?.date && (
                             <p className="text-xs text-muted-foreground mt-1">
-                              {new Date(lastStep?.date).toLocaleDateString("fr-FR", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
+                              {new Date(lastStep?.date).toLocaleDateString(
+                                "fr-FR",
+                                {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )}
                             </p>
                           )}
                         </div>
@@ -294,8 +506,13 @@ export default function DeliveryDetailsPage() {
                     </CardContent>
                   </Card>
                 </div>
+
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">{t("client.pages.public.deliveries-details.packageOverview")}</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    {t(
+                      "client.pages.public.deliveries-details.packageOverview"
+                    )}
+                  </h3>
                   <div className="space-y-3">
                     {delivery.package.slice(0, 2).map((pkg) => (
                       <div
@@ -321,8 +538,14 @@ export default function DeliveryDetailsPage() {
                               </Badge>
                             )}
                             {pkg.fragility && (
-                              <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 text-xs">
-                                <AlertTriangle className="w-3 h-3 mr-1" /> {t("client.pages.public.deliveries-details.fragile")}
+                              <Badge
+                                variant="outline"
+                                className="bg-amber-50 text-amber-700 border-amber-200 text-xs"
+                              >
+                                <AlertTriangle className="w-3 h-3 mr-1" />{" "}
+                                {t(
+                                  "client.pages.public.deliveries-details.fragile"
+                                )}
                               </Badge>
                             )}
                           </div>
@@ -332,56 +555,81 @@ export default function DeliveryDetailsPage() {
                   </div>
                 </div>
               </div>
+
               <div className="col-span-1 md:col-span-2 mt-6">
-                <h3 className="text-lg font-semibold mb-4">{t("client.pages.public.deliveries-details.shippingDetails")}</h3>
+                <h3 className="text-lg font-semibold mb-4">
+                  {t("client.pages.public.deliveries-details.shippingDetails")}
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">{t("client.pages.public.deliveries-details.statut")}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {t("client.pages.public.deliveries-details.statut")}
+                      </span>
                       <Badge
                         className={`w-fit mt-2 ${
                           delivery.details.status === "pending"
                             ? "bg-amber-100 text-amber-800 hover:bg-amber-100"
                             : delivery.details.finished
-                              ? "bg-green-100 text-green-800 hover:bg-green-100"
-                              : ""
+                            ? "bg-green-100 text-green-800 hover:bg-green-100"
+                            : ""
                         }`}
                       >
                         {delivery.details.status === "pending"
-                          ? t("client.pages.public.deliveries-details.status.pending")
+                          ? t(
+                              "client.pages.public.deliveries-details.status.pending"
+                            )
                           : delivery.details.status === "In Progress"
-                            ? t("client.pages.public.deliveries-details.status.inProgress")
-                            : delivery.details.finished
-                              ? t("client.pages.public.deliveries-details.status.finished")
-                              : delivery.details.status}
+                          ? t(
+                              "client.pages.public.deliveries-details.status.inProgress"
+                            )
+                          : delivery.details.finished
+                          ? t(
+                              "client.pages.public.deliveries-details.status.finished"
+                            )
+                          : delivery.details.status}
                       </Badge>
                     </div>
                   </Card>
+
                   <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">{t("client.pages.public.deliveries-details.distance")}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {t("client.pages.public.deliveries-details.distance")}
+                      </span>
                       <span className="font-medium mt-2">
                         {Math.round(
                           Math.sqrt(
                             Math.pow(
-                              delivery.details.departure.coordinates[0] - delivery.details.arrival.coordinates[0],
-                              2,
+                              delivery.details.departure.coordinates[0] -
+                                delivery.details.arrival.coordinates[0],
+                              2
                             ) +
                               Math.pow(
-                                delivery.details.departure.coordinates[1] - delivery.details.arrival.coordinates[1],
-                                2,
-                              ),
-                          ) * 111.32,
+                                delivery.details.departure.coordinates[1] -
+                                  delivery.details.arrival.coordinates[1],
+                                2
+                              )
+                          ) * 111.32
                         )}{" "}
                         km
                       </span>
                     </div>
                   </Card>
+
                   <Card className="p-5 border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
                     <div className="flex flex-col">
-                      <span className="text-sm text-muted-foreground">{t("client.pages.public.deliveries-details.totalWeight")}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {t(
+                          "client.pages.public.deliveries-details.totalWeight"
+                        )}
+                      </span>
                       <span className="font-medium mt-2">
-                        {delivery.package.reduce((total, pkg) => total + pkg.weight, 0)} kg
+                        {delivery.package.reduce(
+                          (total, pkg) => total + pkg.weight,
+                          0
+                        )}{" "}
+                        kg
                       </span>
                     </div>
                   </Card>
@@ -394,8 +642,15 @@ export default function DeliveryDetailsPage() {
         <TabsContent value="packages">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl">{t("client.pages.public.deliveries-details.packageDetails")}</CardTitle>
-              <CardDescription>{delivery.package.length} {t("client.pages.public.deliveries-details.packages", { count: delivery.package.length })}</CardDescription>
+              <CardTitle className="text-xl">
+                {t("client.pages.public.deliveries-details.packageDetails")}
+              </CardTitle>
+              <CardDescription>
+                {delivery.package.length}{" "}
+                {t("client.pages.public.deliveries-details.packages", {
+                  count: delivery.package.length,
+                })}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -412,17 +667,28 @@ export default function DeliveryDetailsPage() {
                           <h3 className="text-lg font-semibold">{pkg.name}</h3>
                           {pkg.fragility && (
                             <Badge className="border-none">
-                              <AlertTriangle className="w-3 h-3 mr-1" /> {t("client.pages.public.deliveries-details.fragile")}
+                              <AlertTriangle className="w-3 h-3 mr-1" />{" "}
+                              {t(
+                                "client.pages.public.deliveries-details.fragile"
+                              )}
                             </Badge>
                           )}
                         </div>
                         <div className="grid grid-cols-2 gap-4 mt-4">
                           <div>
-                            <p className="text-sm text-foreground">{t("client.pages.public.deliveries-details.weight")}</p>
+                            <p className="text-sm text-foreground">
+                              {t(
+                                "client.pages.public.deliveries-details.weight"
+                              )}
+                            </p>
                             <p className="font-medium">{pkg.weight} kg</p>
                           </div>
                           <div>
-                            <p className="text-sm text-foreground">{t("client.pages.public.deliveries-details.volume")}</p>
+                            <p className="text-sm text-foreground">
+                              {t(
+                                "client.pages.public.deliveries-details.volume"
+                              )}
+                            </p>
                             <p className="font-medium">{pkg.volume} m³</p>
                           </div>
                         </div>
@@ -436,5 +702,5 @@ export default function DeliveryDetailsPage() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }

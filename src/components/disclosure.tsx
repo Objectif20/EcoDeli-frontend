@@ -6,6 +6,9 @@ import { IntroDisclosure } from "@/components/ui/intro-disclosure";
 import { UserApi } from "@/api/user.api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
+import Deliveryman from "@/assets/illustrations/deliveryman.svg";
+import Merchant from "@/assets/illustrations/merchant.svg";
+import Provider from "@/assets/illustrations/provider.svg";
 
 export interface User {
   user_id: string;
@@ -26,12 +29,13 @@ export interface User {
 const clientSteps = [
   {
     title: "Devenir Partenaire Livreur",
-    short_description: "Commencez votre parcours en tant que partenaire livreur avec nous.",
+    short_description:
+      "Commencez votre parcours en tant que partenaire livreur avec nous.",
     full_description:
       "Rejoignez notre équipe de partenaires livreurs et profitez d'horaires flexibles et d'une rémunération compétitive. Inscrivez-vous dès aujourd'hui et commencez à livrer en toute simplicité.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Deliveryman,
       alt: "Devenir partenaire livreur",
     },
   },
@@ -42,22 +46,19 @@ const clientSteps = [
       "Assurez-vous que votre profil est complet avec des informations précises. Cela inclut vos coordonnées, les informations sur votre véhicule et vos disponibilités.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Deliveryman,
       alt: "Compléter votre profil",
-    },
-    action: {
-      label: "Mettre à Jour le Profil",
-      href: "/profil/mettre-a-jour",
     },
   },
   {
     title: "Accepter les Demandes de Livraison",
-    short_description: "Commencez à accepter les demandes de livraison dans votre zone.",
+    short_description:
+      "Commencez à accepter les demandes de livraison dans votre zone.",
     full_description:
       "Une fois votre profil complet, vous pouvez commencer à accepter les demandes de livraison. Utilisez notre application pour voir les livraisons disponibles et accepter celles qui correspondent à votre emploi du temps.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Deliveryman,
       alt: "Accepter les demandes de livraison",
     },
   },
@@ -68,7 +69,7 @@ const clientSteps = [
       "Utilisez l'application pour vous rendre au lieu de récupération. Assurez-vous d'avoir le bon colis et scannez-le avec l'application avant de partir.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Deliveryman,
       alt: "Récupérer le colis",
     },
   },
@@ -79,23 +80,20 @@ const clientSteps = [
       "Suivez les indications de l'application pour vous rendre au lieu de livraison. Assurez-vous que le colis est livré en toute sécurité et obtenez une signature ou une confirmation photo si nécessaire.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Deliveryman,
       alt: "Livrer le colis",
     },
   },
   {
     title: "Finaliser la Livraison",
-    short_description: "Marquez la livraison comme terminée dans l'application.",
+    short_description:
+      "Marquez la livraison comme terminée dans l'application.",
     full_description:
       "Une fois le colis livré, marquez la livraison comme terminée dans l'application. Vous pouvez également laisser un retour sur votre expérience.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Deliveryman,
       alt: "Finaliser la livraison",
-    },
-    action: {
-      label: "Voir l'Historique des Livraisons",
-      href: "/livraisons/historique",
     },
   },
 ];
@@ -108,18 +106,19 @@ const merchantSteps = [
       "Utilisez notre plateforme pour créer des demandes de livraison pour vos produits. Spécifiez les détails de livraison et choisissez les options qui conviennent le mieux à vos besoins.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Merchant,
       alt: "Créer une demande de livraison",
     },
   },
   {
     title: "Demander une Livraison Spéciale",
-    short_description: "Faites des demandes de livraison spéciale comme le lâcher de chariot.",
+    short_description:
+      "Faites des demandes de livraison spéciale comme le lâcher de chariot.",
     full_description:
       "Pour des besoins spécifiques, vous pouvez demander des livraisons spéciales comme le lâcher de chariot. Indiquez les détails spécifiques et nous nous occuperons du reste.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Merchant,
       alt: "Demander une livraison spéciale",
     },
   },
@@ -130,7 +129,7 @@ const merchantSteps = [
       "Utilisez notre application pour suivre l'état de vos livraisons en temps réel. Recevez des notifications à chaque étape du processus de livraison.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Merchant,
       alt: "Suivre les livraisons",
     },
   },
@@ -141,7 +140,7 @@ const merchantSteps = [
       "Notre plateforme vous permet de gérer les retours de produits de manière efficace. Suivez les retours et traitez-les rapidement pour assurer la satisfaction de vos clients.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Merchant,
       alt: "Gérer les retours",
     },
   },
@@ -155,7 +154,7 @@ const providerSteps = [
       "Utilisez notre plateforme pour publier les services que vous proposez. Décrivez vos services en détail pour attirer plus de clients.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Provider,
       alt: "Publier des services",
     },
   },
@@ -166,7 +165,7 @@ const providerSteps = [
       "Indiquez vos horaires de disponibilité pour que les clients puissent réserver vos services aux moments qui vous conviennent le mieux.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Provider,
       alt: "Définir les plannings",
     },
   },
@@ -177,7 +176,7 @@ const providerSteps = [
       "Utilisez notre système de messagerie intégré pour discuter avec vos clients, répondre à leurs questions et confirmer les détails des services.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Provider,
       alt: "Discuter avec les clients",
     },
   },
@@ -188,7 +187,7 @@ const providerSteps = [
       "Consultez et gérez les réservations de vos services directement depuis notre plateforme. Acceptez ou refusez les réservations en fonction de votre disponibilité.",
     media: {
       type: "image" as const,
-      src: "https://www.bmjelec.com/wp-content/uploads/2019/08/livraison.jpg",
+      src: Provider,
       alt: "Gérer les réservations",
     },
   },

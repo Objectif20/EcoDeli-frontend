@@ -1,49 +1,58 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { ChevronRight } from "lucide-react"
-import { Carrier, DashboardApi } from "@/api/dashboard.api"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
+import { Carrier, DashboardApi } from "@/api/dashboard.api";
+import { useNavigate } from "react-router-dom";
 
 export default function DeliveryCarriers() {
-  const [carriers, setCarriers] = useState<Carrier[]>([])
+  const [carriers, setCarriers] = useState<Carrier[]>([]);
 
   useEffect(() => {
     const fetchCarriers = async () => {
       try {
-        const data = await DashboardApi.getMyCarriers()
-        setCarriers(data)
+        const data = await DashboardApi.getMyCarriers();
+        setCarriers(data);
       } catch (error) {
-        console.error("Erreur lors de la récupération des transporteurs :", error)
+        console.error(
+          "Erreur lors de la récupération des transporteurs :",
+          error
+        );
       }
-    }
+    };
 
-    fetchCarriers()
-  }, [])
+    fetchCarriers();
+  }, []);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const getStatusBadge = (status: Carrier["status"]) => {
     switch (status) {
       case "going":
-        return <Badge className="bg-green-500 hover:bg-green-600">going</Badge>
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600">En cours</Badge>
+        );
       case "stop":
-        return <Badge className="bg-orange-500 hover:bg-orange-600">stop</Badge>
+        return (
+          <Badge className="bg-orange-500 hover:bg-orange-600">Arrêté</Badge>
+        );
       case "finished":
-        return <Badge className="bg-blue-500 hover:bg-blue-600">finished</Badge>
+        return <Badge className="bg-blue-500 hover:bg-blue-600">Terminé</Badge>;
     }
-  }
+  };
 
   const renderStars = (rating: number) => (
     <div className="flex">
       {[...Array(5)].map((_, i) => (
         <svg
           key={i}
-          className={`w-4 h-4 ${i < rating ? "text-yellow-400" : "text-gray-300"}`}
+          className={`w-4 h-4 ${
+            i < rating ? "text-yellow-400" : "text-gray-300"
+          }`}
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -51,12 +60,14 @@ export default function DeliveryCarriers() {
         </svg>
       ))}
     </div>
-  )
+  );
 
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-base font-medium">Les transporteurs de vos colis</CardTitle>
+        <CardTitle className="text-base font-medium">
+          Les transporteurs de vos colis
+        </CardTitle>
       </CardHeader>
       <CardContent className="p-4">
         <div className="space-y-3">
@@ -64,7 +75,10 @@ export default function DeliveryCarriers() {
             <div key={carrier.id} className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Avatar>
-                  <AvatarImage src={carrier.avatar || "/placeholder.svg"} alt={carrier.name} />
+                  <AvatarImage
+                    src={carrier.avatar || "/placeholder.svg"}
+                    alt={carrier.name}
+                  />
                   <AvatarFallback>{carrier.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -77,12 +91,17 @@ export default function DeliveryCarriers() {
           ))}
         </div>
         <div className="mt-4 flex justify-end">
-          <Button variant="ghost" onClick={() => navigate("/office/ads-history")} size="sm" className="text-xs text-primary flex items-center gap-1">
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/office/ads-history")}
+            size="sm"
+            className="text-xs text-primary flex items-center gap-1"
+          >
             Voir l'historique des livraisons
             <ChevronRight className="h-3 w-3" />
           </Button>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

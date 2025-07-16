@@ -1,14 +1,16 @@
 import { useContext } from "react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import { RegisterContext } from "./RegisterContext";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import particular from "@/assets/illustrations/particular.svg";
+import pro from "@/assets/illustrations/pro.svg";
 
 export default function Step1ProfileChoice() {
   const { t } = useTranslation();
   const { setIsPro, nextStep } = useContext(RegisterContext);
 
-  const handleChoice = (isPro : boolean) => {
+  const handleChoice = (isPro: boolean) => {
     setIsPro(isPro);
     nextStep();
   };
@@ -18,47 +20,67 @@ export default function Step1ProfileChoice() {
       <div className="max-w-6xl w-full">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-semibold text-center mb-12">
-            {t('client.pages.public.register.firstProfileChoice.title')}
+            {t("client.pages.public.register.firstProfileChoice.title")}
           </h2>
           <div className="flex flex-col md:flex-row gap-6 md:gap-10 justify-center mb-12">
             <div className="bg-secondary rounded-lg p-6 flex flex-col items-center max-w-sm mx-auto md:mx-0 w-full">
               <h3 className="text-xl font-semibold mb-4">
-                {t('client.pages.public.register.firstProfileChoice.individual')}
+                {t(
+                  "client.pages.public.register.firstProfileChoice.individual"
+                )}
               </h3>
               <p className="text-center mb-8 text-sm">
-                {t('client.pages.public.register.firstProfileChoice.individualDescription')}
+                {t(
+                  "client.pages.public.register.firstProfileChoice.individualDescription"
+                )}
               </p>
-              <div className="h-40 w-full mb-8">{/* Image placeholder - you'll add the image */}</div>
+              <div className="h-40 w-full mb-8 flex justify-center">
+                <img
+                  src={particular}
+                  className="h-50 w-50 object-cover rounded-md"
+                />
+              </div>
               <Button
                 onClick={() => handleChoice(false)}
                 className="py-2 px-8 rounded-full transition-colors w-full max-w-xs"
               >
-                {t('client.pages.public.register.firstProfileChoice.signUp')}
+                {t("client.pages.public.register.firstProfileChoice.signUp")}
               </Button>
             </div>
 
             <div className="bg-secondary rounded-lg p-6 flex flex-col items-center max-w-sm mx-auto md:mx-0 w-full">
               <h3 className="text-xl font-semibold mb-4">
-                {t('client.pages.public.register.firstProfileChoice.professional')}
+                {t(
+                  "client.pages.public.register.firstProfileChoice.professional"
+                )}
               </h3>
               <p className="text-center mb-8 text-sm">
-                {t('client.pages.public.register.firstProfileChoice.professionalDescription')}
+                {t(
+                  "client.pages.public.register.firstProfileChoice.professionalDescription"
+                )}
               </p>
-              <div className="h-40 w-full mb-8">{/* Image placeholder - you'll add the image */}</div>
+              <div className="h-40 w-full mb-8 flex justify-center">
+                <img src={pro} className="h-50 w-50 object-cover rounded-md" />
+              </div>
               <Button
                 onClick={() => handleChoice(true)}
                 className="py-2 px-8 rounded-full transition-colors w-full max-w-xs"
               >
-                {t('client.pages.public.register.firstProfileChoice.signUp')}
+                {t("client.pages.public.register.firstProfileChoice.signUp")}
               </Button>
             </div>
           </div>
 
           <div className="text-center">
             <p>
-              {t('client.pages.public.register.firstProfileChoice.existingAccount')}{" "}
-              <Link to="/auth/login" className="font-semibold text-primary hover:underline">
-                {t('client.pages.public.register.firstProfileChoice.login')}
+              {t(
+                "client.pages.public.register.firstProfileChoice.existingAccount"
+              )}{" "}
+              <Link
+                to="/auth/login"
+                className="font-semibold text-primary hover:underline"
+              >
+                {t("client.pages.public.register.firstProfileChoice.login")}
               </Link>
             </p>
           </div>

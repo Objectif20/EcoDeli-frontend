@@ -2,7 +2,7 @@ FROM node:22-alpine
 
 WORKDIR /app
 
-RUN npm install serve
+RUN npm install -g serve
 
 COPY package*.json ./
 

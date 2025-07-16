@@ -15,6 +15,7 @@ interface CityAsyncSelectDemoProps {
   labelValue?: string;
   placeholder?: string;
   className?: string;
+  width?: string;
 }
 
 function CityAsyncSelectDemo({
@@ -22,6 +23,7 @@ function CityAsyncSelectDemo({
   labelValue,
   placeholder,
   className,
+  width = "200px",
 }: CityAsyncSelectDemoProps) {
   const [cities, setCities] = useState<City[]>([]);
   const [_, setIsLoading] = useState(false);
@@ -119,7 +121,7 @@ function CityAsyncSelectDemo({
         placeholder={selectedValue ? update(labelValue || "") : placeholder}
         value={selectedValue}
         onChange={handleChange}
-        width="200px"
+        width={width}
         className={className}
       />
     </div>

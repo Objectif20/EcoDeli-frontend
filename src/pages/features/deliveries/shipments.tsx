@@ -140,6 +140,7 @@ export default function ShipmentsListPage() {
           {t("client.pages.office.shipment.onGoing.create")}
         </Button>
       </div>
+
       {!isStripeValidate && (
         <div className="mb-4">
           <div className="flex items-center bg-yellow-50 border border-yellow-200 rounded px-4 py-3 text-yellow-800">
@@ -156,87 +157,126 @@ export default function ShipmentsListPage() {
           </div>
         </div>
       )}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {shipments.map((shipment) => (
-          <Card
-            key={shipment.id}
-            className="overflow-hidden hover:shadow-lg transition-shadow"
-          >
-            <CardContent className="p-0">
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-semibold text-lg line-clamp-1">
-                    {shipment.name}
-                  </h2>
-                  {shipment.urgent && (
-                    <Badge variant="destructive" className="ml-2">
-                      {t("client.pages.office.shipment.onGoing.urgent")}
-                    </Badge>
-                  )}
-                </div>
 
-                <div className="space-y-3 mb-4">
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">
-                        {t("client.pages.office.shipment.onGoing.from")}:{" "}
-                        {shipment.departure.city}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatDate(shipment.theoretical_departure_date)}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, index) => (
+            <Card key={index} className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="p-6">
+                  <Skeleton className="h-6 w-3/4 mb-4" />
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter className="bg-muted/50 p-4 flex justify-between">
+                <Skeleton className="h-10 w-24" />
+                <Skeleton className="h-10 w-24" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      ) : shipments.length === 0 ? (
+        <div className="flex items-center justify-center h-[50vh]">
+          <div className="flex flex-col items-center text-center text-muted-foreground">
+            <Package size={40} className="mb-4" />
+            <h3 className="text-lg font-medium">
+              {t("client.pages.office.shipment.onGoing.noShipments")}
+            </h3>
+            <p className="text-sm mb-4">
+              {t("client.pages.office.shipment.onGoing.noShipmentsDescription")}
+            </p>
+            <Button onClick={() => navigate("/office/shipments/create")}>
+              {t("client.pages.office.shipment.onGoing.create")}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {shipments.map((shipment) => (
+            <Card
+              key={shipment.id}
+              className="overflow-hidden hover:shadow-lg transition-shadow"
+            >
+              <CardContent className="p-0">
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 className="font-semibold text-lg line-clamp-1">
+                      {shipment.name}
+                    </h2>
+                    {shipment.urgent && (
+                      <Badge variant="destructive" className="ml-2">
+                        {t("client.pages.office.shipment.onGoing.urgent")}
+                      </Badge>
+                    )}
+                  </div>
+
+                  <div className="space-y-3 mb-4">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm font-medium">
+                          {t("client.pages.office.shipment.onGoing.from")}:{" "}
+                          {shipment.departure.city}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {formatDate(shipment.theoretical_departure_date)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-sm font-medium">
+                          {t("client.pages.office.shipment.onGoing.to")}:{" "}
+                          {shipment.arrival.city}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {formatDate(shipment.arrival_date)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Package className="w-4 h-4 text-muted-foreground" />
+                      <p className="text-sm">
+                        {shipment.packageCount}{" "}
+                        {t("client.pages.office.shipment.onGoing.packages")}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-4 h-4 mt-0.5 text-muted-foreground" />
-                    <div>
-                      <p className="text-sm font-medium">
-                        {t("client.pages.office.shipment.onGoing.to")}:{" "}
-                        {shipment.arrival.city}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        {formatDate(shipment.arrival_date)}
-                      </p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span>
+                        {t("client.pages.office.shipment.onGoing.progress")}
+                      </span>
+                      <span>{Math.round(shipment.progress)}%</span>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <Package className="w-4 h-4 text-muted-foreground" />
-                    <p className="text-sm">
-                      {shipment.packageCount}{" "}
-                      {t("client.pages.office.shipment.onGoing.packages")}
-                    </p>
+                    <Progress value={shipment.progress} className="h-2" />
                   </div>
                 </div>
+              </CardContent>
 
-                <div className="space-y-1">
-                  <div className="flex justify-between text-sm">
-                    <span>
-                      {t("client.pages.office.shipment.onGoing.progress")}
-                    </span>
-                    <span>{Math.round(shipment.progress)}%</span>
-                  </div>
-                  <Progress value={shipment.progress} className="h-2" />
-                </div>
-              </div>
-            </CardContent>
-
-            <CardFooter className="bg-muted/50 p-4 flex justify-between">
-              <StatusBadge
-                status={shipment.status}
-                finished={shipment.finished}
-              />
-              <Link to={`/office/shipments/${shipment.id}`}>
-                <Button>
-                  {t("client.pages.office.shipment.onGoing.viewDetails")}
-                </Button>
-              </Link>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+              <CardFooter className="bg-muted/50 p-4 flex justify-between">
+                <StatusBadge
+                  status={shipment.status}
+                  finished={shipment.finished}
+                />
+                <Link to={`/office/shipments/${shipment.id}`}>
+                  <Button>
+                    {t("client.pages.office.shipment.onGoing.viewDetails")}
+                  </Button>
+                </Link>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

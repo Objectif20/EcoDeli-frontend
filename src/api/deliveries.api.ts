@@ -23,6 +23,8 @@ export interface Delivery {
   departure_location: Location;
   arrival_location: Location;
   delivery_mail: string;
+  startDeliveryDate?: string;
+  endDeliveryDate?: string;
 }
 
 export interface DeliveriesFilter {
@@ -61,6 +63,8 @@ export interface DeliveryDetails {
   finished: boolean;
   urgent: boolean;
   trolleydrop: boolean;
+  startDeliveryDate?: string;
+  endDeliveryDate?: string;
 }
 
 export interface CityLocation {
@@ -437,10 +441,15 @@ export class DeliveriesAPI {
     }
   }
 
-  static async bookShipment(shipment_id: string): Promise<any> {
+  static async bookShipment(
+    shipment_id: string,
+    startDate: string,
+    endDate: string
+  ): Promise<any> {
     try {
       const response = await axiosInstance.post(
-        `/client/shipments/${shipment_id}/book`
+        `/client/shipments/${shipment_id}/book`,
+        { startDate, endDate }
       );
       return response.data;
     } catch (error) {

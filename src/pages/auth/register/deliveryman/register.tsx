@@ -1,23 +1,47 @@
-'use client'
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import LocationSelector from "@/components/ui/location-input";
 import { Language, RegisterApi } from "@/api/register.api";
 import SignatureInput from "@/components/ui/signature-input";
 import { useDispatch } from "react-redux";
 import { setBreadcrumb } from "@/redux/slices/breadcrumbSlice";
-import { AlertCircleIcon, PaperclipIcon, UploadIcon, XIcon } from "lucide-react";
+import {
+  AlertCircleIcon,
+  PaperclipIcon,
+  UploadIcon,
+  XIcon,
+} from "lucide-react";
 import { formatBytes, useFileUpload } from "@/hooks/use-file-upload";
 import { addDeliverymanProfile } from "@/redux/slices/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -25,25 +49,33 @@ import { useNavigate } from "react-router-dom";
 const createFormSchema = (t: (key: string) => string) => {
   return z.object({
     license: z.string().min(1, {
-      message: t('client.pages.public.register.deliverymanProfile.licenseError'),
+      message: t(
+        "client.pages.public.register.deliverymanProfile.licenseError"
+      ),
     }),
     professional_email: z.string().email({
-      message: t('client.pages.public.register.deliverymanProfile.emailError'),
+      message: t("client.pages.public.register.deliverymanProfile.emailError"),
     }),
     phone_number: z.string().regex(/^(\+33|0)[1-9](\d{2}){4}$/, {
-      message: t('client.pages.public.register.deliverymanProfile.phoneError'),
+      message: t("client.pages.public.register.deliverymanProfile.phoneError"),
     }),
     country: z.string().min(1, {
-      message: t('client.pages.public.register.deliverymanProfile.countryError'),
+      message: t(
+        "client.pages.public.register.deliverymanProfile.countryError"
+      ),
     }),
     city: z.string().min(1, {
-      message: t('client.pages.public.register.deliverymanProfile.cityError'),
+      message: t("client.pages.public.register.deliverymanProfile.cityError"),
     }),
     address: z.string().min(5, {
-      message: t('client.pages.public.register.deliverymanProfile.addressError'),
+      message: t(
+        "client.pages.public.register.deliverymanProfile.addressError"
+      ),
     }),
     postal_code: z.string().regex(/^\d{5}$/, {
-      message: t('client.pages.public.register.deliverymanProfile.postalCodeError'),
+      message: t(
+        "client.pages.public.register.deliverymanProfile.postalCodeError"
+      ),
     }),
     language_id: z.string().optional(),
     signature: z.string().optional(),
@@ -54,18 +86,25 @@ type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
 export default function RegisterDeliveryman() {
   const dispatch = useDispatch();
-  const [, setCountry] = useState('FR');
-  const [, setCountryName] = useState('');
+  const [, setCountry] = useState("FR");
+  const [, setCountryName] = useState("");
   const [languages, setLanguages] = useState<Language[]>([]);
   const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    dispatch(setBreadcrumb({
-      segments: [t('client.pages.public.register.deliverymanProfile.breadcrumb.home'), t('client.pages.public.register.deliverymanProfile.breadcrumb.deliverymanProfile')],
-      links: ['/office/dashboard'],
-    }));
+    dispatch(
+      setBreadcrumb({
+        segments: [
+          t("client.pages.public.register.deliverymanProfile.breadcrumb.home"),
+          t(
+            "client.pages.public.register.deliverymanProfile.breadcrumb.deliverymanProfile"
+          ),
+        ],
+        links: ["/office/dashboard"],
+      })
+    );
   }, [dispatch]);
 
   const formSchema = createFormSchema(t);
@@ -73,7 +112,7 @@ export default function RegisterDeliveryman() {
   useEffect(() => {
     async function fetchLanguages() {
       const languages = await RegisterApi.getLanguage();
-      setLanguages(languages.filter(lang => lang.active));
+      setLanguages(languages.filter((lang) => lang.active));
     }
     fetchLanguages();
   }, []);
@@ -111,16 +150,16 @@ export default function RegisterDeliveryman() {
   });
 
   async function onSubmit(values: FormValues) {
-
-    const isEmailTaken = await RegisterApi.isDeliveryPersonEmailAvailable(values.professional_email);
+    const isEmailTaken = await RegisterApi.isDeliveryPersonEmailAvailable(
+      values.professional_email
+    );
     if (isEmailTaken) {
-      form.setError('professional_email', {
-        type: 'manual',
-        message: 'Cet email est déjà utilisé.',
+      form.setError("professional_email", {
+        type: "manual",
+        message: "Cet email est déjà utilisé.",
       });
       return;
     }
-
 
     const formData = new FormData();
     Object.entries(values).forEach(([key, value]) => {
@@ -129,7 +168,7 @@ export default function RegisterDeliveryman() {
 
     if (files[0]) {
       if (files[0].file instanceof File) {
-        formData.append('delivery_person_documents', files[0].file);
+        formData.append("delivery_person_documents", files[0].file);
       } else {
         console.error("Invalid file type");
       }
@@ -138,7 +177,7 @@ export default function RegisterDeliveryman() {
     try {
       await RegisterApi.registerDeliveryPerson(formData);
       dispatch(addDeliverymanProfile());
-      navigate('/office/registerSuccess');
+      navigate("/office/registerSuccess");
     } catch (error) {
       console.error("Error registering delivery person:", error);
     }
@@ -149,9 +188,11 @@ export default function RegisterDeliveryman() {
       <Card className="max-w-3xl mx-auto">
         <CardHeader>
           <CardTitle className="text-center text-2xl">
-            {t('client.pages.public.register.deliverymanProfile.title')}
+            {t("client.pages.public.register.deliverymanProfile.title")}
           </CardTitle>
-          <CardDescription className="text-center">{t('client.pages.public.register.deliverymanProfile.description')}</CardDescription>
+          <CardDescription className="text-center">
+            {t("client.pages.public.register.deliverymanProfile.description")}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -162,7 +203,12 @@ export default function RegisterDeliveryman() {
                   name="license"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.deliverymanProfile.license')} *</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.deliverymanProfile.license"
+                        )}{" "}
+                        *
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="ABC123456" {...field} />
                       </FormControl>
@@ -176,16 +222,27 @@ export default function RegisterDeliveryman() {
                   name="language_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.deliverymanProfile.language')} *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.deliverymanProfile.language"
+                        )}{" "}
+                        *
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Sélectionnez votre langue" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {languages.map(lang => (
-                            <SelectItem key={lang.language_id} value={lang.language_id}>
+                          {languages.map((lang) => (
+                            <SelectItem
+                              key={lang.language_id}
+                              value={lang.language_id}
+                            >
                               {lang.language_name}
                             </SelectItem>
                           ))}
@@ -203,9 +260,18 @@ export default function RegisterDeliveryman() {
                   name="professional_email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.deliverymanProfile.email')} *</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.deliverymanProfile.email"
+                        )}{" "}
+                        *
+                      </FormLabel>
                       <FormControl>
-                        <Input type="email" placeholder="professional@example.com" {...field} />
+                        <Input
+                          type="email"
+                          placeholder="professional@example.com"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -217,7 +283,12 @@ export default function RegisterDeliveryman() {
                   name="phone_number"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.deliverymanProfile.phone')} *</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.deliverymanProfile.phone"
+                        )}{" "}
+                        *
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="+33123456789" {...field} />
                       </FormControl>
@@ -233,7 +304,12 @@ export default function RegisterDeliveryman() {
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t('client.pages.public.register.deliverymanProfile.address')} *</FormLabel>
+                      <FormLabel>
+                        {t(
+                          "client.pages.public.register.deliverymanProfile.address"
+                        )}{" "}
+                        *
+                      </FormLabel>
                       <FormControl>
                         <Input placeholder="123 Delivery St." {...field} />
                       </FormControl>
@@ -248,7 +324,12 @@ export default function RegisterDeliveryman() {
                     name="postal_code"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('client.pages.public.register.deliverymanProfile.postalCode')} *</FormLabel>
+                        <FormLabel>
+                          {t(
+                            "client.pages.public.register.deliverymanProfile.postalCode"
+                          )}{" "}
+                          *
+                        </FormLabel>
                         <FormControl>
                           <Input placeholder="75001" {...field} />
                         </FormControl>
@@ -262,7 +343,12 @@ export default function RegisterDeliveryman() {
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('client.pages.public.register.deliverymanProfile.city')} *</FormLabel>
+                        <FormLabel>
+                          {t(
+                            "client.pages.public.register.deliverymanProfile.city"
+                          )}{" "}
+                          *
+                        </FormLabel>
                         <FormControl>
                           <Input placeholder="Paris" {...field} />
                         </FormControl>
@@ -276,12 +362,17 @@ export default function RegisterDeliveryman() {
                     name="country"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t('client.pages.public.register.deliverymanProfile.country')} *</FormLabel>
+                        <FormLabel>
+                          {t(
+                            "client.pages.public.register.deliverymanProfile.country"
+                          )}{" "}
+                          *
+                        </FormLabel>
                         <LocationSelector
                           onCountryChange={(country) => {
-                            setCountry(country?.iso2 || 'FR');
-                            setCountryName(country?.name || '');
-                            field.onChange(country?.name || '');
+                            setCountry(country?.iso2 || "FR");
+                            setCountryName(country?.name || "");
+                            field.onChange(country?.name || "");
                           }}
                           enableStateSelection={false}
                         />
@@ -299,7 +390,9 @@ export default function RegisterDeliveryman() {
                     <FormItem className="mx-auto">
                       <div>
                         <FormLabel>
-                          {t('client.pages.public.register.providerDocument.signatureLabel')}
+                          {t(
+                            "client.pages.public.register.providerDocument.signatureLabel"
+                          )}
                         </FormLabel>
                       </div>
                       <div className="mx-auto">
@@ -314,9 +407,9 @@ export default function RegisterDeliveryman() {
                 />
               </div>
 
-              {/* File Upload Component */}
+              {/* Composant de téléversement de fichier */}
               <div className="flex flex-col gap-2">
-                {/* Drop area */}
+                {/* Zone de dépôt */}
                 <div
                   role="button"
                   onClick={openFileDialog}
@@ -330,7 +423,7 @@ export default function RegisterDeliveryman() {
                   <input
                     {...getInputProps()}
                     className="sr-only"
-                    aria-label="Upload file"
+                    aria-label="Téléverser un fichier"
                     disabled={Boolean(files[0])}
                   />
 
@@ -341,9 +434,12 @@ export default function RegisterDeliveryman() {
                     >
                       <UploadIcon className="size-4 opacity-60" />
                     </div>
-                    <p className="mb-1.5 text-sm font-medium">Upload file</p>
+                    <p className="mb-1.5 text-sm font-medium">
+                      Téléverser un fichier
+                    </p>
                     <p className="text-muted-foreground text-xs">
-                      Drag & drop or click to browse (max. {formatBytes(maxSize)})
+                      Glissez-déposez ou cliquez pour parcourir (max.{" "}
+                      {formatBytes(maxSize)})
                     </p>
                   </div>
                 </div>
@@ -381,7 +477,7 @@ export default function RegisterDeliveryman() {
                         variant="ghost"
                         className="text-muted-foreground/80 hover:text-foreground -me-2 size-8 hover:bg-transparent"
                         onClick={() => removeFile(files[0]?.id)}
-                        aria-label="Remove file"
+                        aria-label="Supprimer le fichier"
                       >
                         <XIcon className="size-4" aria-hidden="true" />
                       </Button>
@@ -390,10 +486,15 @@ export default function RegisterDeliveryman() {
                 )}
               </div>
 
-              <p className="mx-2 text-center text-muted-foreground">Vous pourrez ajouter des véhicules ultérieurement une fois votre profil Transporteur validé par un administrateur de EcoDeli</p>
+              <p className="mx-2 text-center text-muted-foreground">
+                Vous pourrez ajouter des véhicules ultérieurement une fois votre
+                profil Transporteur validé par un administrateur de EcoDeli
+              </p>
 
               <Button type="submit" className="w-full">
-                {t('client.pages.public.register.deliverymanProfile.continueButton')}
+                {t(
+                  "client.pages.public.register.deliverymanProfile.continueButton"
+                )}
               </Button>
             </form>
           </Form>

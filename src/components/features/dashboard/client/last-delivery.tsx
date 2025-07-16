@@ -80,7 +80,14 @@ export default function LastDelivery() {
           variant="outline"
           className="bg-primary/20 text-primary hover:bg-primary/20 px-4 py-1.5 rounded-full"
         >
-          {delivery.status}
+          {{
+            pending: "En attente",
+            taken: "Prise en charge",
+            finished: "Terminée",
+            validated: "Validée",
+          }[
+            delivery.status as "pending" | "taken" | "finished" | "validated"
+          ] || delivery.status}
         </Badge>
       </CardHeader>
       <CardContent className="p-0">
@@ -125,7 +132,13 @@ export default function LastDelivery() {
                   <div className="bg-primary w-4 h-4 rounded-full"></div>
                   <div className="text-sm text-foreground ml-2">
                     Colis transmis
-                    <div className="font-semibold">{delivery.pickupDate}</div>
+                    <div className="font-semibold">
+                      {delivery.pickupDate
+                        ? new Date(delivery.pickupDate).toLocaleDateString(
+                            "fr-FR"
+                          )
+                        : ""}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -144,7 +157,11 @@ export default function LastDelivery() {
                   <div className="text-sm text-foreground mr-2 text-right">
                     Date d'arrivée estimée :
                     <div className="font-semibold">
-                      {delivery.estimatedDeliveryDate}
+                      {delivery.estimatedDeliveryDate
+                        ? new Date(
+                            delivery.estimatedDeliveryDate
+                          ).toLocaleDateString("fr-FR")
+                        : ""}
                     </div>
                   </div>
                   <div className=" w-4 h-4 rounded-full"></div>

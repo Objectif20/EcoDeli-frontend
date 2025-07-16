@@ -93,7 +93,7 @@ function StepPreview({ step, direction }: { step: Step; direction: 1 | -1 }) {
       className="relative h-full w-full overflow-hidden rounded-sm rounded-rb-lg rounded-tl-xl ring-2 ring-black/10 dark:ring-black/10 dark:ring-offset-black ring-offset-8"
     >
       {step.media ? (
-        <div className="relative bg-black h-full w-full">
+        <div className="relative bg-background h-full w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={controls}
@@ -165,7 +165,9 @@ function StepTab({ step, isActive, onClick, isCompleted }: StepTabProps) {
         "relative"
       )}
       aria-current={isActive ? "step" : undefined}
-      aria-label={`${step.title}${isCompleted ? t("client.components.disclosure.completed") : ""}`}
+      aria-label={`${step.title}${
+        isCompleted ? t("client.components.disclosure.completed") : ""
+      }`}
     >
       <div className="mb-1 text-sm font-medium">{step.title}</div>
       <div className="text-xs hidden md:block text-muted-foreground line-clamp-2">
@@ -458,7 +460,9 @@ export function IntroDisclosure({
           }}
         >
           <DialogHeader className="p-6 space-y-2 bg-muted border-b border-border">
-            <DialogTitle>{t("client.components.disclosure.featureTour")}</DialogTitle>
+            <DialogTitle>
+              {t("client.components.disclosure.featureTour")}
+            </DialogTitle>
             {showProgressBar && (
               <div className="flex mt-2 w-full justify-center ">
                 <Progress
@@ -500,10 +504,10 @@ export function IntroDisclosure({
 
   return (
     <Drawer open={open} onOpenChange={setOpen} dismissible={false}>
-      <DrawerContent className="h-[95vh] max-h-[95vh] "
-
+      <DrawerContent
+        className="h-[95vh] max-h-[95vh] "
         onInteractOutside={(e) => {
-            e.preventDefault();
+          e.preventDefault();
         }}
       >
         <motion.div
